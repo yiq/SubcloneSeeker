@@ -16,6 +16,8 @@ namespace qiaoy {
 	// node. The node will be fed to the function as a parameter
 	class TreeTraverseDelegate {
 	public:
+		TreeTraverseDelegate() {}
+		virtual ~TreeTraverseDelegate() {}
 		virtual void processNode(TreeNode * node) = 0;	
 	};
 	

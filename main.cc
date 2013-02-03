@@ -1,6 +1,7 @@
 #include <iostream>
 #include <assert.h>
 #include "TreeNode.h"
+#include "SubcloneExplore.h"
 
 using namespace qiaoy;
 
@@ -20,8 +21,9 @@ public:
 
 int main(int argc, char *argv[])
 {
-	test_tree();
-	test_traverse();
+//	test_tree();
+//	test_traverse();
+	SubcloneExplorerMain(argc, argv);
 	return 0;
 }
 

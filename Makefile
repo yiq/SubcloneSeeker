@@ -1,11 +1,11 @@
 CXX=clang++
-CXXFLAGS=-g
+CXXFLAGS=$(FLAGS) -g
 
 all: main
 
 .PHONY: all
 
-main: TreeNode.cc main.cc
+main: TreeNode.cc SubcloneExplore.cc main.cc 
 
 clean: 
 	rm -f *.o
