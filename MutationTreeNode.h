@@ -17,13 +17,20 @@ namespace qiaoy {
 	protected:
 		int symId;
 		double nodeFraction;
+		double treeFraction;
 	
 	public:
+		
+		MutationTreeNode(): symId(0), nodeFraction(-1), treeFraction(-1) {}
+		
 		inline void setSymbolId(int symId) {this->symId = symId;}
 		inline int getSymbolId() const {return symId;}
 		
 		inline void setNodeFraction(double f) {nodeFraction = f;}
 		inline double getNodeFraction() const {return nodeFraction;}
+		
+		inline void setTreeFraction(double f) {treeFraction = f;}
+		inline double getTreeFraction() const {return treeFraction;}
 	};
 }
 

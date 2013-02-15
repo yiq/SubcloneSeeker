@@ -15,10 +15,17 @@ namespace qiaoy {
 	// that will be called upon when the traverser stump upon a 
 	// node. The node will be fed to the function as a parameter
 	class TreeTraverseDelegate {
+	protected:
+		bool _isTerminated;
+		
 	public:
-		TreeTraverseDelegate() {}
+		TreeTraverseDelegate() { _isTerminated = false; }
 		virtual ~TreeTraverseDelegate() {}
-		virtual void processNode(TreeNode * node) = 0;	
+		
+		inline void terminate() {_isTerminated = true;};
+		inline bool isTerminated() {return _isTerminated;}
+		
+		virtual void processNode(TreeNode * node) = 0;
 	};
 	
 	// The base class for tree nodes. Implements the basic tree
