@@ -2,6 +2,8 @@
 #define TREENODE_H
 
 #include <vector>
+#include <string>
+#include <sqlite3/sqlite3.h>
 
 namespace qiaoy {
 		
@@ -10,6 +12,16 @@ namespace qiaoy {
 	class TreeNode;
 	
 	typedef std::vector<TreeNode *> TreeNodeVec_t;
+
+	typedef struct _db_record {
+		sqlite3_int64 id;
+		sqlite3_int64 parentId;
+		bool isStoredInDB;
+
+		_db_record():
+			id(0), parentId(0), isStoredInDB(false)
+		{;}
+	} _db_record_s;
 	
 	// Base class for traverse delegate, which defines a function
 	// that will be called upon when the traverser stump upon a 
@@ -36,10 +48,17 @@ namespace qiaoy {
 	protected:
 		TreeNodeVec_t children;
 		TreeNode * parent;
+		_db_record_s dbRecord;
 		
 	public:
-		TreeNode():parent(NULL) {;}
+		friend class TreeTraverseDelegate;
+
+		TreeNode():parent(NULL), dbRecord() {;}
+		TreeNode(sqlite3 *database, sqlite3_int64 id);
+
 		~TreeNode(){}
+
+		virtual std::string description() {return "Generic Tree Node";}
 		
 		// returns a reference to the children vector
 		inline TreeNodeVec_t& vecChildren() {return children;}
@@ -58,6 +77,15 @@ namespace qiaoy {
 		
 		inline bool isLeaf() const {return children.size() == 0;}
 		inline bool isRoot() const {return parent == NULL;}
+
+		inline sqlite3_int64 getDBId() const {return dbRecord.id;}
+
+		static void saveTree(sqlite3 *database, TreeNode *root);
+		static std::vector<sqlite3_int64> loadRoots(sqlite3 *database);
+
+		virtual void update(sqlite3 *database) {;}
+		virtual void load(sqlite3 *database) {;}
+		
 	};
 }
 
