@@ -9,6 +9,7 @@
  */
 
 #include "GenomicRange.h"
+#include "SomaticEvent.h"
 
 namespace SubcloneExplorer {
 
@@ -23,7 +24,16 @@ namespace SubcloneExplorer {
 	 */
 	class SegmentalMutation : public SomaticEvent{
 		public:
+			virtual sqlite3_int64 archiveObjectToDB(sqlite3 *database);
+			virtual bool unarchiveObjectFromDB(sqlite3 *database, sqlite3_int64 id);
+
+		public:
 			GenomicRange range; /**< Genomic range over which the mutation occurred */
+
+			/**
+			 * minimal constructor to reset all member variables 
+			 */
+			SegmentalMutation() : SomaticEvent(), range() {}
 	};
 
 	/**

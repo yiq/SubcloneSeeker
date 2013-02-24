@@ -2,7 +2,11 @@ CC=clang
 CXX=clang++
 CXXFLAGS=$(FLAGS) -g -I../lib -I../lib/boost
 
-SOURCES = TreeNode.cc
+SOURCES = TreeNode.cc \
+		  SomaticEvent.cc \
+		  SegmentalMutation.cc \
+		  SNP.cc
+
 HEADERS = TreeNode.h \
 		  MutationTreeNode.h \
 		  GenomicLocation.h \
@@ -29,10 +33,11 @@ main: $(OBJS) $(HEADERS) $(MAIN_SRC) sqlite3.o
 check: $(OBJS) $(HEADERS) sqlite3.o
 	$(CXX) $(CXXFLAGS) $(OBJS) sqlite3.o test/*.cc -o runTest
 	./runTest
+	rm -rf runTest runTest.dSYM
 
 clean: 
 	rm -f *.o
-	rm -f main runTest
+	rm -f main
 	rm -rf *.dSYM
 
 .PHONY: clean

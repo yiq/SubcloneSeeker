@@ -9,6 +9,7 @@
  */
 
 #include "GenomicLocation.h"
+#include "SomaticEvent.h"
 
 namespace SubcloneExplorer {
 
@@ -18,9 +19,13 @@ namespace SubcloneExplorer {
 	 * A SNP is a point mutation at a specific location on the genome
 	 * that the DNA nucleotide is different from a more common alternative
 	 */
-	class SNP : SomaticEvent {
+	class SNP : public SomaticEvent {
 		public:
-			GenomicLocation location;
+			virtual sqlite3_int64 archiveObjectToDB(sqlite3 *database);
+			virtual bool unarchiveObjectFromDB(sqlite3 *database, sqlite3_int64 id);
+
+		public:
+			GenomicLocation location; /**< At which location did the SNP occurred */
 	};
 }
 

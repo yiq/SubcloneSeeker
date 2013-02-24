@@ -8,6 +8,8 @@
  * @author Yi Qiao
  */
 
+#include "Archivable.h"
+
 namespace SubcloneExplorer {
 
 	/**
@@ -17,9 +19,18 @@ namespace SubcloneExplorer {
 	 * is that it has an cell frequency associated, which describes in what
 	 * fraction of the cells does this specific event exist
 	 */
-	class SomaticEvent {
+	class SomaticEvent : public Archivable {
+		public:
+			virtual std::string getTableName();
+			bool createTableInDB(sqlite3 *database);
+
 		public:
 			double frequency; /**< Cell frequency */
+
+			/**
+			 * minimal constructor to reset member variables
+			 */
+			SomaticEvent(): frequency(0) {id = 0;}
 	};
 }
 

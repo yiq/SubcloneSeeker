@@ -22,6 +22,11 @@ namespace SubcloneExplorer {
 		public:
 			int chrom; /**< The integer id of the chromosome */
 			unsigned long position; /**< The 0-based position */
+
+			/**
+			 * minimal constructor to reset all member variables
+			 */
+			GenomicLocation() : chrom(0), position(0) {}
 	};
 }
 #endif

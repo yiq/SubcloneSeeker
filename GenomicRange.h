@@ -26,6 +26,11 @@ namespace SubcloneExplorer {
 		public:
 			GenomicLocation start;	/**< The starting position of the segment */
 			unsigned long length;	/**< The length of the segment */
+
+			/**
+			 * minimal constructor to reset all member variables
+			 */
+			GenomicRange() : start(), length(0) {}
 	};
 }
 

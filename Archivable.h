@@ -29,6 +29,11 @@ namespace SubcloneExplorer{
 	 */
 	class Archivable {
 		protected:
+
+			sqlite3_int64 id;  /**< the database identifier for a specific record */
+
+		public:
+
 			/**
 			 * returns the name of the table in which all object of a specific class are stored
 			 * @return Table name
