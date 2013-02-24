@@ -21,8 +21,12 @@ namespace SubcloneExplorer {
 	 */
 	class SNP : public SomaticEvent {
 		public:
-			virtual sqlite3_int64 archiveObjectToDB(sqlite3 *database);
-			virtual bool unarchiveObjectFromDB(sqlite3 *database, sqlite3_int64 id);
+			virtual std::string createObjectStatementStr();
+			virtual std::string updateObjectStatementStr();
+			virtual std::string selectObjectColumnListStr();
+			virtual void bindObjectToStatement(sqlite3_stmt *);
+			virtual void updateObjectFromStatement(sqlite3_stmt *);
+
 
 		public:
 			GenomicLocation location; /**< At which location did the SNP occurred */

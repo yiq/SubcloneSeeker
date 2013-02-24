@@ -2,14 +2,12 @@ CC=clang
 CXX=clang++
 CXXFLAGS=$(FLAGS) -g -I../lib -I../lib/boost
 
-SOURCES = TreeNode.cc \
+SOURCES = Archivable.cc \
 		  SomaticEvent.cc \
 		  SegmentalMutation.cc \
 		  SNP.cc
 
-HEADERS = TreeNode.h \
-		  MutationTreeNode.h \
-		  GenomicLocation.h \
+HEADERS = GenomicLocation.h \
 		  GenomicRange.h \
 		  Archivable.h
 

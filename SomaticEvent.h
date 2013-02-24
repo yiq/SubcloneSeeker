@@ -22,7 +22,6 @@ namespace SubcloneExplorer {
 	class SomaticEvent : public Archivable {
 		public:
 			virtual std::string getTableName();
-			bool createTableInDB(sqlite3 *database);
 
 		public:
 			double frequency; /**< Cell frequency */
@@ -31,6 +30,8 @@ namespace SubcloneExplorer {
 			 * minimal constructor to reset member variables
 			 */
 			SomaticEvent(): frequency(0) {id = 0;}
+
+			virtual std::string createTableStatementStr();
 	};
 }
 
