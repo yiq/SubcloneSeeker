@@ -4,7 +4,10 @@ CXXFLAGS=$(FLAGS) -g -I../lib
 
 SOURCES = TreeNode.cc
 HEADERS = TreeNode.h \
-		  MutationTreeNode.h
+		  MutationTreeNode.h \
+		  GenomicLocation.h \
+		  GenomicRange.h \
+		  Archivable.h
 
 MAIN_SRC = main.cc
 
