@@ -52,6 +52,16 @@ public:
 		ss<<data;
 		return ss.str();
 	}
+
+	static void initializeDatabase(sqlite3 *database) {
+		sqlite3_stmt *stmt;
+		int rc;
+		rc = sqlite3_prepare_v2(database, "CREATE TABLE Node (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, parentNodeId INTEGER NULL REFERENCES Node(id), data INTEGER NULL);", -1, &stmt, 0);
+		if(rc == SQLITE_OK) {
+			sqlite3_step(stmt);
+			sqlite3_finalize(stmt);
+		}
+	}
 };
 
 
@@ -207,13 +217,8 @@ void test_write_to_db() {
 	sqlite3 *database;
 	sqlite3_open(TEST_DB, &database);
 
-	sqlite3_stmt *stmt;
-	int rc;
-	rc = sqlite3_prepare_v2(database, "CREATE TABLE Node (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, parentNodeId INTEGER NULL REFERENCES Node(id), data INTEGER NULL);", -1, &stmt, 0);
-	if(rc == SQLITE_OK) {
-		sqlite3_step(stmt);
-		sqlite3_finalize(stmt);
-	}
+	// init db
+	SimpleTreeNode::initializeDatabase(database);
 
 	TreeNode::saveTree(database, root);
 	sqlite3_close(database);

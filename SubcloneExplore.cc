@@ -35,7 +35,7 @@ void SubcloneExplorerMain(int argc, char* argv[])
 		#endif
 	}
 	
-	// At this point, ins should be a good in stream.
+	// At this point, ins should be a good in-stream.
 	std::vector<Symbol_t> symbolVec;
 	while(!ins->eof()) {
 		Symbol_t newSymbol;
