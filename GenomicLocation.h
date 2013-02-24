@@ -23,5 +23,5 @@ namespace SubcloneExplorer {
 			int chrom; /**< The integer id of the chromosome */
 			unsigned long position; /**< The 0-based position */
 	};
-};
+}
 #endif

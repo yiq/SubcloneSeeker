@@ -57,6 +57,6 @@ namespace SubcloneExplorer{
 			 */
 			virtual bool unarchiveObjectFromDB(sqlite3 *database, sqlite3_int64 id) = 0;
 	};
-};
+}
 
 #endif

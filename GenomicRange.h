@@ -27,6 +27,6 @@ namespace SubcloneExplorer {
 			GenomicLocation start;	/**< The starting position of the segment */
 			unsigned long length;	/**< The length of the segment */
 	};
-};
+}
 
 #endif
