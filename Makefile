@@ -2,6 +2,14 @@ CC=clang
 CXX=clang++
 CXXFLAGS=$(FLAGS) -g -I../lib
 
+SOURCES = TreeNode.cc
+HEADERS = TreeNode.h \
+		  MutationTreeNode.h
+
+MAIN_SRC = main.cc
+
+OBJS = $(SOURCES:%.cc=%.o)
+
 all: main
 
 .PHONY: all
@@ -9,7 +17,13 @@ all: main
 sqlite3.o: ../lib/sqlite3/sqlite3.c
 	$(CC) -c -o $@ $?
 
-main: TreeNode.cc SubcloneExplore.cc main.cc sqlite3.o
+.cc.o:
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+
+main: $(OBJS) $(HEADERS) $(MAIN_SRC) sqlite3.o
+	$(CXX) $(CXXFLAGS) $(OBJS) $(MAIN_SRC) sqlite3.o -o main
+
 
 clean: 
 	rm -f *.o
