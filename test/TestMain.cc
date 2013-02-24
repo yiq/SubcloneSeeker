@@ -1,5 +1,7 @@
 #include <boost/test/included/unit_test.hpp>
 
+#include "TestSomaticEvent.h"
+
 void testGenomicLocation();
 void testGenomicRange();
 
@@ -12,6 +14,9 @@ test_suite* init_unit_test_suite(int argc, char* argv[]) {
 	
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testGenomicLocation ));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testGenomicRange ));
-	
+	framework::master_test_suite().add( BOOST_TEST_CASE( &testCNV ));
+	framework::master_test_suite().add( BOOST_TEST_CASE( &testLOH ));
+	framework::master_test_suite().add( BOOST_TEST_CASE( &testSNP ));
+
 	return 0;
 }
