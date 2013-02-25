@@ -20,8 +20,10 @@ namespace SubcloneExplorer {
 	 * fraction of the cells does this specific event exist
 	 */
 	class SomaticEvent : public Archivable {
-		public:
+		protected:
+			// Implements Archivable
 			virtual std::string getTableName();
+			virtual std::string createTableStatementStr();
 
 		public:
 			double frequency; /**< Cell frequency */
@@ -31,7 +33,6 @@ namespace SubcloneExplorer {
 			 */
 			SomaticEvent(): frequency(0) {id = 0;}
 
-			virtual std::string createTableStatementStr();
 	};
 }
 

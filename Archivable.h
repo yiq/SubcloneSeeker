@@ -32,7 +32,7 @@ namespace SubcloneExplorer{
 
 			sqlite3_int64 id;  /**< the database identifier for a specific record */
 
-		public:
+		protected:
 
 			/**
 			 * returns the name of the table in which all object of a specific class are stored
@@ -74,6 +74,21 @@ namespace SubcloneExplorer{
 			virtual std::string selectObjectColumnListStr() = 0;
 
 			/**
+			 * Bind archivable properties to a prepared, unbound sqlite3 statement
+			 *
+			 * @param statement A prepared, unbound sqlite3 statement instance
+			 */
+			virtual void bindObjectToStatement(sqlite3_stmt *statement) = 0;
+
+			/**
+			 * Populate archivable properties from a prepared statement during unarchiving
+			 *
+			 * @param statement A prepared statement contains the retrieved row
+			 */
+			virtual void updateObjectFromStatement(sqlite3_stmt *statement) = 0;
+
+		public:
+			/**
 			 * Create the storage table in the database
 			 * @param database An open sqlite3 database connection handle
 			 * @return Whether the operation is successful or not
@@ -95,19 +110,6 @@ namespace SubcloneExplorer{
 			 */
 			bool unarchiveObjectFromDB(sqlite3 *database, sqlite3_int64 id);
 
-			/**
-			 * Bind archivable properties to a prepared, unbound sqlite3 statement
-			 *
-			 * @param statement A prepared, unbound sqlite3 statement instance
-			 */
-			virtual void bindObjectToStatement(sqlite3_stmt *statement) = 0;
-
-			/**
-			 * Populate archivable properties from a prepared statement during unarchiving
-			 *
-			 * @param statement A prepared statement contains the retrieved row
-			 */
-			virtual void updateObjectFromStatement(sqlite3_stmt *statement) = 0;
 	};
 }
 

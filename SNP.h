@@ -20,7 +20,8 @@ namespace SubcloneExplorer {
 	 * that the DNA nucleotide is different from a more common alternative
 	 */
 	class SNP : public SomaticEvent {
-		public:
+		protected:
+			// Implements Archivable
 			virtual std::string createObjectStatementStr();
 			virtual std::string updateObjectStatementStr();
 			virtual std::string selectObjectColumnListStr();

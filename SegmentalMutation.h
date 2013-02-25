@@ -23,7 +23,8 @@ namespace SubcloneExplorer {
 	 * @see GenomicRange
 	 */
 	class SegmentalMutation : public SomaticEvent{
-		public:
+		protected:
+			// Implements Archivable
 			virtual std::string createObjectStatementStr();
 			virtual std::string updateObjectStatementStr();
 			virtual std::string selectObjectColumnListStr();
