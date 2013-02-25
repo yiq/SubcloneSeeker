@@ -5,11 +5,13 @@ CXXFLAGS=$(FLAGS) -g -I../lib -I../lib/boost
 SOURCES = Archivable.cc \
 		  SomaticEvent.cc \
 		  SegmentalMutation.cc \
-		  SNP.cc
+		  SNP.cc \
+		  EventCluster.cc
 
 HEADERS = GenomicLocation.h \
 		  GenomicRange.h \
-		  Archivable.h
+		  Archivable.h \
+		  EventCluster.h
 
 MAIN_SRC = main.cc
 
@@ -29,7 +31,7 @@ main: $(OBJS) $(HEADERS) $(MAIN_SRC) sqlite3.o
 	$(CXX) $(CXXFLAGS) $(OBJS) $(MAIN_SRC) sqlite3.o -o main
 
 check: $(OBJS) $(HEADERS) sqlite3.o
-	$(CXX) $(CXXFLAGS) $(OBJS) sqlite3.o test/*.cc -o runTest
+	$(CXX) -DKEEP_TEST_DB $(CXXFLAGS) $(OBJS) sqlite3.o test/*.cc -o runTest
 	./runTest
 	rm -rf runTest runTest.dSYM
 
