@@ -7,13 +7,15 @@ SOURCES = Archivable.cc \
 		  SegmentalMutation.cc \
 		  SNP.cc \
 		  EventCluster.cc \
-		  TreeNode.cc
+		  TreeNode.cc \
+		  Subclone.cc
 
 HEADERS = GenomicLocation.h \
 		  GenomicRange.h \
 		  Archivable.h \
 		  EventCluster.h \
-		  TreeNode.h
+		  TreeNode.h \
+		  Subclone.h
 
 MAIN_SRC = main.cc
 
