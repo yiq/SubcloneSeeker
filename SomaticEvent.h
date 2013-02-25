@@ -25,13 +25,15 @@ namespace SubcloneExplorer {
 			virtual std::string getTableName();
 			virtual std::string createTableStatementStr();
 
+			sqlite3_int64 ofClusterID; /**< to which cluster in database does this event belongs */
+
 		public:
 			double frequency; /**< Cell frequency */
 
 			/**
 			 * minimal constructor to reset member variables
 			 */
-			SomaticEvent(): frequency(0) {id = 0;}
+			SomaticEvent(): Archivable(), frequency(0), ofClusterID(0) {;}
 
 	};
 }

@@ -89,6 +89,11 @@ namespace SubcloneExplorer{
 
 		public:
 			/**
+			 * Minimal constructor to reset all member variables
+			 */
+			Archivable() : id(0) {;}
+
+			/**
 			 * Create the storage table in the database
 			 * @param database An open sqlite3 database connection handle
 			 * @return Whether the operation is successful or not

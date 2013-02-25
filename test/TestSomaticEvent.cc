@@ -69,7 +69,9 @@ void testCNVToDB() {
 	BOOST_CHECK(cnv2.range.start.position==1000000L);
 	BOOST_CHECK(cnv2.range.length==1000L);
 
+#ifndef KEEP_TEST_DB
 	remove("test.sqlite");
+#endif
 }
 
 void testLOH() {
@@ -127,7 +129,9 @@ void testLOHToDB() {
 	BOOST_CHECK(loh2.range.start.position==1000000L);
 	BOOST_CHECK(loh2.range.length==1000L);
 
+#ifndef KEEP_TEST_DB
 	remove("test.sqlite");
+#endif
 }
 
 void testSNP() {
@@ -183,5 +187,7 @@ void testSNPToDB() {
 	BOOST_CHECK(snp2.location.chrom==1);
 	BOOST_CHECK(snp2.location.position==1000000L);
 
+#ifndef KEEP_TEST_DB
 	remove("test.sqlite");
+#endif
 }
