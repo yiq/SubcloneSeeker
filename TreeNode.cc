@@ -36,6 +36,9 @@ void TreeNode::PreOrderTraverse(TreeNode * root, TreeTraverseDelegate &traverseD
 	
 	// Do the bidding of the traverse delegate
 	traverseDelegate.processNode(root);
+
+	// Preprocess Hook
+	traverseDelegate.preprocessNode(root);
 	
 	// recursively traverse the children nodes
 	for(TreeNodeVec_t::iterator it = root->children.begin(); it != root->children.end(); it++) {
@@ -44,6 +47,9 @@ void TreeNode::PreOrderTraverse(TreeNode * root, TreeTraverseDelegate &traverseD
 		if(traverseDelegate.isTerminated())
 			return;
 	}
+
+	// Postprocess Hook
+	traverseDelegate.postprocessNode(root);
 }
 
 void TreeNode::PostOrderTraverse(TreeNode * root, TreeTraverseDelegate &traverseDelegate)
@@ -55,6 +61,9 @@ void TreeNode::PostOrderTraverse(TreeNode * root, TreeTraverseDelegate &traverse
 	// Check if the root node exists at all
 	if (root == NULL) return;
 	
+	// Preprocess Hook
+	traverseDelegate.preprocessNode(root);
+	
 	// recursively traverse the children nodes
 	for(TreeNodeVec_t::iterator it = root->children.begin(); it != root->children.end(); it++) {
 		TreeNode::PostOrderTraverse(*it, traverseDelegate);
@@ -62,7 +71,10 @@ void TreeNode::PostOrderTraverse(TreeNode * root, TreeTraverseDelegate &traverse
 		if(traverseDelegate.isTerminated())
 			return;
 	}
-	
+
+	// Postprocess Hook
+	traverseDelegate.postprocessNode(root);
+
 	// Do the bidding of the traverse delegate
 	traverseDelegate.processNode(root);
 }
