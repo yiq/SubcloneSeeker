@@ -45,14 +45,14 @@ namespace SubcloneExplorer {
 			 * update the fraction
 			 * @param fraction The new fraction value
 			 */
-			inline void setFraction(double fraction) { if (fraction >=0 && fraction <=1) _fraction = fraction; }
+			inline void setFraction(double fraction) { /*if (fraction >=0 && fraction <=1)*/ _fraction = fraction; }
 
 			/**
 			 * retreve a vector of all EventClusters this subclone has
 			 *
 			 * @return member EventCluster vector
 			 */
-			inline std::vector<EventCluster *> vecEventCluster() const {return _eventClusters;}
+			inline std::vector<EventCluster *> &vecEventCluster() {return _eventClusters;}
 
 			/**
 			 * Add a given EventCluster into the subclone

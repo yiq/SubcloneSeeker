@@ -64,6 +64,13 @@ namespace SubcloneExplorer {
 			inline double cellFraction() const {return _cellFraction;}
 
 			/**
+			 * Set a new cell fraction
+			 *
+			 * @param fraction the new cell fraction
+			 */
+			inline void setCellFraction(double fraction) {_cellFraction = fraction;}
+
+			/**
 			 * Add an SomaticEvent object into the member list and update cell fraction
 			 *
 			 * @param event The event to be added as a member
