@@ -1,11 +1,11 @@
 #include <boost/test/included/unit_test.hpp>
 
+#include "TestGenomicRange.h"
 #include "TestSomaticEvent.h"
 #include "TestEventCluster.h"
 #include "TestTreeNode.h"
 
 void testGenomicLocation();
-void testGenomicRange();
 
 using namespace boost::unit_test;
 
@@ -16,6 +16,7 @@ test_suite* init_unit_test_suite(int argc, char* argv[]) {
 	
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testGenomicLocation ));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testGenomicRange ));
+	framework::master_test_suite().add( BOOST_TEST_CASE( &testGenomicRangeOverlaps ));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testCNV ));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testCNVToDB ));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testLOH ));
