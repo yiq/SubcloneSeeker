@@ -38,6 +38,20 @@ sqlite3_int64 Archivable::archiveObjectToDB(sqlite3 *database) {
 	int rc;
 	int bind_loc;
 
+	// check if table exist
+	std::string table_check_str = "SELECT name FROM sqlite_master WHERE type='table' AND name='"+getTableName()+"';";
+	rc = sqlite3_prepare_v2(database, table_check_str.c_str(), -1, &statement, 0);
+	if(rc != SQLITE_OK) {
+		sqlite3_finalize(statement);
+		return -1;
+	}
+	rc = sqlite3_step(statement);
+	sqlite3_finalize(statement);
+	if(rc != SQLITE_ROW) {
+		// Table does not exist, create table
+		createTableInDB(database);
+	}
+
 	// First, determines if the record already exist
 	std::string select_str = "SELECT id FROM " + getTableName() + " WHERE id=?;";
 	rc = sqlite3_prepare_v2(database, select_str.c_str(), -1, &statement, 0);
