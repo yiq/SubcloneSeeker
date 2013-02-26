@@ -8,6 +8,7 @@
 #include "Archivable.h"
 #include <sqlite3/sqlite3.h>
 #include <string>
+#include <vector>
 
 using namespace SubcloneExplorer;
 
@@ -126,4 +127,24 @@ bool Archivable::unarchiveObjectFromDB(sqlite3 *database, sqlite3_int64 id) {
 
 	sqlite3_finalize(statement);
 	return true;
+}
+
+std::vector<sqlite3_int64> Archivable::vecAllObjectsID(sqlite3 *database) {
+	std::string query_str = "SELECT id FROM " + getTableName() + ";";
+	sqlite3_stmt* statement;
+	int rc;
+
+	std::vector<sqlite3_int64> ret;
+
+	rc = sqlite3_prepare_v2(database, query_str.c_str(), -1, &statement, 0);
+	if(rc != SQLITE_OK) {
+		sqlite3_finalize(statement);
+		return ret;
+	}
+
+	while((rc = sqlite3_step(statement)) == SQLITE_ROW) 
+		ret.push_back(sqlite3_column_int64(statement, 0));
+
+	sqlite3_finalize(statement);
+	return ret;
 }
