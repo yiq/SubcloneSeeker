@@ -2,6 +2,7 @@
 #define ARCHIVABLE_H
 
 #include <string>
+#include <vector>
 #include <sqlite3.h>
 
 /**
@@ -114,6 +115,13 @@ namespace SubcloneExplorer{
 			 * @return Whether the operation is successful or not
 			 */
 			bool unarchiveObjectFromDB(sqlite3 *database, sqlite3_int64 id);
+
+			/**
+			 * Return a std::vector of all ids of records of the current object's class
+			 *
+			 * @return A vector of sqlite3_int64, describing all records with the same class
+			 */
+			std::vector<sqlite3_int64> vecAllObjectsID(sqlite3 *database);
 
 	};
 }
