@@ -8,14 +8,16 @@ SOURCES = Archivable.cc \
 		  SNP.cc \
 		  EventCluster.cc \
 		  TreeNode.cc \
-		  Subclone.cc
+		  Subclone.cc \
+		  SubcloneExplore.cc
 
 HEADERS = GenomicLocation.h \
 		  GenomicRange.h \
 		  Archivable.h \
 		  EventCluster.h \
 		  TreeNode.h \
-		  Subclone.h
+		  Subclone.h \
+		  SubcloneExplore.h
 
 MAIN_SRC = main.cc
 

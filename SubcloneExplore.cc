@@ -3,66 +3,62 @@
 #include <vector>
 #include <cstdio>
 #include <assert.h>
+#include <algorithm>
 
+#include <boost/lambda/lambda.hpp>
+
+#include "EventCluster.h"
+#include "Subclone.h"
 #include "SubcloneExplore.h"
-#include "MutationTreeNode.h"
 
-using namespace qiaoy;
+using namespace SubcloneExplorer;
 
-void TreeEnumeration(MutationTreeNode * root, std::vector<Symbol_t>& mutationVec, size_t symIdx);
-void TreeAssessment(MutationTreeNode * root, std::vector<Symbol_t>& mutationVec);
+void TreeEnumeration(Subclone * root, std::vector<EventCluster> vecClusters, size_t symIdx);
+void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters);
 
 void SubcloneExplorerMain(int argc, char* argv[])
 {
-	std::istream * ins;
-	bool isInputFile = false;
-	argc--; argv++;
-	if(argc == 0) {
-		ins = &std::cin;
-		#ifdef DEBUG
-		std::cerr<<"DEBUG: reading data from stdin"<<std::endl;
-		#endif
+
+	if(argc < 2) {
+		std::cout<<"Usage: "<<argv[0]<<" <cluster-archive-sqlite-db>"<<std::endl;
+		return;
 	}
-	else {
-		ins = new std::ifstream(*argv, std::ifstream::in);
-		if(!ins->good()) {
-			std::cout<<"Unable to open file "<<*argv<<std::endl;
-			exit(0);
-		}
-		isInputFile = true;
-		#ifdef DEBUG
-		std::cerr<<"DEBUG: reading data from file "<<*argv<<std::endl;
-		#endif
+
+	sqlite3 *database;
+	int rc;
+	rc = sqlite3_open_v2(argv[1], &database, SQLITE_OPEN_READONLY, NULL);
+	if(rc != SQLITE_OK) {
+		std::cout<<"Unable to open database "<<argv[1]<<std::endl;
+		return;
 	}
-	
-	// At this point, ins should be a good in-stream.
-	std::vector<Symbol_t> symbolVec;
-	while(!ins->eof()) {
-		Symbol_t newSymbol;
-		newSymbol.symId = -1; newSymbol.fraction = -1;
-		*ins >> newSymbol.symId >> newSymbol.fraction;
-		if(newSymbol.symId < 0 || newSymbol.fraction < 0) break; // partial result
-		symbolVec.push_back(newSymbol);
-		#ifdef DEBUG
-		std::cerr<<"DEBUG: new item read: "<<newSymbol.symId<<","<<newSymbol.fraction<<std::endl;
-		#endif
+
+	// load mutation clusters
+	EventCluster dummyCluster;
+	std::vector<sqlite3_int64> clusterIDs = dummyCluster.vecAllObjectsID(database);
+
+	if(clusterIDs.size() == 0) {
+		std::cout<<"Event cluster list is empty!"<<std::endl;
+		return;
 	}
-	if(isInputFile) ((std::ifstream *)ins)->close();
-	
-	#ifdef DEBUG
-	std::vector<Symbol_t>::iterator symIt;
-	for(symIt = symbolVec.begin(); symIt != symbolVec.end(); symIt++)
-		std::cout<<"DEBUG: "<<symIt->symId<<","<<symIt->fraction<<std::endl;
-	#endif
-	
+
+	std::vector<EventCluster> vecClusters;
+	for(size_t i=0; i<clusterIDs.size(); i++) {
+		EventCluster newCluster;
+		newCluster.unarchiveObjectFromDB(database, clusterIDs[i]);
+		vecClusters.push_back(newCluster);
+	}
+
+	std::sort(vecClusters.begin(), vecClusters.end());
+	std::reverse(vecClusters.begin(), vecClusters.end());
+
 	// Mutation list read. Start to enumerate trees
 	// 1. Create a node contains no mutation (symId = 0).
 	// this node will act as the root of the trees
-	MutationTreeNode *root = new MutationTreeNode;
-	root->setSymbolId(0);
+	Subclone *root = new Subclone();
+	root->setFraction(-1);
+	root->setTreeFraction(-1);
 	
-	TreeEnumeration(root, symbolVec, 0);	
-	
+	TreeEnumeration(root, vecClusters, 0);	
 }
 
 // First of all, a tree traverser that will print out the tree.
@@ -70,13 +66,22 @@ void SubcloneExplorerMain(int argc, char* argv[])
 	
 // Tree Print Traverser. This one will just print the symbol id
 // of the node that is given to it.
-class TreePrintTraverser : public TreeTraverseDelegate {
-public:
-	virtual void processNode(TreeNode * node) {
-		std::cout<<((MutationTreeNode *)node)->getSymbolId()<<",";
-	}
-};
+class TreePrintTraverser: public TreeTraverseDelegate {
+	public:
+		virtual void preprocessNode(TreeNode *node) {
+			if(!node->isLeaf())
+				std::cout<<"(";
+		}
 
+		virtual void processNode(TreeNode * node) {
+			std::cout<<((Subclone *)node)->fraction()<<",";
+		}
+
+		virtual void postprocessNode(TreeNode *node) {
+			if(!node->isLeaf())
+				std::cout<<")";
+		}
+};
 
 // This function will recursively construct all possible tree structures
 // using the given mutation list, starting with the mutation identified by symIdx
@@ -89,7 +94,7 @@ public:
 // Pre-Order and Post-Order, by the TreePrintTraverser class, so that each tree can be 
 // uniquely identified.
 
-void TreeEnumeration(MutationTreeNode * root, std::vector<Symbol_t>& mutationVec, size_t symIdx)
+void TreeEnumeration(Subclone * root, std::vector<EventCluster> vecClusters, size_t symIdx)
 {	
 	// Tree Enum Traverser. It will check if the last symbol has been
 	// treated or not. If yes, the tree is complete and it will call
@@ -101,132 +106,95 @@ void TreeEnumeration(MutationTreeNode * root, std::vector<Symbol_t>& mutationVec
 	protected:
 		// Some state variables that the TreeEnumeration
 		// function needs to expose to the traverser
-		std::vector<Symbol_t>& _mutationVec;
+		std::vector<EventCluster>& _vecClusters;
 		size_t _symIdx;
-		MutationTreeNode *_floatNode;
-		MutationTreeNode *_root;
+		Subclone *_floatNode;
+		Subclone *_root;
 		
 	public:
 		
-		TreeEnumTraverser(std::vector<Symbol_t>& mutationVec,
+		TreeEnumTraverser(std::vector<EventCluster>& vecClusters,
 						  size_t symIdx,
-						  MutationTreeNode *floatNode,
-						  MutationTreeNode *root):
-						_mutationVec(mutationVec), _symIdx(symIdx), 
+						  Subclone *floatNode,
+						  Subclone *root):
+						_vecClusters(vecClusters), _symIdx(symIdx), 
 						_floatNode(floatNode), _root(root) {;}
 								
 		
 		virtual void processNode(TreeNode * node) {
-			// Add the floating node as the chilren of the current node
-			node->addChild(_floatNode);
+			Subclone *clone = dynamic_cast<Subclone *>(node);
 			
-			if(_symIdx == _mutationVec.size()) {
-				// if the tree is complete, assess it somehow
-				
-				#ifdef DEBUG
-				TreePrintTraverser TreePrintTraverserObj;
-				std::cout<<"Pre-Order: ";
-				TreeNode::PreOrderTraverse(_root, TreePrintTraverserObj);
-				std::cout<<"\t";
-				
-				std::cout<<"Post-Order: ";
-				TreeNode::PostOrderTraverse(_root, TreePrintTraverserObj);
-				std::cout<<std::endl;
-				#endif
-				
-				TreeAssessment(_root, _mutationVec);
-				
-				#ifdef DEBUG
-				std::cerr<<"press enter to next tree..."<<std::endl;
-				
-				#ifdef STEP
-				getchar();
-				#endif
-				#endif
-			}
-			else {
-				// Move on to the next symbol
-				TreeEnumeration(_root, _mutationVec, _symIdx);
-			}
+			// Add the floating node as the chilren of the current node
+			clone->addChild(_floatNode);
+			
+			// Move on to the next symbol
+			TreeEnumeration(_root, _vecClusters, _symIdx);
 			
 			// Remove the child
 			node->removeChild(_floatNode);
 		}
 	};
 
+	if(symIdx == vecClusters.size()) {
+		TreeAssessment(root, vecClusters);
+		return;
+	}
+
 	// Create the new tree node
-	MutationTreeNode *newNode = new MutationTreeNode;
-	newNode->setSymbolId(mutationVec[symIdx].symId);
+	Subclone *newClone = new Subclone();
+	newClone->setFraction(-1);
+	newClone->setTreeFraction(-1);
+	newClone->addEventCluster(&vecClusters[symIdx]);
 
 	// Configure the tree traverser
-	TreeEnumTraverser TreeEnumTraverserObj(mutationVec, ++symIdx, newNode, root);
+	TreeEnumTraverser TreeEnumTraverserObj(vecClusters, ++symIdx, newClone, root);
 	
 	// Traverse the tree
 	TreeNode::PreOrderTraverse(root, TreeEnumTraverserObj);
 	
-	delete newNode;
+	delete newClone;
 }
 
-void TreeAssessment(MutationTreeNode * root, std::vector<Symbol_t>& mutationVec)
+void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 {
 	class FracAsnTraverser : public TreeTraverseDelegate {
 	protected:
-		std::vector<Symbol_t>& _mutationVec;
+		std::vector<EventCluster>& _vecClusters;
 		
 	public:
-		FracAsnTraverser(std::vector<Symbol_t>& mutationVec): _mutationVec(mutationVec) {;}
+		FracAsnTraverser(std::vector<EventCluster>& vecClusters): _vecClusters(vecClusters) {;}
 		virtual void processNode(TreeNode * node) {
 			if(node->isLeaf()) {
 				// direct assign
-				((MutationTreeNode *)node)->setNodeFraction(_mutationVec[((MutationTreeNode *)node)->getSymbolId()-1].fraction);
-				((MutationTreeNode *)node)->setTreeFraction(_mutationVec[((MutationTreeNode *)node)->getSymbolId()-1].fraction);
-				
-				#ifdef DEBUG
-				std::cerr<<"Setting fraction "<<((MutationTreeNode *)node)->getNodeFraction() << " for L-symbol "<<((MutationTreeNode *)node)->getSymbolId()<<std::endl;
-				#endif
-				
+				((Subclone *)node)->setFraction(((Subclone *)node)->vecEventCluster()[0]->cellFraction());
+				((Subclone *)node)->setTreeFraction(((Subclone *)node)->vecEventCluster()[0]->cellFraction());
 			}
 			else {
 				// intermediate node. assign it's mutation fraction - subtree_fraction
 				// actually, if it's root, assign 1
-				if(((MutationTreeNode *)node)->getSymbolId() == 0)
-					((MutationTreeNode *)node)->setTreeFraction(1);
+				if(node->isRoot())
+					((Subclone *)node)->setTreeFraction(1);
 				else
-					((MutationTreeNode *)node)->setTreeFraction(_mutationVec[((MutationTreeNode *)node)->getSymbolId()-1].fraction);
+					((Subclone *)node)->setTreeFraction(((Subclone *)node)->vecEventCluster()[0]->cellFraction());
 				
-				assert(((MutationTreeNode *)node)->getTreeFraction() >= 0 && ((MutationTreeNode *)node)->getTreeFraction() <= 1);
-				
-				#ifdef DEBUG
-				std::cerr<<"1. Setting fraction "<<((MutationTreeNode *)node)->getTreeFraction() << " for I-symbol "<<((MutationTreeNode *)node)->getSymbolId()<<std::endl;
-				#endif
-				
+				assert(((Subclone *)node)->treeFraction() >= 0 && ((Subclone *)node)->treeFraction() <= 1);
+							
 				double childrenFraction = 0;
-				for(size_t i=0; i<node->vecChildren().size(); i++) 
-					childrenFraction += ((MutationTreeNode *)node->vecChildren()[i])->getTreeFraction();
-					
-				#ifdef DEBUG
-				std::cerr<<"2. Children Frac: "<<childrenFraction<<std::endl;
-				#endif
-				
-				double nodeFraction = ((MutationTreeNode *)node)->getTreeFraction() - childrenFraction;
+				for(size_t i=0; i<node->getVecChildren().size(); i++) 
+					childrenFraction += ((Subclone *)node->getVecChildren()[i])->treeFraction();
+									
+				double nodeFraction = ((Subclone *)node)->treeFraction() - childrenFraction;
+
 				if(nodeFraction < 1e-3 && nodeFraction > -1e-3)
 					nodeFraction = 0;
 				
 				// check tree viability
-				if(nodeFraction < 0) // root allowed to be depleted
-				{
-					#ifdef DEBUG
-					std::cerr<<"Terminated"<<std::endl;
-					#endif
+				if(nodeFraction < 0) {
 					terminate();
 				}
 				else {
-					((MutationTreeNode *)node)->setNodeFraction(nodeFraction);
-					#ifdef DEBUG
-					std::cerr<<"3. Setting N-fraction "<<((MutationTreeNode *)node)->getNodeFraction() << " for I-symbol "<<((MutationTreeNode *)node)->getSymbolId()<<std::endl;
-					#endif
-					assert(((MutationTreeNode *)node)->getNodeFraction() >= 0 && ((MutationTreeNode *)node)->getNodeFraction() <= 1);
-					
+					((Subclone *)node)->setFraction(nodeFraction);
+					assert(((Subclone *)node)->fraction() >= 0 && ((Subclone *)node)->fraction() <= 1);
 				}
 			}
 		}
@@ -238,42 +206,37 @@ void TreeAssessment(MutationTreeNode * root, std::vector<Symbol_t>& mutationVec)
 	class NodeResetTraverser : public TreeTraverseDelegate {
 	public:
 		virtual void processNode(TreeNode * node) {
-			((MutationTreeNode *)node)->setNodeFraction(-1);
-			((MutationTreeNode *)node)->setTreeFraction(-1);
+			((Subclone *)node)->setFraction(-1);
+			((Subclone *)node)->setTreeFraction(-1);
 		}
 	};
 	
-	class NodeFracTraverser : public TreeTraverseDelegate {
-	public:
-		virtual void processNode(TreeNode * node) {
-			std::cout<<((MutationTreeNode *)node)->getSymbolId()<<":"<<((MutationTreeNode *)node)->getNodeFraction()<<std::endl;
-		}
-	};
 	
 	// check if the root is sane
 	if(root == NULL)
 		return;
 
-	// calcuate tree fractions
-	FracAsnTraverser fracTraverser(mutationVec);
-	TreeNode::PostOrderTraverse(root, fracTraverser);
-	
-	// if the tree is viable, output it
-	if(root->getNodeFraction() >= 0) {
-		TreePrintTraverser printTraverser;
-		NodeFracTraverser fracTraverser;
-		std::cout<<"Viable Tree! Pre-Orer: ";
-		TreeNode::PreOrderTraverse(root, printTraverser);
-		std::cout<<"\tPost-Order: ";
-		TreeNode::PostOrderTraverse(root, printTraverser);
-		std::cout<<"\troot N-Frac: "<< ((MutationTreeNode *)root)->getNodeFraction()<<std::endl;
-		
-		#ifdef DEBUG_FRAC
-		TreeNode::PreOrderTraverse(root, fracTraverser);
-		#endif
-	}
-
 	// reset node and tree fractions
 	NodeResetTraverser nrTraverser;
 	TreeNode::PreOrderTraverse(root, nrTraverser);
+
+	// calcuate tree fractions
+	FracAsnTraverser fracTraverser(vecClusters);
+	TreeNode::PostOrderTraverse(root, fracTraverser);
+	
+	// if the tree is viable, output it
+	if(root->fraction() >= 0) {
+		TreePrintTraverser printTraverser;
+		std::cout<<"Viable Tree! Pre-Orer: ";
+		TreeNode::PreOrderTraverse(root, printTraverser);
+		std::cout<<std::endl;
+	}
+	else
+	{
+		TreePrintTraverser printTraverser;
+		std::cout<<"Unviable Tree! Pre-Orer: ";
+		TreeNode::PreOrderTraverse(root, printTraverser);
+		std::cout<<std::endl;
+
+	}
 }
