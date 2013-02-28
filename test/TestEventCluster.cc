@@ -46,6 +46,20 @@ void testEventCluster() {
 	BOOST_CHECK(cluster.members().size() == 2);
 }
 
+void testEventClusterComparator() {
+	SubcloneExplorer::EventCluster cluster1, cluster2;
+	SubcloneExplorer::CNV cnv1, cnv2;
+
+	cnv1.frequency = 0.2;
+	cnv2.frequency = 0.3;
+
+	cluster1.addEvent(&cnv1);
+	cluster2.addEvent(&cnv2);
+
+	BOOST_CHECK(cluster1 < cluster2);
+	BOOST_CHECK(cluster2 > cluster1);
+}
+
 void testEventClusterToDB() {
 	SubcloneExplorer::EventCluster cluster;
 	SubcloneExplorer::CNV cnv;
