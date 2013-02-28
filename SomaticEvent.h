@@ -33,7 +33,14 @@ namespace SubcloneExplorer {
 			/**
 			 * minimal constructor to reset member variables
 			 */
-			SomaticEvent(): Archivable(), frequency(0), ofClusterID(0) {;}
+			SomaticEvent(): Archivable(), ofClusterID(0), frequency(0) {;}
+
+			/**
+			 * Set the cluster's database id to which this event belongs
+			 *
+			 * @param clusterID The cluster's database record id
+			 */
+			inline void setClusterID(sqlite3_int64 clusterID) {ofClusterID = clusterID;}
 
 	};
 }

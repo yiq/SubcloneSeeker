@@ -64,6 +64,13 @@ namespace SubcloneExplorer {
 			inline double cellFraction() const {return _cellFraction;}
 
 			/**
+			 * Set a new cell fraction
+			 *
+			 * @param fraction the new cell fraction
+			 */
+			inline void setCellFraction(double fraction) {_cellFraction = fraction;}
+
+			/**
 			 * Add an SomaticEvent object into the member list and update cell fraction
 			 *
 			 * @param event The event to be added as a member
@@ -71,6 +78,23 @@ namespace SubcloneExplorer {
 			void addEvent(SomaticEvent * event);
 
 			// Removing an event is such a rare case that, although trivial, it's not yet implemented
+			
+
+			/** 
+			 * Override the < operator for sorting purpose
+			 *
+			 * @param another the other EventCluster to compare to
+			 * @return true if this object has a smaller cell frequency than the other object, false if otherwise
+			 */
+			inline bool operator<(const EventCluster &another) const { return _cellFraction < another.cellFraction(); }
+
+			/**
+			 * Override the > operator for sorting purpose
+			 *
+			 * @param another the other EventCluster to compare to
+			 * @return true if this object has a greater cell frequency than the other object, false if otherwise
+			 */
+			inline bool operator>(const EventCluster &another) const { return _cellFraction > another.cellFraction(); }
 	};
 }
 #endif

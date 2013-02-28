@@ -31,6 +31,58 @@ namespace SubcloneExplorer {
 			 * minimal constructor to reset all member variables
 			 */
 			GenomicRange() : start(), length(0) {}
+
+			/**
+			 * Check if two GenomicRange overlap with each other
+			 *
+			 * @param another The other GenomicRange to check with
+			 * @return true if overlaps, or false
+			 */
+			virtual inline bool overlaps(GenomicRange& another) {
+				//check chrom
+				if(another.start.chrom != start.chrom)
+					return false;
+
+				//check overlaps
+				if( another.start.position + another.length < start.position 
+						|| another.start.position > start.position + length )
+					return false;
+				return true;
+			}
+
+			/**
+			 * GenomicRange compare operator ==
+			 *
+			 * @param another The other GenomicRange to compare to
+			 * @return true if they are equal, false if not
+			 */
+			inline bool operator==(const GenomicRange& another) const {
+				return (start.chrom == another.start.chrom) && (start.position == another.start.position) && (length == another.length);
+			}
+
+			/**
+			 * GenomicRange compare operator <
+			 *
+			 * @param another The other GenomicRange to compare to
+			 * @return true if the object takes place before the other object, false if not
+			 */
+			inline bool operator<(const GenomicRange& another) const {
+				if(start.chrom < another.start.chrom) return true;
+				if(start.position < another.start.position) return true;
+				return false;
+			}
+			
+			/**
+			 * GenomicRange compare operator >
+			 *
+			 * @param another The other GenomicRange to compare to
+			 * @return true if the object takes place after the other object, false if not
+			 */
+			inline bool operator>(const GenomicRange& another) const {
+				if(start.chrom > another.start.chrom) return true;
+				if(start.position > another.start.position) return true;
+				return false;
+			}
 	};
 }
 
