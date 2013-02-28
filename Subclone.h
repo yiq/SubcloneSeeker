@@ -27,13 +27,14 @@ namespace SubcloneExplorer {
 	class Subclone : public TreeNode {
 		protected:
 			double _fraction; /**< The percentage of this subclone */
+			double _treeFraction; /**< The total fraction taken by the subtree rooted by this object */
 			std::vector<EventCluster *> _eventClusters; /**< the event clusters this subclone contains */
 
 		public:
 			/**
 			 * Minimal constructor to reset all member variables
 			 */
-			Subclone() : TreeNode(), _fraction(0) {;}
+			Subclone() : TreeNode(), _fraction(0), _treeFraction(0) {;}
 
 			/**
 			 * return the fraction
@@ -46,6 +47,18 @@ namespace SubcloneExplorer {
 			 * @param fraction The new fraction value
 			 */
 			inline void setFraction(double fraction) { /*if (fraction >=0 && fraction <=1)*/ _fraction = fraction; }
+
+			/**
+			 * return the tree fraction
+			 * @return percentage of the subtree rooted by this subclone
+			 */
+			inline double treeFraction() const {return _treeFraction;}
+
+			/**
+			 * update the tree fraction
+			 * @param fraction The new tree fraction value
+			 */
+			inline void setTreeFraction(double fraction) { /*if (fraction >=0 && fraction <=1)*/ _treeFraction = fraction; }
 
 			/**
 			 * retreve a vector of all EventClusters this subclone has
