@@ -95,6 +95,13 @@ namespace SubcloneExplorer {
 			 * @return true if this object has a greater cell frequency than the other object, false if otherwise
 			 */
 			inline bool operator>(const EventCluster &another) const { return _cellFraction > another.cellFraction(); }
+
+			/**
+			 * Set the subclone ID this cluster belongs to
+			 *
+			 * @param cloneID the database id of the subclone this cluster belongs to
+			 */
+			inline void setSubcloneID(sqlite3_int64 cloneID) { ofSubcloneID = cloneID; }
 	};
 }
 #endif
