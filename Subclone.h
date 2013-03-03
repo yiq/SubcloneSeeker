@@ -111,6 +111,7 @@ namespace SubcloneExplorer {
 			SubcloneLoadTreeTraverser(sqlite3 *database): _database(database) {;}
 			virtual void processNode(TreeNode *node);
 			static std::vector<sqlite3_int64> rootNodes(sqlite3 *database);
+			static std::vector<sqlite3_int64> nodesOfParentID(sqlite3 *database, sqlite3_int64 parentId);
 	};
 }
 

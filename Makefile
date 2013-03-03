@@ -37,6 +37,7 @@ main: $(OBJS) $(HEADERS) $(MAIN_SRC) sqlite3.o
 	$(CXX) $(CXXFLAGS) $(OBJS) $(MAIN_SRC) sqlite3.o -o main
 
 check: $(OBJS) $(HEADERS) sqlite3.o
+	rm test.sqlite
 	$(CXX) -DKEEP_TEST_DB $(CXXFLAGS) $(OBJS) sqlite3.o test/*.cc -o runTest
 	./runTest
 	rm -rf runTest runTest.dSYM

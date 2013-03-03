@@ -4,6 +4,7 @@
 #include "TestSomaticEvent.h"
 #include "TestEventCluster.h"
 #include "TestTreeNode.h"
+#include "TestSubclone.h"
 
 void testGenomicLocation();
 
@@ -28,9 +29,13 @@ test_suite* init_unit_test_suite(int argc, char* argv[]) {
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testEventClusterToDB ));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testEventClusterComparator));
 
-
-
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testTreeNode));
+
+	framework::master_test_suite().add( BOOST_TEST_CASE( &testSubclone));
+	framework::master_test_suite().add( BOOST_TEST_CASE( &testSubcloneToDB));
+
+
+
 
 
 

@@ -98,16 +98,34 @@ void SubcloneSaveTreeTraverser::preprocessNode(TreeNode *node) {
 	}
 }
 
+// SubcloneLoadTreeTraverser
 std::vector<sqlite3_int64> SubcloneLoadTreeTraverser::rootNodes(sqlite3 *database) {
+	return nodesOfParentID(database, 0);
+}
+
+std::vector<sqlite3_int64> SubcloneLoadTreeTraverser::nodesOfParentID(sqlite3 *database, sqlite3_int64 parentId) {
 
 	sqlite3_stmt *statement;
 	int rc;
 	std::vector<sqlite3_int64> res;
 
-	rc = sqlite3_prepare_v2(database, "SELECT id FROM Subclones WHERE parentId = 0;", -1, &statement, 0);
+	if(parentId == 0) 
+		rc = sqlite3_prepare_v2(database, "SELECT id FROM Subclones WHERE parentId is NULL;", -1, &statement, 0);
+	else
+		rc = sqlite3_prepare_v2(database, "SELECT id FROM Subclones WHERE parentId = ?;", -1, &statement, 0);
+
 	if(rc != SQLITE_OK) {
 		sqlite3_finalize(statement);
 		return res;
+	}
+
+	if(parentId != 0) {
+		rc = sqlite3_bind_int64(statement, 1, parentId);
+
+		if(rc != SQLITE_OK) {
+			sqlite3_finalize(statement);
+			return res;
+		}
 	}
 
 	while((rc = sqlite3_step(statement)) == SQLITE_ROW) {
@@ -117,4 +135,15 @@ std::vector<sqlite3_int64> SubcloneLoadTreeTraverser::rootNodes(sqlite3 *databas
 
 	sqlite3_finalize(statement);
 	return res;
+}
+
+void SubcloneLoadTreeTraverser::processNode(TreeNode * node) {
+	Subclone *clone = dynamic_cast<Subclone *>(node);
+	std::vector<sqlite3_int64> childrenIDs = nodesOfParentID(_database, clone->getId());
+
+	for(size_t i=0; i<childrenIDs.size(); i++) {
+		Subclone *children = new Subclone();
+		children->unarchiveObjectFromDB(_database, childrenIDs[i]);
+		clone->addChild(children);
+	}
 }

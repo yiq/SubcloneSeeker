@@ -1,0 +1,2 @@
+void testSubclone();
+void testSubcloneToDB();

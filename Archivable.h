@@ -95,6 +95,12 @@ namespace SubcloneExplorer{
 			Archivable() : id(0) {;}
 
 			/**
+			 * get access function of id
+			 * @return the database identifier of the object
+			 */
+			inline sqlite3_int64 getId() {return id;}
+
+			/**
 			 * Create the storage table in the database
 			 * @param database An open sqlite3 database connection handle
 			 * @return Whether the operation is successful or not
