@@ -24,8 +24,8 @@ std::string SegmentalMutation::selectObjectColumnListStr() {
 void SegmentalMutation::bindObjectToStatement(sqlite3_stmt *statement) {
 	int bind_loc = 1;
 	sqlite3_bind_double(statement, bind_loc++, frequency);
-	sqlite3_bind_int(statement, bind_loc++, range.start.chrom);
-	sqlite3_bind_int64(statement, bind_loc++, range.start.position);
+	sqlite3_bind_int(statement, bind_loc++, range.chrom);
+	sqlite3_bind_int64(statement, bind_loc++, range.position);
 	sqlite3_bind_int64(statement, bind_loc++, range.length);
 	if(ofClusterID > 0) {
 		sqlite3_bind_int64(statement, bind_loc++, ofClusterID);
@@ -38,8 +38,8 @@ void SegmentalMutation::bindObjectToStatement(sqlite3_stmt *statement) {
 void SegmentalMutation::updateObjectFromStatement(sqlite3_stmt *statement) {
 	int col_pos = 0;
 	frequency = sqlite3_column_double(statement, col_pos++);
-	range.start.chrom = sqlite3_column_int(statement, col_pos++);
-	range.start.position = sqlite3_column_int64(statement, col_pos++);
+	range.chrom = sqlite3_column_int(statement, col_pos++);
+	range.position = sqlite3_column_int64(statement, col_pos++);
 	range.length = sqlite3_column_int64(statement, col_pos++);
 
 	if(sqlite3_column_type(statement, col_pos) != SQLITE_NULL) {

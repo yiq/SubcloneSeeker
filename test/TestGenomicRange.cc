@@ -20,36 +20,36 @@ void testGenomicRangeOverlaps() {
 
 	GenomicRange range[8];
 
-	range[0].start.chrom=1;
-	range[0].start.position=300;
+	range[0].chrom=1;
+	range[0].position=300;
 	range[0].length=400;
 
-	range[1].start.chrom=1;
-	range[1].start.position=200;
+	range[1].chrom=1;
+	range[1].position=200;
 	range[1].length=600;
 
-	range[2].start.chrom=1;
-	range[2].start.position=400;
+	range[2].chrom=1;
+	range[2].position=400;
 	range[2].length=200;
 
-	range[3].start.chrom=1;
-	range[3].start.position=100;
+	range[3].chrom=1;
+	range[3].position=100;
 	range[3].length=400;
 
-	range[4].start.chrom=1;
-	range[4].start.position=500;
+	range[4].chrom=1;
+	range[4].position=500;
 	range[4].length=400;
 
-	range[5].start.chrom=1;
-	range[5].start.position=0;
+	range[5].chrom=1;
+	range[5].position=0;
 	range[5].length=50;
 
-	range[6].start.chrom=1;
-	range[6].start.position=950;
+	range[6].chrom=1;
+	range[6].position=950;
 	range[6].length=50;
 
-	range[7].start.chrom=2;
-	range[7].start.position=300;
+	range[7].chrom=2;
+	range[7].position=300;
 	range[7].length=500;
 
 	for(int i=0; i<5; i++) {
@@ -68,4 +68,26 @@ void testGenomicRangeOverlaps() {
 	BOOST_CHECK(range[5] < range[0]);
 	BOOST_CHECK(range[6] > range[0]);
 	BOOST_CHECK(range[7] > range[0]);
+}
+
+void testGenomicRangeCompare() {
+	GenomicRange range;
+	range.chrom=2;
+	range.position=1000;
+	range.length=1000;
+
+	GenomicLocation loc1, loc2, loc3, loc4;
+	loc1.chrom=1; loc1.position = 2000;
+	loc2.chrom=2; loc2.position=500;
+	loc3.chrom=2; loc3.position=1500;
+	loc4.chrom=3; loc4.position = 500;
+
+	BOOST_CHECK( range > loc1 );
+	BOOST_CHECK(not ( range < loc1 ));
+	BOOST_CHECK(range > loc2);
+	BOOST_CHECK(not ( range < loc2 ));
+	BOOST_CHECK(range < loc3);
+	BOOST_CHECK(not ( range > loc3 ));
+	BOOST_CHECK(range < loc4);
+	BOOST_CHECK(not ( range > loc4 ));
 }

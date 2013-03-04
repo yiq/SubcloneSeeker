@@ -23,8 +23,8 @@ void testEventCluster() {
 	SubcloneExplorer::CNV cnv;
 
 	cnv.frequency=0.2;
-	cnv.range.start.chrom=1;
-	cnv.range.start.position = 1000000L;
+	cnv.range.chrom=1;
+	cnv.range.position = 1000000L;
 	cnv.range.length = 1000L;
 
 	cluster.addEvent(&cnv);
@@ -36,8 +36,8 @@ void testEventCluster() {
 	SubcloneExplorer::CNV cnv2;
 
 	cnv2.frequency=0.3;
-	cnv2.range.start.chrom=1;
-	cnv2.range.start.position = 1000000L;
+	cnv2.range.chrom=1;
+	cnv2.range.position = 1000000L;
 	cnv2.range.length = 1000L;
 
 	cluster.addEvent(&cnv2);
@@ -65,8 +65,8 @@ void testEventClusterToDB() {
 	SubcloneExplorer::CNV cnv;
 
 	cnv.frequency=0.2;
-	cnv.range.start.chrom=1;
-	cnv.range.start.position = 1000000L;
+	cnv.range.chrom=1;
+	cnv.range.position = 1000000L;
 	cnv.range.length = 1000L;
 
 	cluster.addEvent(&cnv);

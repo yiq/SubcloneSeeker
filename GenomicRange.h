@@ -10,6 +10,8 @@
  * @author Yi Qiao
  */
 
+#include "GenomicLocation.h"
+
 namespace SubcloneExplorer {
 
 	/**
@@ -22,15 +24,14 @@ namespace SubcloneExplorer {
 	 *
 	 * @see GenomicLocation
 	 */
-	class GenomicRange {
+	class GenomicRange : public GenomicLocation {
 		public:
-			GenomicLocation start;	/**< The starting position of the segment */
 			unsigned long length;	/**< The length of the segment */
 
 			/**
 			 * minimal constructor to reset all member variables
 			 */
-			GenomicRange() : start(), length(0) {}
+			GenomicRange() : GenomicLocation(), length(0) {}
 
 			/**
 			 * Check if two GenomicRange overlap with each other
@@ -40,12 +41,12 @@ namespace SubcloneExplorer {
 			 */
 			virtual inline bool overlaps(GenomicRange& another) {
 				//check chrom
-				if(another.start.chrom != start.chrom)
+				if(another.chrom != chrom)
 					return false;
 
 				//check overlaps
-				if( another.start.position + another.length < start.position 
-						|| another.start.position > start.position + length )
+				if( another.position + another.length < position 
+						|| another.position > position + length )
 					return false;
 				return true;
 			}
@@ -57,31 +58,7 @@ namespace SubcloneExplorer {
 			 * @return true if they are equal, false if not
 			 */
 			inline bool operator==(const GenomicRange& another) const {
-				return (start.chrom == another.start.chrom) && (start.position == another.start.position) && (length == another.length);
-			}
-
-			/**
-			 * GenomicRange compare operator <
-			 *
-			 * @param another The other GenomicRange to compare to
-			 * @return true if the object takes place before the other object, false if not
-			 */
-			inline bool operator<(const GenomicRange& another) const {
-				if(start.chrom < another.start.chrom) return true;
-				if(start.position < another.start.position) return true;
-				return false;
-			}
-			
-			/**
-			 * GenomicRange compare operator >
-			 *
-			 * @param another The other GenomicRange to compare to
-			 * @return true if the object takes place after the other object, false if not
-			 */
-			inline bool operator>(const GenomicRange& another) const {
-				if(start.chrom > another.start.chrom) return true;
-				if(start.position > another.start.position) return true;
-				return false;
+				return (chrom == another.chrom) && (position == another.position) && (length == another.length);
 			}
 	};
 }

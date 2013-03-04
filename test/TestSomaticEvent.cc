@@ -17,18 +17,18 @@ void testCNV() {
 	SubcloneExplorer::CNV cnv;
 
 	BOOST_CHECK_CLOSE( cnv.frequency, 0, 1e-3);
-	BOOST_CHECK(cnv.range.start.chrom==0);
-	BOOST_CHECK(cnv.range.start.position==0);
+	BOOST_CHECK(cnv.range.chrom==0);
+	BOOST_CHECK(cnv.range.position==0);
 	BOOST_CHECK(cnv.range.length==0);
 
 	cnv.frequency=0.2;
-	cnv.range.start.chrom=1;
-	cnv.range.start.position = 1000000L;
+	cnv.range.chrom=1;
+	cnv.range.position = 1000000L;
 	cnv.range.length = 1000L;
 
 	BOOST_CHECK_CLOSE(cnv.frequency, 0.2, 1e-3);
-	BOOST_CHECK(cnv.range.start.chrom==1);
-	BOOST_CHECK(cnv.range.start.position==1000000L);
+	BOOST_CHECK(cnv.range.chrom==1);
+	BOOST_CHECK(cnv.range.position==1000000L);
 	BOOST_CHECK(cnv.range.length==1000L);
 }
 
@@ -36,13 +36,13 @@ void testCNVToDB() {
 	SubcloneExplorer::CNV cnv;
 
 	cnv.frequency=0.2;
-	cnv.range.start.chrom=1;
-	cnv.range.start.position = 1000000L;
+	cnv.range.chrom=1;
+	cnv.range.position = 1000000L;
 	cnv.range.length = 1000L;
 
 	BOOST_CHECK_CLOSE(cnv.frequency, 0.2, 1e-3);
-	BOOST_CHECK(cnv.range.start.chrom==1);
-	BOOST_CHECK(cnv.range.start.position==1000000L);
+	BOOST_CHECK(cnv.range.chrom==1);
+	BOOST_CHECK(cnv.range.position==1000000L);
 	BOOST_CHECK(cnv.range.length==1000L);
 
 	// write
@@ -65,8 +65,8 @@ void testCNVToDB() {
 
 	BOOST_CHECK(status);
 	BOOST_CHECK_CLOSE(cnv2.frequency, 0.2, 1e-3);
-	BOOST_CHECK(cnv2.range.start.chrom==1);
-	BOOST_CHECK(cnv2.range.start.position==1000000L);
+	BOOST_CHECK(cnv2.range.chrom==1);
+	BOOST_CHECK(cnv2.range.position==1000000L);
 	BOOST_CHECK(cnv2.range.length==1000L);
 
 #ifndef KEEP_TEST_DB
@@ -77,18 +77,18 @@ void testCNVToDB() {
 void testLOH() {
 	SubcloneExplorer::LOH loh;
 	BOOST_CHECK_CLOSE( loh.frequency, 0, 1e-3);
-	BOOST_CHECK(loh.range.start.chrom==0);
-	BOOST_CHECK(loh.range.start.position==0);
+	BOOST_CHECK(loh.range.chrom==0);
+	BOOST_CHECK(loh.range.position==0);
 	BOOST_CHECK(loh.range.length==0);
 
 	loh.frequency=0.2;
-	loh.range.start.chrom=1;
-	loh.range.start.position = 1000000L;
+	loh.range.chrom=1;
+	loh.range.position = 1000000L;
 	loh.range.length = 1000L;
 
 	BOOST_CHECK_CLOSE(loh.frequency, 0.2, 1e-3);
-	BOOST_CHECK(loh.range.start.chrom==1);
-	BOOST_CHECK(loh.range.start.position==1000000L);
+	BOOST_CHECK(loh.range.chrom==1);
+	BOOST_CHECK(loh.range.position==1000000L);
 	BOOST_CHECK(loh.range.length==1000L);
 }
 
@@ -96,13 +96,13 @@ void testLOHToDB() {
 	SubcloneExplorer::LOH loh;
 
 	loh.frequency=0.2;
-	loh.range.start.chrom=1;
-	loh.range.start.position = 1000000L;
+	loh.range.chrom=1;
+	loh.range.position = 1000000L;
 	loh.range.length = 1000L;
 
 	BOOST_CHECK_CLOSE(loh.frequency, 0.2, 1e-3);
-	BOOST_CHECK(loh.range.start.chrom==1);
-	BOOST_CHECK(loh.range.start.position==1000000L);
+	BOOST_CHECK(loh.range.chrom==1);
+	BOOST_CHECK(loh.range.position==1000000L);
 	BOOST_CHECK(loh.range.length==1000L);
 
 	// write
@@ -125,8 +125,8 @@ void testLOHToDB() {
 
 	BOOST_CHECK(status);
 	BOOST_CHECK_CLOSE(loh2.frequency, 0.2, 1e-3);
-	BOOST_CHECK(loh2.range.start.chrom==1);
-	BOOST_CHECK(loh2.range.start.position==1000000L);
+	BOOST_CHECK(loh2.range.chrom==1);
+	BOOST_CHECK(loh2.range.position==1000000L);
 	BOOST_CHECK(loh2.range.length==1000L);
 
 #ifndef KEEP_TEST_DB

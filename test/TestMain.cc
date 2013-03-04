@@ -18,6 +18,8 @@ test_suite* init_unit_test_suite(int argc, char* argv[]) {
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testGenomicLocation ));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testGenomicRange ));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testGenomicRangeOverlaps ));
+	framework::master_test_suite().add( BOOST_TEST_CASE( &testGenomicRangeCompare));
+
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testCNV ));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testCNVToDB ));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testLOH ));
