@@ -101,6 +101,13 @@ namespace SubcloneExplorer{
 			inline sqlite3_int64 getId() {return id;}
 
 			/**
+			 * Set the database id
+			 * @param nid the new database id
+			 */
+			inline void setId(sqlite3_int64 nid) {id = nid;}
+
+
+			/**
 			 * Create the storage table in the database
 			 * @param database An open sqlite3 database connection handle
 			 * @return Whether the operation is successful or not

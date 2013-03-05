@@ -80,7 +80,7 @@ void SubcloneSaveTreeTraverser::processNode(TreeNode *node) {
 
 	sqlite3_int64 id  = clone->archiveObjectToDB(_database);
 
-	assert(clone->id == id);
+	assert(clone->getId() == id);
 
 	for(size_t i=0; i<clone->vecEventCluster().size(); i++)
 		(clone->vecEventCluster()[i])->setSubcloneID(id);
@@ -94,7 +94,7 @@ void SubcloneSaveTreeTraverser::preprocessNode(TreeNode *node) {
 
 	for(size_t i=0; i<clone->getVecChildren().size(); i++) {
 		Subclone *children = dynamic_cast<Subclone *>(clone->getVecChildren()[i]);
-		children->parentId = clone->id;
+		children->setParentId(clone->getId());
 	}
 }
 
