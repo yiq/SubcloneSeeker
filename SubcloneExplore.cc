@@ -11,6 +11,8 @@
 #include "Subclone.h"
 #include "SubcloneExplore.h"
 
+sqlite3 *res_database;
+
 using namespace SubcloneExplorer;
 
 void TreeEnumeration(Subclone * root, std::vector<EventCluster> vecClusters, size_t symIdx);
@@ -20,9 +22,11 @@ void SubcloneExplorerMain(int argc, char* argv[])
 {
 
 	if(argc < 2) {
-		std::cout<<"Usage: "<<argv[0]<<" <cluster-archive-sqlite-db>"<<std::endl;
+		std::cout<<"Usage: "<<argv[0]<<" <cluster-archive-sqlite-db> [output-db]"<<std::endl;
 		return;
 	}
+
+	res_database=NULL;
 
 	sqlite3 *database;
 	int rc;
@@ -48,6 +52,8 @@ void SubcloneExplorerMain(int argc, char* argv[])
 		vecClusters.push_back(newCluster);
 	}
 
+	sqlite3_close(database);
+
 	std::sort(vecClusters.begin(), vecClusters.end());
 	std::reverse(vecClusters.begin(), vecClusters.end());
 
@@ -57,8 +63,19 @@ void SubcloneExplorerMain(int argc, char* argv[])
 	Subclone *root = new Subclone();
 	root->setFraction(-1);
 	root->setTreeFraction(-1);
+
+	if(argc >= 2) {
+		int rc = sqlite3_open(argv[2], &res_database);
+		if(rc != SQLITE_OK ) {
+			std::cout<<"Unable to open result database for writting."<<std::endl;
+			return;
+		}
+	}
 	
 	TreeEnumeration(root, vecClusters, 0);	
+
+	if(res_database != NULL) 
+		sqlite3_close(res_database);
 }
 
 // First of all, a tree traverser that will print out the tree.
@@ -208,10 +225,12 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 		virtual void processNode(TreeNode * node) {
 			((Subclone *)node)->setFraction(-1);
 			((Subclone *)node)->setTreeFraction(-1);
+			((Subclone *)node)->setParentId(0);
+			((Subclone *)node)->setId(0);
+
 		}
 	};
-	
-	
+		
 	// check if the root is sane
 	if(root == NULL)
 		return;
@@ -230,6 +249,12 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 		std::cout<<"Viable Tree! Pre-Orer: ";
 		TreeNode::PreOrderTraverse(root, printTraverser);
 		std::cout<<std::endl;
+
+		// save tree to database
+		if(res_database != NULL) {
+			SubcloneSaveTreeTraverser stt(res_database);
+			TreeNode::PreOrderTraverse(root, stt);
+		}
 	}
 	else
 	{
