@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <assert.h>
 #include <algorithm>
+#include <numeric>
 
 #include <boost/lambda/lambda.hpp>
 
@@ -13,7 +14,23 @@
 
 sqlite3 *res_database;
 
+static int _num_solutions;
+static std::vector<int> _tree_depth;
+
 using namespace SubcloneExplorer;
+
+int treeDepth(TreeNode *root) {
+	if(root->isLeaf())
+		return 1;
+
+	int max_subtree_depth = 0;
+	for(size_t i=0; i<root->getVecChildren().size(); i++) {
+		int subtree_depth = treeDepth(root->getVecChildren()[i]);
+		if(subtree_depth > max_subtree_depth)
+			max_subtree_depth = subtree_depth;
+	}
+	return 1+max_subtree_depth;
+}
 
 void TreeEnumeration(Subclone * root, std::vector<EventCluster> vecClusters, size_t symIdx);
 void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters);
@@ -76,6 +93,9 @@ void SubcloneExplorerMain(int argc, char* argv[])
 
 	if(res_database != NULL) 
 		sqlite3_close(res_database);
+
+	if(_tree_depth.size()> 0)
+		std::cout<<_num_solutions<<"\t"<<std::accumulate(_tree_depth.begin(), _tree_depth.end(), 0)/float(_tree_depth.size())<<std::endl;
 }
 
 // First of all, a tree traverser that will print out the tree.
@@ -255,6 +275,9 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 			SubcloneSaveTreeTraverser stt(res_database);
 			TreeNode::PreOrderTraverse(root, stt);
 		}
+
+		_num_solutions++;
+		_tree_depth.push_back(treeDepth(root));
 	}
 	else
 	{
