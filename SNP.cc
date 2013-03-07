@@ -9,12 +9,16 @@
 
 using namespace SubcloneExplorer;
 
+std::string SNP::getTableName() {
+	return "Events_SNP";
+}
+
 std::string SNP::createObjectStatementStr() {
-	return "INSERT INTO Events (frequency, chrom, start, ofClusterID) VALUES (?,?,?,?);";
+	return "INSERT INTO " + getTableName() + " (frequency, chrom, start, ofClusterID) VALUES (?,?,?,?);";
 }
 
 std::string SNP::updateObjectStatementStr() {
-	return "UPDATE Events SET frequency=?, chrom=?, start=?, ofClusterID=? WHERE id=?;";
+	return "UPDATE " + getTableName() + " SET frequency=?, chrom=?, start=?, ofClusterID=? WHERE id=?;";
 }
 
 std::string SNP::selectObjectColumnListStr() {

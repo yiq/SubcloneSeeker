@@ -22,6 +22,7 @@ namespace SubcloneExplorer {
 	class SNP : public SomaticEvent {
 		protected:
 			// Implements Archivable
+			virtual std::string getTableName();
 			virtual std::string createObjectStatementStr();
 			virtual std::string updateObjectStatementStr();
 			virtual std::string selectObjectColumnListStr();

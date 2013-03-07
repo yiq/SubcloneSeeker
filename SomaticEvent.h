@@ -22,7 +22,6 @@ namespace SubcloneExplorer {
 	class SomaticEvent : public Archivable {
 		protected:
 			// Implements Archivable
-			virtual std::string getTableName();
 			virtual std::string createTableStatementStr();
 
 			sqlite3_int64 ofClusterID; /**< to which cluster in database does this event belongs */

@@ -10,11 +10,11 @@
 using namespace SubcloneExplorer;
 
 std::string SegmentalMutation::createObjectStatementStr() {
-	return "INSERT INTO Events (frequency, chrom, start, length, ofClusterID) VALUES (?,?,?,?,?);";
+	return "INSERT INTO " + getTableName() + " (frequency, chrom, start, length, ofClusterID) VALUES (?,?,?,?,?);";
 }
 
 std::string SegmentalMutation::updateObjectStatementStr() {
-	return "UPDATE Events SET frequency=?, chrom=?, start=?, length=?, ofClusterID=? WHERE id=?;";
+	return "UPDATE " + getTableName() + " SET frequency=?, chrom=?, start=?, length=?, ofClusterID=? WHERE id=?;";
 }
 
 std::string SegmentalMutation::selectObjectColumnListStr() {
@@ -48,4 +48,12 @@ void SegmentalMutation::updateObjectFromStatement(sqlite3_stmt *statement) {
 	else {
 		ofClusterID = 0;
 	}
+}
+
+std::string CNV::getTableName() {
+	return "Events_CNV";
+}
+
+std::string LOH::getTableName() {
+	return "Events_LOH";
 }

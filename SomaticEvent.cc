@@ -12,10 +12,6 @@
 
 using namespace SubcloneExplorer;
 
-std::string SomaticEvent::getTableName() {
-	return "Events";
-}
-
 std::string SomaticEvent::createTableStatementStr() {
 	return ", frequency REAL NOT NULL, chrom INTEGER NOT NULL, start INTEGER NOT NULL, length INTEGER NULL, ofClusterID INTEGER NULL REFERENCES Clusters(id)";
 }

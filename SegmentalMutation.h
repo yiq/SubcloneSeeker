@@ -47,7 +47,12 @@ namespace SubcloneExplorer {
 	 *
 	 * @see SegmentalMutation
 	 */
-	class CNV : public SegmentalMutation {};
+	class CNV : public SegmentalMutation {
+		protected:
+			// Overwrite Archivable tableName
+			virtual std::string getTableName();
+	
+	};
 
 	/**
 	 * @brief Loss of Heterozygosity
@@ -57,7 +62,12 @@ namespace SubcloneExplorer {
 	 *
 	 * @see SegmentalMutation
 	 */
-	class LOH : public SegmentalMutation {};
+	class LOH : public SegmentalMutation {
+		protected:
+			// Overwrite Archivable tableName
+			virtual std::string getTableName();
+	
+	};
 }
 
 #endif
