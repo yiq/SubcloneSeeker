@@ -37,6 +37,9 @@ stexp: $(OBJS) $(HEADERS) main.cc sqlite3.o
 cluster: $(OBJS) $(HEADERS) cluster.cc sqlite3.o
 	$(CXX) $(CXXFLAGS) $(OBJS) cluster.cc sqlite3.o -o cluster
 
+segtxt2db: $(OBJS) $(HEADERS) segtxt2db.cc sqlite3.o
+	$(CXX) $(CXXFLAGS) $(OBJS) segtxt2db.cc sqlite3.o -o segtxt2db
+
 check: $(OBJS) $(HEADERS) sqlite3.o
 	rm -f test.sqlite
 	$(CXX) -DKEEP_TEST_DB $(CXXFLAGS) $(OBJS) sqlite3.o test/*.cc -o runTest

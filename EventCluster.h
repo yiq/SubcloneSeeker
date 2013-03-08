@@ -102,6 +102,14 @@ namespace SubcloneExplorer {
 			 * @param cloneID the database id of the subclone this cluster belongs to
 			 */
 			inline void setSubcloneID(sqlite3_int64 cloneID) { ofSubcloneID = cloneID; }
+
+			/**
+			 * SomaticEvent Clustering Algorithm
+			 * @param events A vector of SomaticEvent to be clustered
+			 * @param threshold The difference threshold to use when doing the clustering
+			 * @return A vector of EventCluster containing the resulting clusters
+			 */
+			static std::vector<EventCluster *> clustering(const std::vector<SomaticEvent *>& events, double threshold);
 	};
 }
 #endif
