@@ -42,7 +42,7 @@ namespace SubcloneExplorer {
 			virtual std::string updateObjectStatementStr();
 			virtual std::string selectObjectColumnListStr();
 
-			virtual void bindObjectToStatement(sqlite3_stmt* statement);
+			virtual int bindObjectToStatement(sqlite3_stmt* statement);
 			virtual void updateObjectFromStatement(sqlite3_stmt* statement);
 
 		public:

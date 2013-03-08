@@ -53,7 +53,7 @@ std::string EventCluster::selectObjectColumnListStr() {
 	return "fraction, ofSubcloneID";
 }
 
-void EventCluster::bindObjectToStatement(sqlite3_stmt *statement) {
+int EventCluster::bindObjectToStatement(sqlite3_stmt *statement) {
 	int bind_loc = 1;
 	sqlite3_bind_double(statement, bind_loc++, _cellFraction);
 	if(ofSubcloneID> 0) {
@@ -62,6 +62,8 @@ void EventCluster::bindObjectToStatement(sqlite3_stmt *statement) {
 	else {
 		sqlite3_bind_null(statement, bind_loc++);
 	}
+
+	return bind_loc;
 }
 
 void EventCluster::updateObjectFromStatement(sqlite3_stmt *statement) {

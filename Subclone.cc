@@ -48,7 +48,7 @@ std::string Subclone::selectObjectColumnListStr() {
 	return "fraction, treeFraction, parentId";
 }
 
-void Subclone::bindObjectToStatement(sqlite3_stmt* statement) {
+int Subclone::bindObjectToStatement(sqlite3_stmt* statement) {
 	int bind_loc = 1;
 	sqlite3_bind_double(statement, bind_loc++, _fraction);
 	sqlite3_bind_double(statement, bind_loc++, _treeFraction);
@@ -58,6 +58,7 @@ void Subclone::bindObjectToStatement(sqlite3_stmt* statement) {
 	else {
 		sqlite3_bind_null(statement, bind_loc++);
 	}
+	return bind_loc;
 }
 
 void Subclone::updateObjectFromStatement(sqlite3_stmt* statement) {

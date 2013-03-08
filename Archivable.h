@@ -78,8 +78,9 @@ namespace SubcloneExplorer{
 			 * Bind archivable properties to a prepared, unbound sqlite3 statement
 			 *
 			 * @param statement A prepared, unbound sqlite3 statement instance
+			 * @return How many parameters are bound to the statement + 1
 			 */
-			virtual void bindObjectToStatement(sqlite3_stmt *statement) = 0;
+			virtual int bindObjectToStatement(sqlite3_stmt *statement) = 0;
 
 			/**
 			 * Populate archivable properties from a prepared statement during unarchiving

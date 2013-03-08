@@ -25,7 +25,7 @@ std::string SNP::selectObjectColumnListStr() {
 	return "frequency, chrom, start, ofClusterID";
 }
 
-void SNP::bindObjectToStatement(sqlite3_stmt *statement) {
+int SNP::bindObjectToStatement(sqlite3_stmt *statement) {
 	int bind_loc = 1;
 	sqlite3_bind_double(statement, bind_loc++, frequency);
 	sqlite3_bind_int(statement, bind_loc++, location.chrom);
@@ -36,6 +36,7 @@ void SNP::bindObjectToStatement(sqlite3_stmt *statement) {
 	else {
 		sqlite3_bind_null(statement, bind_loc++);
 	}
+	return bind_loc;
 }
 
 void SNP::updateObjectFromStatement(sqlite3_stmt *statement) {

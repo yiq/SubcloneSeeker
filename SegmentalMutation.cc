@@ -21,7 +21,7 @@ std::string SegmentalMutation::selectObjectColumnListStr() {
 	return "frequency, chrom, start, length, ofClusterID";
 }
 
-void SegmentalMutation::bindObjectToStatement(sqlite3_stmt *statement) {
+int SegmentalMutation::bindObjectToStatement(sqlite3_stmt *statement) {
 	int bind_loc = 1;
 	sqlite3_bind_double(statement, bind_loc++, frequency);
 	sqlite3_bind_int(statement, bind_loc++, range.chrom);
@@ -33,6 +33,7 @@ void SegmentalMutation::bindObjectToStatement(sqlite3_stmt *statement) {
 	else {
 		sqlite3_bind_null(statement, bind_loc++);
 	}
+	return bind_loc;
 }
 
 void SegmentalMutation::updateObjectFromStatement(sqlite3_stmt *statement) {
