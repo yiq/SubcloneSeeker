@@ -9,7 +9,6 @@
 #include <sqlite3/sqlite3.h>
 #include <string>
 #include <vector>
-#include <iostream>
 using namespace SubcloneExplorer;
 
 bool Archivable::createTableInDB(sqlite3 *database) {
@@ -67,8 +66,6 @@ sqlite3_int64 Archivable::archiveObjectToDB(sqlite3 *database) {
 
 	if(rc == SQLITE_ROW) {
 		// record exist, update mode
-		std::cout<<"Updating record"<<std::endl;
-		std::cout<<"statement: "<<updateObjectStatementStr()<<std::endl;
 		rc = sqlite3_prepare_v2(database, updateObjectStatementStr().c_str(), -1, &statement, 0);
 		if(rc != SQLITE_OK) {
 			sqlite3_finalize(statement);
