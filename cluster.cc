@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 	// Invoke the clustering algorithm
 	// *******************************
 	
-	ClusterList_t clusteringResult = clustering_running(events, 0.05);
+	ClusterList_t clusteringResult = EventCluster::clustering(events, 0.05);
 
 	// *****************************************
 	// Remove old clusters by dropping the table
@@ -118,41 +118,4 @@ int main(int argc, char* argv[]) {
 
 	sqlite3_close(src_database);
 	return(0);
-}
-
-ClusterList_t clustering_running(const EventList_t &events, double threshold) {
-	ClusterList_t clusters;
-
-	if(threshold < 0 || threshold > 1)
-		return clusters;
-
-	for(size_t eventIdx = 0; eventIdx < events.size(); eventIdx++) {
-		double minDiff = -1;
-		size_t minClusterIdx = 0;
-
-		SomaticEvent *currentEvent = events[eventIdx];
-
-		for(size_t clusterIdx = 0; clusterIdx < clusters.size(); clusterIdx++) {
-			EventCluster *currentCluster = clusters[clusterIdx];
-			double diff = fabs(currentCluster->cellFraction() - currentEvent->frequency);
-			
-			if(minDiff == -1 || minDiff > diff) {
-				minDiff = diff;
-				minClusterIdx = clusterIdx;
-			}
-		}
-
-		if(clusters.size() > 0 && minDiff <= threshold) {
-			// add the current event to the cluster
-			clusters[minClusterIdx]->addEvent(currentEvent);
-		}
-		else {
-			// create new cluster to contain the currentEvent;
-			EventCluster *newCluster = new EventCluster();
-			newCluster->addEvent(currentEvent);
-			clusters.push_back(newCluster);
-		}
-	}
-
-	return clusters;
 }
