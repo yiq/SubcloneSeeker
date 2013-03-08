@@ -6,6 +6,7 @@
  */
 
 #include "SegmentalMutation.h"
+#include <iostream>
 
 using namespace SubcloneExplorer;
 
@@ -28,6 +29,7 @@ int SegmentalMutation::bindObjectToStatement(sqlite3_stmt *statement) {
 	sqlite3_bind_int64(statement, bind_loc++, range.position);
 	sqlite3_bind_int64(statement, bind_loc++, range.length);
 	if(ofClusterID > 0) {
+		std::cout<<"binding cluster id "<<ofClusterID<<std::endl;
 		sqlite3_bind_int64(statement, bind_loc++, ofClusterID);
 	}
 	else {
