@@ -109,7 +109,7 @@ namespace SubcloneExplorer {
 			 * @param threshold The difference threshold to use when doing the clustering
 			 * @return A vector of EventCluster containing the resulting clusters
 			 */
-			static std::vector<EventCluster *> clustering(std::vector<SomaticEvent *>&events);
+			static std::vector<EventCluster *> clustering(const std::vector<SomaticEvent *>& events, double threshold);
 	};
 }
 #endif

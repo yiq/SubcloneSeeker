@@ -30,7 +30,7 @@ void EventCluster::addEvent(SomaticEvent *event) {
 	}
 }
 
-static std::vector<EventCluster *> clustering(const std::vector<SomaticEvent *>& events, double threshold) {
+std::vector<EventCluster *> EventCluster::clustering(const std::vector<SomaticEvent *>& events, double threshold) {
 	std::vector<EventCluster *> clusters;
 
 	if(threshold < 0 || threshold > 1)
