@@ -9,7 +9,8 @@ SOURCES = Archivable.cc \
 		  EventCluster.cc \
 		  TreeNode.cc \
 		  Subclone.cc \
-		  SubcloneExplore.cc
+		  SubcloneExplore.cc \
+		  RefGenome.cc
 
 HEADERS = GenomicLocation.h \
 		  GenomicRange.h \
@@ -17,11 +18,12 @@ HEADERS = GenomicLocation.h \
 		  EventCluster.h \
 		  TreeNode.h \
 		  Subclone.h \
-		  SubcloneExplore.h
+		  SubcloneExplore.h \
+		  RefGenome.h
 
 OBJS = $(SOURCES:%.cc=%.o)
 
-all: stexp cluster
+all: stexp cluster segtxt2db
 
 .PHONY: all
 
