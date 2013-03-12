@@ -9,6 +9,7 @@
  */
 
 #include "Archivable.h"
+#include <vector>
 
 namespace SubcloneExplorer {
 
@@ -56,6 +57,11 @@ namespace SubcloneExplorer {
 			virtual DBObjectID_vec allObjectsOfCluster(sqlite3 *database, sqlite3_int64 clusterID);
 
 	};
+
+	/**
+	 * A vector of SomaticEvent Pointers
+	 */
+	typedef std::vector<SomaticEvent *> SomaticEventPtr_vec;
 }
 
 #endif

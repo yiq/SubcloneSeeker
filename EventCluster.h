@@ -129,5 +129,10 @@ namespace SubcloneExplorer {
 			 */
 			DBObjectID_vec allObjectsOfSubclone(sqlite3 *database, sqlite3_int64 subcloneID);
 	};
+
+	/**
+	 * A vector of EventCluster pointers
+	 */
+	typedef std::vector<EventCluster *> EventClusterPtr_vec;
 }
 #endif
