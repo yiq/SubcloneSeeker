@@ -51,6 +51,7 @@ namespace SubcloneExplorer {
 		protected:
 			// Overwrite Archivable tableName
 			virtual std::string getTableName();
+
 	
 	};
 

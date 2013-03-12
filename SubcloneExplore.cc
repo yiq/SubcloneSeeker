@@ -11,6 +11,7 @@
 #include "EventCluster.h"
 #include "Subclone.h"
 #include "SubcloneExplore.h"
+#include "SegmentalMutation.h"
 
 sqlite3 *res_database;
 
@@ -66,6 +67,16 @@ void SubcloneExplorerMain(int argc, char* argv[])
 	for(size_t i=0; i<clusterIDs.size(); i++) {
 		EventCluster newCluster;
 		newCluster.unarchiveObjectFromDB(database, clusterIDs[i]);
+
+		// load CNV events
+		CNV dummyCNV;
+		DBObjectID_vec memberCNV_IDs = dummyCNV.allObjectsOfCluster(database, newCluster.getId());
+		for(size_t j=0; j<memberCNV_IDs.size(); j++) {
+			CNV *newCNV = new CNV();
+			newCNV->unarchiveObjectFromDB(database, memberCNV_IDs[j]);
+			newCluster.addEvent(newCNV, false);
+		}
+
 		vecClusters.push_back(newCluster);
 	}
 
