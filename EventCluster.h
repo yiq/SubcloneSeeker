@@ -111,5 +111,10 @@ namespace SubcloneExplorer {
 			 */
 			static std::vector<EventCluster *> clustering(const std::vector<SomaticEvent *>& events, double threshold);
 	};
+
+	/**
+	 * A vector of EventCluster pointers
+	 */
+	typedef std::vector<EventCluster *> EventClusterPtr_vec;
 }
 #endif
