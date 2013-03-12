@@ -50,7 +50,6 @@ check: $(OBJS) $(HEADERS) sqlite3.o
 
 clean: 
 	rm -f *.o
-	rm -f main
 	rm -rf *.dSYM
 
 .PHONY: clean
