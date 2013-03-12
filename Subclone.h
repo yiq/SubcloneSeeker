@@ -113,6 +113,12 @@ namespace SubcloneExplorer {
 			static std::vector<sqlite3_int64> rootNodes(sqlite3 *database);
 			static std::vector<sqlite3_int64> nodesOfParentID(sqlite3 *database, sqlite3_int64 parentId);
 	};
+
+
+	/**
+	 * A vector of Subclone pointers
+	 */
+	typedef std::vector<Subclone *> SubclonePtr_vec;
 }
 
 #endif

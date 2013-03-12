@@ -103,5 +103,10 @@ namespace SubcloneExplorer {
 			 */
 			inline void setSubcloneID(sqlite3_int64 cloneID) { ofSubcloneID = cloneID; }
 	};
+
+	/**
+	 * A vector of EventCluster pointers
+	 */
+	typedef std::vector<EventCluster *> EventClusterPtr_vec;
 }
 #endif
