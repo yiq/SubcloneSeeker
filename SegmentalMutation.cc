@@ -6,6 +6,7 @@
  */
 
 #include "SegmentalMutation.h"
+#include <iostream>
 
 using namespace SubcloneExplorer;
 
@@ -48,4 +49,32 @@ void SegmentalMutation::updateObjectFromStatement(sqlite3_stmt *statement) {
 	else {
 		ofClusterID = 0;
 	}
+}
+
+
+bool CNV::isEqualTo(SomaticEvent * anotherEvent, unsigned long resolution) {
+	CNV *cnvEvent = dynamic_cast<CNV*>(anotherEvent);
+
+	if(cnvEvent == NULL) {
+		return false; 
+	}
+
+	if(range.chrom != cnvEvent->range.chrom) {
+		return false; 
+	}
+
+	unsigned long startDiff = range.position > cnvEvent->range.position?
+		range.position - cnvEvent->range.position:
+		cnvEvent->range.position - range.position;
+
+	unsigned long thisEnd = range.position + range.length;
+	unsigned long anotherEnd = cnvEvent->range.position + cnvEvent->range.length;
+	unsigned long endDiff = thisEnd > anotherEnd ? 
+		thisEnd - anotherEnd :
+		anotherEnd - thisEnd;
+
+	if(startDiff < resolution && endDiff < resolution)
+		return true;
+
+	return false;
 }

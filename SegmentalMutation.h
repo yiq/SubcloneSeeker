@@ -38,6 +38,8 @@ namespace SubcloneExplorer {
 			 * minimal constructor to reset all member variables 
 			 */
 			SegmentalMutation() : SomaticEvent(), range() {}
+
+
 	};
 
 	/**
@@ -47,7 +49,11 @@ namespace SubcloneExplorer {
 	 *
 	 * @see SegmentalMutation
 	 */
-	class CNV : public SegmentalMutation {};
+	class CNV : public SegmentalMutation {
+		public:
+			// Override isEqualTo
+			virtual bool isEqualTo(SomaticEvent * anotherEvent, unsigned long resolution=10000L);
+	};
 
 	/**
 	 * @brief Loss of Heterozygosity

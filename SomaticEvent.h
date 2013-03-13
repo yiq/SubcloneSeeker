@@ -43,6 +43,15 @@ namespace SubcloneExplorer {
 			 */
 			inline void setClusterID(sqlite3_int64 clusterID) {ofClusterID = clusterID;}
 
+			/**
+			 * Check equality
+			 *
+			 * @param anotherEvent The other SomaticEvent object to compare to
+			 * @param resolution The boundry resolution with respect to chromosome location
+			 *
+			 * @return whether two SomaticEvent objects are representing the same event
+			 */
+			virtual bool isEqualTo(SomaticEvent * anotherEvent, unsigned long resolution=10000L) {return false;}
 	};
 
 	/**
