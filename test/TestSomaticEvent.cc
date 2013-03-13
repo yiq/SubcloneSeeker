@@ -30,6 +30,24 @@ void testCNV() {
 	BOOST_CHECK(cnv.range.chrom==1);
 	BOOST_CHECK(cnv.range.position==1000000L);
 	BOOST_CHECK(cnv.range.length==1000L);
+
+	SubcloneExplorer::CNV *cnv2 = new SubcloneExplorer::CNV();
+	cnv2->frequency = 0.4;
+	cnv2->range.chrom=1;
+	cnv2->range.position = 1000123L;
+	cnv2->range.length = 1012L;
+
+	BOOST_CHECK(cnv.isEqualTo(cnv2));
+
+	SubcloneExplorer::LOH *loh = new SubcloneExplorer::LOH();
+	loh->frequency = 0.4;
+	loh->range.chrom=1;
+	loh->range.position = 1000123L;
+	loh->range.length = 1012L;
+
+	BOOST_CHECK(not cnv.isEqualTo(loh));
+
+
 }
 
 void testCNVToDB() {

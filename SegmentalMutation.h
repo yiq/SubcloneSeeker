@@ -38,6 +38,8 @@ namespace SubcloneExplorer {
 			 * minimal constructor to reset all member variables 
 			 */
 			SegmentalMutation() : SomaticEvent(), range() {}
+
+
 	};
 
 	/**
@@ -52,7 +54,9 @@ namespace SubcloneExplorer {
 			// Overwrite Archivable tableName
 			virtual std::string getTableName();
 
-	
+		public:
+			// Override isEqualTo
+			virtual bool isEqualTo(SomaticEvent * anotherEvent, unsigned long resolution=10000L);
 	};
 
 	/**
