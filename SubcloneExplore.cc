@@ -4,14 +4,34 @@
 #include <cstdio>
 #include <assert.h>
 #include <algorithm>
+#include <numeric>
 
 #include <boost/lambda/lambda.hpp>
 
 #include "EventCluster.h"
 #include "Subclone.h"
 #include "SubcloneExplore.h"
+#include "SegmentalMutation.h"
+
+sqlite3 *res_database;
+
+static int _num_solutions;
+static std::vector<int> _tree_depth;
 
 using namespace SubcloneExplorer;
+
+int treeDepth(TreeNode *root) {
+	if(root->isLeaf())
+		return 1;
+
+	int max_subtree_depth = 0;
+	for(size_t i=0; i<root->getVecChildren().size(); i++) {
+		int subtree_depth = treeDepth(root->getVecChildren()[i]);
+		if(subtree_depth > max_subtree_depth)
+			max_subtree_depth = subtree_depth;
+	}
+	return 1+max_subtree_depth;
+}
 
 void TreeEnumeration(Subclone * root, std::vector<EventCluster> vecClusters, size_t symIdx);
 void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters);
@@ -20,15 +40,17 @@ void SubcloneExplorerMain(int argc, char* argv[])
 {
 
 	if(argc < 2) {
-		std::cout<<"Usage: "<<argv[0]<<" <cluster-archive-sqlite-db>"<<std::endl;
+		std::cerr<<"Usage: "<<argv[0]<<" <cluster-archive-sqlite-db> [output-db]"<<std::endl;
 		return;
 	}
+
+	res_database=NULL;
 
 	sqlite3 *database;
 	int rc;
 	rc = sqlite3_open_v2(argv[1], &database, SQLITE_OPEN_READONLY, NULL);
 	if(rc != SQLITE_OK) {
-		std::cout<<"Unable to open database "<<argv[1]<<std::endl;
+		std::cerr<<"Unable to open database "<<argv[1]<<std::endl;
 		return;
 	}
 
@@ -37,7 +59,7 @@ void SubcloneExplorerMain(int argc, char* argv[])
 	std::vector<sqlite3_int64> clusterIDs = dummyCluster.vecAllObjectsID(database);
 
 	if(clusterIDs.size() == 0) {
-		std::cout<<"Event cluster list is empty!"<<std::endl;
+		std::cerr<<"Event cluster list is empty!"<<std::endl;
 		return;
 	}
 
@@ -45,8 +67,20 @@ void SubcloneExplorerMain(int argc, char* argv[])
 	for(size_t i=0; i<clusterIDs.size(); i++) {
 		EventCluster newCluster;
 		newCluster.unarchiveObjectFromDB(database, clusterIDs[i]);
+
+		// load CNV events
+		CNV dummyCNV;
+		DBObjectID_vec memberCNV_IDs = dummyCNV.allObjectsOfCluster(database, newCluster.getId());
+		for(size_t j=0; j<memberCNV_IDs.size(); j++) {
+			CNV *newCNV = new CNV();
+			newCNV->unarchiveObjectFromDB(database, memberCNV_IDs[j]);
+			newCluster.addEvent(newCNV, false);
+		}
+
 		vecClusters.push_back(newCluster);
 	}
+
+	sqlite3_close(database);
 
 	std::sort(vecClusters.begin(), vecClusters.end());
 	std::reverse(vecClusters.begin(), vecClusters.end());
@@ -57,8 +91,22 @@ void SubcloneExplorerMain(int argc, char* argv[])
 	Subclone *root = new Subclone();
 	root->setFraction(-1);
 	root->setTreeFraction(-1);
+
+	if(argc >= 2) {
+		int rc = sqlite3_open(argv[2], &res_database);
+		if(rc != SQLITE_OK ) {
+			std::cerr<<"Unable to open result database for writting."<<std::endl;
+			return;
+		}
+	}
 	
 	TreeEnumeration(root, vecClusters, 0);	
+
+	if(res_database != NULL) 
+		sqlite3_close(res_database);
+
+	if(_tree_depth.size()> 0)
+		std::cout<<_num_solutions<<"\t"<<std::accumulate(_tree_depth.begin(), _tree_depth.end(), 0)/float(_tree_depth.size())<<std::endl;
 }
 
 // First of all, a tree traverser that will print out the tree.
@@ -70,16 +118,16 @@ class TreePrintTraverser: public TreeTraverseDelegate {
 	public:
 		virtual void preprocessNode(TreeNode *node) {
 			if(!node->isLeaf())
-				std::cout<<"(";
+				std::cerr<<"(";
 		}
 
 		virtual void processNode(TreeNode * node) {
-			std::cout<<((Subclone *)node)->fraction()<<",";
+			std::cerr<<((Subclone *)node)->fraction()<<",";
 		}
 
 		virtual void postprocessNode(TreeNode *node) {
 			if(!node->isLeaf())
-				std::cout<<")";
+				std::cerr<<")";
 		}
 };
 
@@ -208,10 +256,12 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 		virtual void processNode(TreeNode * node) {
 			((Subclone *)node)->setFraction(-1);
 			((Subclone *)node)->setTreeFraction(-1);
+			((Subclone *)node)->setParentId(0);
+			((Subclone *)node)->setId(0);
+
 		}
 	};
-	
-	
+		
 	// check if the root is sane
 	if(root == NULL)
 		return;
@@ -227,16 +277,25 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 	// if the tree is viable, output it
 	if(root->fraction() >= 0) {
 		TreePrintTraverser printTraverser;
-		std::cout<<"Viable Tree! Pre-Orer: ";
+		std::cerr<<"Viable Tree! Pre-Orer: ";
 		TreeNode::PreOrderTraverse(root, printTraverser);
-		std::cout<<std::endl;
+		std::cerr<<std::endl;
+
+		// save tree to database
+		if(res_database != NULL) {
+			SubcloneSaveTreeTraverser stt(res_database);
+			TreeNode::PreOrderTraverse(root, stt);
+		}
+
+		_num_solutions++;
+		_tree_depth.push_back(treeDepth(root));
 	}
 	else
 	{
 		TreePrintTraverser printTraverser;
-		std::cout<<"Unviable Tree! Pre-Orer: ";
+		std::cerr<<"Unviable Tree! Pre-Orer: ";
 		TreeNode::PreOrderTraverse(root, printTraverser);
-		std::cout<<std::endl;
+		std::cerr<<std::endl;
 
 	}
 }

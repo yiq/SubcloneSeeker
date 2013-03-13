@@ -15,6 +15,11 @@
 namespace SubcloneExplorer{
 
 	/**
+	 * a vector of database object ids, in the type of sqlite3_int64
+	 */
+	typedef std::vector<sqlite3_int64> DBObjectID_vec;
+
+	/**
 	 * @brief Abstract class that defines the interface to handle archiving objects into sqlite3 database
 	 * 
 	 * This abstract class defines the required behaviors when handling object archiving to and from a
@@ -78,8 +83,9 @@ namespace SubcloneExplorer{
 			 * Bind archivable properties to a prepared, unbound sqlite3 statement
 			 *
 			 * @param statement A prepared, unbound sqlite3 statement instance
+			 * @return How many parameters are bound to the statement + 1
 			 */
-			virtual void bindObjectToStatement(sqlite3_stmt *statement) = 0;
+			virtual int bindObjectToStatement(sqlite3_stmt *statement) = 0;
 
 			/**
 			 * Populate archivable properties from a prepared statement during unarchiving
@@ -99,6 +105,13 @@ namespace SubcloneExplorer{
 			 * @return the database identifier of the object
 			 */
 			inline sqlite3_int64 getId() {return id;}
+
+			/**
+			 * Set the database id
+			 * @param nid the new database id
+			 */
+			inline void setId(sqlite3_int64 nid) {id = nid;}
+
 
 			/**
 			 * Create the storage table in the database
@@ -127,7 +140,7 @@ namespace SubcloneExplorer{
 			 *
 			 * @return A vector of sqlite3_int64, describing all records with the same class
 			 */
-			std::vector<sqlite3_int64> vecAllObjectsID(sqlite3 *database);
+			DBObjectID_vec vecAllObjectsID(sqlite3 *database);
 
 	};
 }

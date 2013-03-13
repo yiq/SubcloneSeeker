@@ -9,7 +9,6 @@
 #include <sqlite3/sqlite3.h>
 #include <string>
 #include <vector>
-
 using namespace SubcloneExplorer;
 
 bool Archivable::createTableInDB(sqlite3 *database) {
@@ -73,7 +72,8 @@ sqlite3_int64 Archivable::archiveObjectToDB(sqlite3 *database) {
 			return -1;
 		}
 
-		bindObjectToStatement(statement);
+		int bind_pos = bindObjectToStatement(statement);
+		sqlite3_bind_int64(statement, bind_pos, id);
 
 		rc = sqlite3_step(statement);
 		sqlite3_finalize(statement);
@@ -91,7 +91,7 @@ sqlite3_int64 Archivable::archiveObjectToDB(sqlite3 *database) {
 			return -1;
 		}
 		
-		bindObjectToStatement(statement);
+		int bind_pos = bindObjectToStatement(statement);
 
 		rc = sqlite3_step(statement);
 		sqlite3_finalize(statement);

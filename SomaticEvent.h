@@ -23,7 +23,6 @@ namespace SubcloneExplorer {
 	class SomaticEvent : public Archivable {
 		protected:
 			// Implements Archivable
-			virtual std::string getTableName();
 			virtual std::string createTableStatementStr();
 
 			sqlite3_int64 ofClusterID; /**< to which cluster in database does this event belongs */
@@ -51,7 +50,22 @@ namespace SubcloneExplorer {
 			 *
 			 * @return whether two SomaticEvent objects are representing the same event
 			 */
+
 			virtual bool isEqualTo(SomaticEvent * anotherEvent, unsigned long resolution=10000L) {return false;}
+			/**	 
+			 * Retrieve cluster id this event belongs to
+			 *
+			 * @return the cluster id
+			 */
+			inline sqlite3_int64 clusterID() {return ofClusterID;}
+
+			/**
+			 * Return all objects with the given cluster id as their parent
+			 *
+			 * @returm a vector of objectIDs (whose type depends on concrete class)
+			 */
+			virtual DBObjectID_vec allObjectsOfCluster(sqlite3 *database, sqlite3_int64 clusterID);
+
 	};
 
 	/**

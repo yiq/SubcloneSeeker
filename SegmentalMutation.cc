@@ -11,18 +11,18 @@
 using namespace SubcloneExplorer;
 
 std::string SegmentalMutation::createObjectStatementStr() {
-	return "INSERT INTO Events (frequency, chrom, start, length, ofClusterID) VALUES (?,?,?,?,?);";
+	return "INSERT INTO " + getTableName() + " (frequency, chrom, start, length, ofClusterID) VALUES (?,?,?,?,?);";
 }
 
 std::string SegmentalMutation::updateObjectStatementStr() {
-	return "UPDATE Events SET frequency=?, chrom=?, start=?, length=?, ofClusterID=? WHERE id=?;";
+	return "UPDATE " + getTableName() + " SET frequency=?, chrom=?, start=?, length=?, ofClusterID=? WHERE id=?;";
 }
 
 std::string SegmentalMutation::selectObjectColumnListStr() {
 	return "frequency, chrom, start, length, ofClusterID";
 }
 
-void SegmentalMutation::bindObjectToStatement(sqlite3_stmt *statement) {
+int SegmentalMutation::bindObjectToStatement(sqlite3_stmt *statement) {
 	int bind_loc = 1;
 	sqlite3_bind_double(statement, bind_loc++, frequency);
 	sqlite3_bind_int(statement, bind_loc++, range.chrom);
@@ -34,6 +34,7 @@ void SegmentalMutation::bindObjectToStatement(sqlite3_stmt *statement) {
 	else {
 		sqlite3_bind_null(statement, bind_loc++);
 	}
+	return bind_loc;
 }
 
 void SegmentalMutation::updateObjectFromStatement(sqlite3_stmt *statement) {
@@ -50,7 +51,6 @@ void SegmentalMutation::updateObjectFromStatement(sqlite3_stmt *statement) {
 		ofClusterID = 0;
 	}
 }
-
 
 bool CNV::isEqualTo(SomaticEvent * anotherEvent, unsigned long resolution) {
 	CNV *cnvEvent = dynamic_cast<CNV*>(anotherEvent);
@@ -77,4 +77,12 @@ bool CNV::isEqualTo(SomaticEvent * anotherEvent, unsigned long resolution) {
 		return true;
 
 	return false;
+}
+
+std::string CNV::getTableName() {
+	return "Events_CNV";
+}
+
+std::string LOH::getTableName() {
+	return "Events_LOH";
 }

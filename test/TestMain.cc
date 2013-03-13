@@ -5,6 +5,7 @@
 #include "TestEventCluster.h"
 #include "TestTreeNode.h"
 #include "TestSubclone.h"
+#include "TestClustering.h"
 
 void testGenomicLocation();
 
@@ -35,6 +36,8 @@ test_suite* init_unit_test_suite(int argc, char* argv[]) {
 
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testSubclone));
 	framework::master_test_suite().add( BOOST_TEST_CASE( &testSubcloneToDB));
+
+	framework::master_test_suite().add( BOOST_TEST_CASE( &testClustering));
 
 
 

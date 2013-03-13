@@ -9,19 +9,23 @@
 
 using namespace SubcloneExplorer;
 
+std::string SNP::getTableName() {
+	return "Events_SNP";
+}
+
 std::string SNP::createObjectStatementStr() {
-	return "INSERT INTO Events (frequency, chrom, start, ofClusterID) VALUES (?,?,?,?);";
+	return "INSERT INTO " + getTableName() + " (frequency, chrom, start, ofClusterID) VALUES (?,?,?,?);";
 }
 
 std::string SNP::updateObjectStatementStr() {
-	return "UPDATE Events SET frequency=?, chrom=?, start=?, ofClusterID=? WHERE id=?;";
+	return "UPDATE " + getTableName() + " SET frequency=?, chrom=?, start=?, ofClusterID=? WHERE id=?;";
 }
 
 std::string SNP::selectObjectColumnListStr() {
 	return "frequency, chrom, start, ofClusterID";
 }
 
-void SNP::bindObjectToStatement(sqlite3_stmt *statement) {
+int SNP::bindObjectToStatement(sqlite3_stmt *statement) {
 	int bind_loc = 1;
 	sqlite3_bind_double(statement, bind_loc++, frequency);
 	sqlite3_bind_int(statement, bind_loc++, location.chrom);
@@ -32,6 +36,7 @@ void SNP::bindObjectToStatement(sqlite3_stmt *statement) {
 	else {
 		sqlite3_bind_null(statement, bind_loc++);
 	}
+	return bind_loc;
 }
 
 void SNP::updateObjectFromStatement(sqlite3_stmt *statement) {

@@ -19,11 +19,9 @@ HEADERS = GenomicLocation.h \
 		  Subclone.h \
 		  SubcloneExplore.h
 
-MAIN_SRC = main.cc
-
 OBJS = $(SOURCES:%.cc=%.o)
 
-all: main
+all: stexp cluster
 
 .PHONY: all
 
@@ -33,8 +31,14 @@ sqlite3.o: ../lib/sqlite3/sqlite3.c
 .cc.o:
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-main: $(OBJS) $(HEADERS) $(MAIN_SRC) sqlite3.o
-	$(CXX) $(CXXFLAGS) $(OBJS) $(MAIN_SRC) sqlite3.o -o main
+stexp: $(OBJS) $(HEADERS) main.cc sqlite3.o
+	$(CXX) $(CXXFLAGS) $(OBJS) main.cc sqlite3.o -o stexp
+
+cluster: $(OBJS) $(HEADERS) cluster.cc sqlite3.o
+	$(CXX) $(CXXFLAGS) $(OBJS) cluster.cc sqlite3.o -o cluster
+
+segtxt2db: $(OBJS) $(HEADERS) segtxt2db.cc sqlite3.o
+	$(CXX) $(CXXFLAGS) $(OBJS) segtxt2db.cc sqlite3.o -o segtxt2db
 
 check: $(OBJS) $(HEADERS) sqlite3.o
 	rm -f test.sqlite

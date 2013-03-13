@@ -28,7 +28,7 @@ namespace SubcloneExplorer {
 			virtual std::string createObjectStatementStr();
 			virtual std::string updateObjectStatementStr();
 			virtual std::string selectObjectColumnListStr();
-			virtual void bindObjectToStatement(sqlite3_stmt *);
+			virtual int bindObjectToStatement(sqlite3_stmt *);
 			virtual void updateObjectFromStatement(sqlite3_stmt *);
 
 		public:
@@ -50,6 +50,10 @@ namespace SubcloneExplorer {
 	 * @see SegmentalMutation
 	 */
 	class CNV : public SegmentalMutation {
+		protected:
+			// Overwrite Archivable tableName
+			virtual std::string getTableName();
+
 		public:
 			// Override isEqualTo
 			virtual bool isEqualTo(SomaticEvent * anotherEvent, unsigned long resolution=10000L);
@@ -63,7 +67,12 @@ namespace SubcloneExplorer {
 	 *
 	 * @see SegmentalMutation
 	 */
-	class LOH : public SegmentalMutation {};
+	class LOH : public SegmentalMutation {
+		protected:
+			// Overwrite Archivable tableName
+			virtual std::string getTableName();
+	
+	};
 }
 
 #endif

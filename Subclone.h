@@ -42,17 +42,20 @@ namespace SubcloneExplorer {
 			virtual std::string updateObjectStatementStr();
 			virtual std::string selectObjectColumnListStr();
 
-			virtual void bindObjectToStatement(sqlite3_stmt* statement);
+			virtual int bindObjectToStatement(sqlite3_stmt* statement);
 			virtual void updateObjectFromStatement(sqlite3_stmt* statement);
 
 		public:
-
-			friend class SubcloneSaveTreeTraverser;
 
 			/**
 			 * Minimal constructor to reset all member variables
 			 */
 			Subclone() : TreeNode(), Archivable(), _fraction(0), _treeFraction(0), parentId(0) {;}
+
+			/** set parent id
+			 * @param pid The new parent id
+			 */
+			inline void setParentId(sqlite3_int64 pid) {parentId = pid;}
 
 			/**
 			 * return the fraction

@@ -9,6 +9,8 @@
 
 #include "Subclone.h"
 #include "EventCluster.h"
+#include "SomaticEvent.h"
+#include "SegmentalMutation.h"
 
 using namespace SubcloneExplorer;
 
@@ -48,7 +50,7 @@ std::string Subclone::selectObjectColumnListStr() {
 	return "fraction, treeFraction, parentId";
 }
 
-void Subclone::bindObjectToStatement(sqlite3_stmt* statement) {
+int Subclone::bindObjectToStatement(sqlite3_stmt* statement) {
 	int bind_loc = 1;
 	sqlite3_bind_double(statement, bind_loc++, _fraction);
 	sqlite3_bind_double(statement, bind_loc++, _treeFraction);
@@ -58,6 +60,7 @@ void Subclone::bindObjectToStatement(sqlite3_stmt* statement) {
 	else {
 		sqlite3_bind_null(statement, bind_loc++);
 	}
+	return bind_loc;
 }
 
 void Subclone::updateObjectFromStatement(sqlite3_stmt* statement) {
@@ -77,13 +80,30 @@ void Subclone::updateObjectFromStatement(sqlite3_stmt* statement) {
 // SubcloneSaveTreeTraverser
 void SubcloneSaveTreeTraverser::processNode(TreeNode *node) {
 	Subclone *clone = dynamic_cast<Subclone *>(node);
+	clone->setId(0);
 
 	sqlite3_int64 id  = clone->archiveObjectToDB(_database);
 
-	assert(clone->id == id);
+	// SAVE CLUSTERS
+	for(size_t i=0; i<clone->vecEventCluster().size(); i++) {
+		sqlite3_int64 oldCluID = clone->vecEventCluster()[i]->getId();
+		sqlite3_int64 oldSubcID = clone->vecEventCluster()[i]->subcloneID();
+		clone->vecEventCluster()[i]->setId(0);
+		clone->vecEventCluster()[i]->setSubcloneID(id);
+		sqlite3_int64 newCluID = clone->vecEventCluster()[i]->archiveObjectToDB(_database);
+		for(size_t j=0; j<clone->vecEventCluster()[i]->members().size(); j++) {
+			sqlite3_int64 oldEventID = clone->vecEventCluster()[i]->members()[j]->getId();
+			sqlite3_int64 oldOfCluID = clone->vecEventCluster()[i]->members()[j]->clusterID();
+			clone->vecEventCluster()[i]->members()[j]->setId(0);
+			clone->vecEventCluster()[i]->members()[j]->setClusterID(newCluID);
+			sqlite3_int64 newEventID = clone->vecEventCluster()[i]->members()[j]->archiveObjectToDB(_database);
 
-	for(size_t i=0; i<clone->vecEventCluster().size(); i++)
-		(clone->vecEventCluster()[i])->setSubcloneID(id);
+			clone->vecEventCluster()[i]->members()[j]->setId(oldEventID);
+			clone->vecEventCluster()[i]->members()[j]->setClusterID(oldOfCluID);
+		}
+		clone->vecEventCluster()[i]->setId(oldCluID);
+		clone->vecEventCluster()[i]->setSubcloneID(oldSubcID);
+	}
 }
 
 void SubcloneSaveTreeTraverser::preprocessNode(TreeNode *node) {
@@ -94,7 +114,7 @@ void SubcloneSaveTreeTraverser::preprocessNode(TreeNode *node) {
 
 	for(size_t i=0; i<clone->getVecChildren().size(); i++) {
 		Subclone *children = dynamic_cast<Subclone *>(clone->getVecChildren()[i]);
-		children->parentId = clone->id;
+		children->setParentId(clone->getId());
 	}
 }
 
@@ -139,6 +159,26 @@ std::vector<sqlite3_int64> SubcloneLoadTreeTraverser::nodesOfParentID(sqlite3 *d
 
 void SubcloneLoadTreeTraverser::processNode(TreeNode * node) {
 	Subclone *clone = dynamic_cast<Subclone *>(node);
+
+	// unarchive clusters and events
+	EventCluster dummyCluster;
+	DBObjectID_vec cluster_ids = dummyCluster.allObjectsOfSubclone(_database, clone->getId());
+	for(size_t i=0; i<cluster_ids.size(); i++) {
+		EventCluster *newCluster = new EventCluster();
+		newCluster->unarchiveObjectFromDB(_database, cluster_ids[i]);
+
+		// unarchive CNV
+		CNV dummyCNV;
+		DBObjectID_vec cnv_ids = dummyCNV.allObjectsOfCluster(_database, newCluster->getId());
+		for(size_t j=0; j<cnv_ids.size(); j++) {
+			CNV *newCNV = new CNV();
+			newCNV->unarchiveObjectFromDB(_database, cnv_ids[j]);
+			newCluster->addEvent(newCNV, false);
+		}
+
+		clone->addEventCluster(newCluster);
+	}
+
 	std::vector<sqlite3_int64> childrenIDs = nodesOfParentID(_database, clone->getId());
 
 	for(size_t i=0; i<childrenIDs.size(); i++) {

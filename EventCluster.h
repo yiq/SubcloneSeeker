@@ -40,7 +40,7 @@ namespace SubcloneExplorer {
 			virtual std::string updateObjectStatementStr();
 			virtual std::string selectObjectColumnListStr();
 
-			virtual void bindObjectToStatement(sqlite3_stmt* statement);
+			virtual int bindObjectToStatement(sqlite3_stmt* statement);
 			virtual void updateObjectFromStatement(sqlite3_stmt* statement);
 
 		public:
@@ -74,8 +74,9 @@ namespace SubcloneExplorer {
 			 * Add an SomaticEvent object into the member list and update cell fraction
 			 *
 			 * @param event The event to be added as a member
+			 * @param updateFraction Should the method automatically update the cell fraction of the cluster
 			 */
-			void addEvent(SomaticEvent * event);
+			void addEvent(SomaticEvent * event, bool updateFraction = true);
 
 			// Removing an event is such a rare case that, although trivial, it's not yet implemented
 			
@@ -102,6 +103,31 @@ namespace SubcloneExplorer {
 			 * @param cloneID the database id of the subclone this cluster belongs to
 			 */
 			inline void setSubcloneID(sqlite3_int64 cloneID) { ofSubcloneID = cloneID; }
+
+			/**
+			 * SomaticEvent Clustering Algorithm
+			 * @param events A vector of SomaticEvent to be clustered
+			 * @param threshold The difference threshold to use when doing the clustering
+			 * @return A vector of EventCluster containing the resulting clusters
+			 */
+			static std::vector<EventCluster *> clustering(const std::vector<SomaticEvent *>& events, double threshold);
+
+			/**
+			 * Retrieve the subclone ID
+			 *
+			 * @return the subclone id this cluster belongs to
+			 */
+			inline sqlite3_int64 subcloneID() { return ofSubcloneID; }
+
+			/**
+			 * Retrieve a vector of cluster IDs whose parent subclone is the given id
+			 *
+			 * @param database A live database connection
+			 * @param subcloneID The subclone id who contains the clusters
+			 *
+			 * @return a vector of cluster ids contained by the given subclone id
+			 */
+			DBObjectID_vec allObjectsOfSubclone(sqlite3 *database, sqlite3_int64 subcloneID);
 	};
 
 	/**
