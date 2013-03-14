@@ -43,7 +43,7 @@ DBObjectID_vec EventCluster::allObjectsOfSubclone(sqlite3 *database, sqlite3_int
 		return res_vec;
 	}
 
-	rc = sqlite3_bind_int64(st, 0, subcloneID);
+	rc = sqlite3_bind_int64(st, 1, subcloneID);
 	if(rc != SQLITE_OK) {
 		sqlite3_finalize(st);
 		return res_vec;
