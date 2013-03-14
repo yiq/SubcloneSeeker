@@ -36,12 +36,12 @@ int treeDepth(TreeNode *root) {
 void TreeEnumeration(Subclone * root, std::vector<EventCluster> vecClusters, size_t symIdx);
 void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters);
 
-void SubcloneExplorerMain(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 
 	if(argc < 2) {
 		std::cerr<<"Usage: "<<argv[0]<<" <cluster-archive-sqlite-db> [output-db]"<<std::endl;
-		return;
+		return(0);
 	}
 
 	res_database=NULL;
@@ -51,7 +51,7 @@ void SubcloneExplorerMain(int argc, char* argv[])
 	rc = sqlite3_open_v2(argv[1], &database, SQLITE_OPEN_READONLY, NULL);
 	if(rc != SQLITE_OK) {
 		std::cerr<<"Unable to open database "<<argv[1]<<std::endl;
-		return;
+		return(1);
 	}
 
 	// load mutation clusters
@@ -60,7 +60,7 @@ void SubcloneExplorerMain(int argc, char* argv[])
 
 	if(clusterIDs.size() == 0) {
 		std::cerr<<"Event cluster list is empty!"<<std::endl;
-		return;
+		return(1);
 	}
 
 	std::vector<EventCluster> vecClusters;
@@ -96,7 +96,7 @@ void SubcloneExplorerMain(int argc, char* argv[])
 		int rc = sqlite3_open(argv[2], &res_database);
 		if(rc != SQLITE_OK ) {
 			std::cerr<<"Unable to open result database for writting."<<std::endl;
-			return;
+			return(1);
 		}
 	}
 	
@@ -107,6 +107,8 @@ void SubcloneExplorerMain(int argc, char* argv[])
 
 	if(_tree_depth.size()> 0)
 		std::cout<<_num_solutions<<"\t"<<std::accumulate(_tree_depth.begin(), _tree_depth.end(), 0)/float(_tree_depth.size())<<std::endl;
+
+	return 0;
 }
 
 // First of all, a tree traverser that will print out the tree.

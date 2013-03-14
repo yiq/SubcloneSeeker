@@ -1,6 +1,7 @@
 CC=clang
 CXX=clang++
 CXXFLAGS=$(FLAGS) -g -I../lib -I../lib/boost
+UTILSFLAGS=$(FLAGS) -g -I../lib -I../lib/boost -I./
 
 SOURCES = Archivable.cc \
 		  SomaticEvent.cc \
@@ -9,7 +10,6 @@ SOURCES = Archivable.cc \
 		  EventCluster.cc \
 		  TreeNode.cc \
 		  Subclone.cc \
-		  SubcloneExplore.cc \
 		  RefGenome.cc
 
 HEADERS = GenomicLocation.h \
@@ -18,7 +18,6 @@ HEADERS = GenomicLocation.h \
 		  EventCluster.h \
 		  TreeNode.h \
 		  Subclone.h \
-		  SubcloneExplore.h \
 		  RefGenome.h
 
 OBJS = $(SOURCES:%.cc=%.o)
@@ -33,22 +32,22 @@ sqlite3.o: ../lib/sqlite3/sqlite3.c
 .cc.o:
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-stexp: $(OBJS) $(HEADERS) main.cc sqlite3.o
-	$(CXX) $(CXXFLAGS) $(OBJS) main.cc sqlite3.o -o stexp
+stexp: $(OBJS) $(HEADERS) utils/SubcloneExplore.cc sqlite3.o
+	$(CXX) $(UTILSFLAGS) $(OBJS) utils/SubcloneExplore.cc sqlite3.o -o stexp
 
 utils: cluster segtxt2db treemerge
 
-cluster: $(OBJS) $(HEADERS) cluster.cc sqlite3.o
-	$(CXX) $(CXXFLAGS) $(OBJS) cluster.cc sqlite3.o -o cluster
+cluster: $(OBJS) $(HEADERS) utils/cluster.cc sqlite3.o
+	$(CXX) $(UTILSFLAGS) $(OBJS) utils/cluster.cc sqlite3.o -o cluster
 
-segtxt2db: $(OBJS) $(HEADERS) segtxt2db.cc sqlite3.o
-	$(CXX) $(CXXFLAGS) $(OBJS) segtxt2db.cc sqlite3.o -o segtxt2db
+segtxt2db: $(OBJS) $(HEADERS) utils/segtxt2db.cc sqlite3.o
+	$(CXX) $(UTILSFLAGS) $(OBJS) utils/segtxt2db.cc sqlite3.o -o segtxt2db
 
-treemerge: $(OBJS) $(HEADERS) treemerge.cc sqlite3.o
-	$(CXX) -DTREEMERGE_MAIN $(CXXFLAGS) $(OBJS) treemerge.cc sqlite3.o -o treemerge
+treemerge: $(OBJS) $(HEADERS) utils/treemerge.cc sqlite3.o
+	$(CXX) -DTREEMERGE_MAIN $(UTILSFLAGS) $(OBJS) utils/treemerge.cc sqlite3.o -o treemerge
 
-treemerge_check: $(OBJS) $(HEADERS) treemerge.cc sqlite3.o
-	$(CXX) -DTREEMERGE_TEST $(CXXFLAGS) $(OBJS) treemerge.cc sqlite3.o -o treemerge_check
+treemerge_check: $(OBJS) $(HEADERS) utils/treemerge.cc sqlite3.o
+	$(CXX) -DTREEMERGE_TEST $(UTILSFLAGS) $(OBJS) utils/treemerge.cc sqlite3.o -o treemerge_check
 	./treemerge_check
 	rm treemerge_check
 
