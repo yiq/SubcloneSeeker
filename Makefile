@@ -45,7 +45,12 @@ segtxt2db: $(OBJS) $(HEADERS) segtxt2db.cc sqlite3.o
 	$(CXX) $(CXXFLAGS) $(OBJS) segtxt2db.cc sqlite3.o -o segtxt2db
 
 treemerge: $(OBJS) $(HEADERS) treemerge.cc sqlite3.o
-	$(CXX) $(CXXFLAGS) $(OBJS) treemerge.cc sqlite3.o -o treemerge
+	$(CXX) -DTREEMERGE_MAIN $(CXXFLAGS) $(OBJS) treemerge.cc sqlite3.o -o treemerge
+
+treemerge_check: $(OBJS) $(HEADERS) treemerge.cc sqlite3.o
+	$(CXX) -DTREEMERGE_TEST $(CXXFLAGS) $(OBJS) treemerge.cc sqlite3.o -o treemerge_check
+	./treemerge_check
+	rm treemerge_check
 
 check: $(OBJS) $(HEADERS) sqlite3.o
 	rm -f test.sqlite
