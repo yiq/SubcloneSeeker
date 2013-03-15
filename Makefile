@@ -35,13 +35,16 @@ sqlite3.o: ../lib/sqlite3/sqlite3.c
 stexp: $(OBJS) $(HEADERS) utils/SubcloneExplore.cc sqlite3.o
 	$(CXX) $(UTILSFLAGS) $(OBJS) utils/SubcloneExplore.cc sqlite3.o -o stexp
 
-utils: cluster segtxt2db treemerge
+utils: cluster segtxt2db treemerge treeprint
 
 cluster: $(OBJS) $(HEADERS) utils/cluster.cc sqlite3.o
 	$(CXX) $(UTILSFLAGS) $(OBJS) utils/cluster.cc sqlite3.o -o cluster
 
 segtxt2db: $(OBJS) $(HEADERS) utils/segtxt2db.cc sqlite3.o
 	$(CXX) $(UTILSFLAGS) $(OBJS) utils/segtxt2db.cc sqlite3.o -o segtxt2db
+
+treeprint: $(OBJS) $(HEADERS) utils/treeprint.cc sqlite3.o
+	$(CXX) $(UTILSFLAGS) $(OBJS) utils/treeprint.cc sqlite3.o -o treeprint
 
 treemerge: $(OBJS) $(HEADERS) utils/treemerge.cc sqlite3.o
 	$(CXX) -DTREEMERGE_MAIN $(UTILSFLAGS) $(OBJS) utils/treemerge.cc sqlite3.o -o treemerge
@@ -50,6 +53,8 @@ treemerge_check: $(OBJS) $(HEADERS) utils/treemerge.cc sqlite3.o
 	$(CXX) -DTREEMERGE_TEST $(UTILSFLAGS) $(OBJS) utils/treemerge.cc sqlite3.o -o treemerge_check
 	./treemerge_check
 	rm treemerge_check
+
+.PHONY: treemerge_check
 
 check: $(OBJS) $(HEADERS) sqlite3.o
 	rm -f test.sqlite
