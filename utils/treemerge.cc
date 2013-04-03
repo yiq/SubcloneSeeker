@@ -299,6 +299,12 @@ bool TreeMerge(Subclone *p, Subclone *q) {
 				SomaticEventPtr_vec subcloneEvents;
 
 				Subclone *wp = dynamic_cast<Subclone *>(node);
+
+				// ignores zero frequency subclones as their order cannot be reliably determined
+				if(wp->fraction()< 1e-2)
+					return;
+
+
 				while(wp != NULL) {
 					for(size_t i=0; i<wp->vecEventCluster().size(); i++) {
 						for(size_t j=0; j<wp->vecEventCluster()[i]->members().size(); j++)
