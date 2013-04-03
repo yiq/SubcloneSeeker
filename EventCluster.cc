@@ -7,28 +7,41 @@
 
 #include "EventCluster.h"
 #include "SomaticEvent.h"
+#include "SegmentalMutation.h"
 #include <cmath>
+#include <iostream>
 
 using namespace SubcloneExplorer;
 
 void EventCluster::addEvent(SomaticEvent *event, bool updateFraction) {
 	// check if the event already is a member
-
-	bool alreadyExist = false;
-
 	for(size_t i=0; i<_members.size(); i++) {
 		if(_members[i] == event) {
-			alreadyExist = true;
-			break;
+			return;
 		}
 	}
 
-	if(!alreadyExist) {
-		double oldFraction = _cellFraction * _members.size();
-		_members.push_back(event);
-		if(updateFraction)
-			_cellFraction = (oldFraction + event->frequency) / _members.size();
+	if(updateFraction) {
+		unsigned long oldLen = 0;
+		for(size_t i=0; i<_members.size(); i++) {
+			SegmentalMutation *asSeg = dynamic_cast<SegmentalMutation *>(_members[i]);
+			if(asSeg != NULL) {
+				oldLen += asSeg->range.length;
+			}
+			else
+				oldLen += 1;
+		}
+		unsigned long thisLen;
+		SegmentalMutation *asSeg = dynamic_cast<SegmentalMutation *>(event);
+		if(asSeg != NULL)
+			thisLen = asSeg->range.length;
+		else
+			thisLen = 1;
+
+		_cellFraction = (_cellFraction * oldLen + event->frequency * thisLen) / (oldLen + thisLen);
 	}
+
+	_members.push_back(event);
 }
 
 std::vector<EventCluster *> EventCluster::clustering(const std::vector<SomaticEvent *>& events, double threshold) {
@@ -44,8 +57,7 @@ std::vector<EventCluster *> EventCluster::clustering(const std::vector<SomaticEv
 		SomaticEvent *currentEvent = events[eventIdx];
 
 		for(size_t clusterIdx = 0; clusterIdx < clusters.size(); clusterIdx++) {
-			EventCluster *currentCluster = clusters[clusterIdx];
-			double diff = fabs(currentCluster->cellFraction() - currentEvent->frequency);
+			double diff = fabs(currentEvent->frequency - clusters[clusterIdx]->cellFraction());
 			
 			if(minDiff == -1 || minDiff > diff) {
 				minDiff = diff;
@@ -56,6 +68,7 @@ std::vector<EventCluster *> EventCluster::clustering(const std::vector<SomaticEv
 		if(clusters.size() > 0 && minDiff <= threshold) {
 			// add the current event to the cluster
 			clusters[minClusterIdx]->addEvent(currentEvent);
+
 		}
 		else {
 			// create new cluster to contain the currentEvent;

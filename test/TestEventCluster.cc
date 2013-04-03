@@ -51,7 +51,9 @@ void testEventClusterComparator() {
 	SubcloneExplorer::CNV cnv1, cnv2;
 
 	cnv1.frequency = 0.2;
+	cnv1.range.length = 1000L;
 	cnv2.frequency = 0.3;
+	cnv2.range.length = 1000L;
 
 	cluster1.addEvent(&cnv1);
 	cluster2.addEvent(&cnv2);
