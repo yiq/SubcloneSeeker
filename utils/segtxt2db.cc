@@ -10,6 +10,7 @@
 #include <fstream>
 #include <cmath>
 #include <getopt.h>
+#include <cstring>
 
 #include "SomaticEvent.h"
 #include "SegmentalMutation.h"
@@ -18,16 +19,37 @@
 
 #define _EPISLON 1e-3
 
+#define CORR_AUTO 1
+#define CORR_PROXIMITY 2
+
 static int _ploidy;
 static double _purity;
 static double _neutral_level;
+static int _correct_model;
 static double _threshold;
 static char *_prog_name;
+static char *_mask_fn;
+static unsigned long _min_length;
 
 using namespace SubcloneExplorer;
 
 void SegmentalMeanCorrection(std::vector<EventCluster *>& clusters);
 void SegmentalMean2Frequency(std::vector<EventCluster *>& clusters);
+double SegmentalMeanModal(const EventClusterPtr_vec& clusters);
+void printClusters(std::vector<EventCluster *>& clusters)  {
+	for(size_t i=0; i<clusters.size(); i++) {
+		for(size_t j=0; j<clusters[i]->members().size(); j++) {
+			CNV *theEvent = dynamic_cast<CNV*>(clusters[i]->members()[j]);
+			if(theEvent == NULL)
+				continue;
+			//std::cout<<"\tchr"<<theEvent->range.chrom<<"\t"<<theEvent->range.position<<"\t\t"<<theEvent->range.position + theEvent->range.length<<std::endl;
+			theEvent->frequency = clusters[i]->cellFraction();
+		}
+
+		if(clusters[i]->cellFraction() < 1)
+			std::cout<<"Cluster "<<i<<"\t frequency: "<<clusters[i]->cellFraction()<<std::endl;
+	}
+}
 
 void usage() {
 	std::cout<<"Usage: "<<_prog_name<<" <seg.txt file> <result database>"<<std::endl;
@@ -35,7 +57,10 @@ void usage() {
 	std::cout<<"\t\t -p purity\t[default = 1]\t\tA number between 0-1 specifying the purity of the sample"<<std::endl;
 	std::cout<<"\t\t -q ploidy\t[default = 2]\t\tA integer number specifying the ploidy of the copy number neutral regions"<<std::endl;
 	std::cout<<"\t\t -n ratio\t[default = 1]\t\tA tumor/normal ratio at where the copy number neutral regions are found"<<std::endl;
+	std::cout<<"\t\t -m model\t[default = 2]\t\tFraction correction model. 1=MODAL, 2=PROXIMITY"<<std::endl;
+	std::cout<<"\t\t -r mask-file\t\t\t\tA mask file for regions to exclude"<<std::endl;
 	std::cout<<"\t\t -t threshold\t[default = 0.05]\tThe ratio threshold for merging two segments into a cluster"<<std::endl;
+	std::cout<<"\t\t -e length\t[default=0]\tThe minimal cumulative length of a cluster to be included in the result"<<std::endl;
 	exit(0);
 }
 
@@ -44,10 +69,13 @@ int main(int argc, char* argv[]) {
 	_ploidy = 2;
 	_purity = 1;
 	_neutral_level = 1;
+	_correct_model = CORR_PROXIMITY;
 	_threshold = 0.05;
+	_mask_fn=NULL;
+	_min_length = 0;
 
 	int c;
-	while((c = getopt(argc, argv, "p:q:n:t:")) != -1) {
+	while((c = getopt(argc, argv, "p:q:n:m:r:t:e:h")) != -1) {
 		switch(c) {
 			case 'p':
 				_purity = atof(optarg); break;
@@ -55,9 +83,17 @@ int main(int argc, char* argv[]) {
 				_ploidy = atoi(optarg); break;
 			case 'n':
 				_neutral_level = atof(optarg); break;
+			case 'm':
+				_correct_model = atoi(optarg); break;
+			case 'r':
+				_mask_fn = strdup(optarg); break;
 			case 't':
 				_threshold = atof(optarg); break;
+			case 'e':
+				_min_length = atoi(optarg); break;
 			default:
+				std::cerr<<"Unrecognized option "<<(char)c<<std::endl;
+				usage();
 				break;
 		}
 	}
@@ -67,6 +103,37 @@ int main(int argc, char* argv[]) {
 	if(argc < 2) {
 		usage();
 	}
+
+	RefGenome *refGenome = RefGenome::getInstance();
+
+	// open mask file if supplied
+	SomaticEventPtr_vec maskEvents;
+
+	if(_mask_fn != NULL) {
+		std::ifstream in_mask_file;
+		in_mask_file.open(_mask_fn);
+		if(!in_mask_file.is_open()) {
+			std::cerr<<"Unable to open mask file "<<_mask_fn<<std::endl;
+			return(1);
+		}
+
+		std::string chrom;
+		long startLoc, endLoc;
+
+		in_mask_file >> chrom >> startLoc >> endLoc;
+		while(!in_mask_file.eof()) {
+			CNV *cnv = new CNV();
+			cnv->range.chrom = refGenome->queryChromID(chrom);
+			cnv->range.position = startLoc;
+			cnv->range.length = endLoc - startLoc;
+
+			maskEvents.push_back(cnv);
+			in_mask_file >> chrom >> startLoc >> endLoc;
+		}
+
+		in_mask_file.close();
+	}
+
 
 	// *************************************
 	// Read content of .seg.txt file as CNVs
@@ -80,6 +147,40 @@ int main(int argc, char* argv[]) {
 
 	argc--; argv++;
 
+	// read event lists
+	std::vector<SomaticEvent *> events;
+	std::string id, chrom;
+	long startLoc, endLoc, numMark;
+	double segMean;
+
+	in_segtxt_file >> id >> id >> id >> id >> id >> id; // Skip the header line
+	while(!in_segtxt_file.eof()) {
+		in_segtxt_file >> id >> chrom >> startLoc >> endLoc >> numMark >> segMean;
+		if(in_segtxt_file.eof())
+			break;
+
+		segMean = pow(2, segMean);
+		
+		CNV *cnv = new CNV();
+		cnv->range.chrom = refGenome->queryChromID(chrom);
+		cnv->range.position = startLoc;
+		cnv->range.length = endLoc - startLoc;
+		cnv->frequency = segMean;
+
+		bool masked = false;
+		for(size_t i=0; i<maskEvents.size(); i++) {
+			CNV *otherEvent = dynamic_cast<CNV*>(maskEvents[i]);
+			if(otherEvent == NULL) continue;
+			if(otherEvent->range.overlaps(cnv->range)) {
+				masked = true;
+				break;
+			}
+		}
+
+		if(not masked) events.push_back(cnv);
+	}
+	in_segtxt_file.close();
+
 	// ********************
 	// Open output database
 	// ********************
@@ -90,43 +191,34 @@ int main(int argc, char* argv[]) {
 		return(1);
 	}
 
-	std::vector<SomaticEvent *> events;
-
-	std::string id, chrom;
-	long startLoc, endLoc, numMark;
-	double segMean;
-
-	RefGenome *refGenome = RefGenome::getInstance();
-
-	in_segtxt_file >> id >> id >> id >> id >> id >> id; // Skip the header line
-	while(!in_segtxt_file.eof()) {
-		in_segtxt_file >> id >> chrom >> startLoc >> endLoc >> numMark >> segMean;
-		if(in_segtxt_file.eof())
-			break;
-
-		segMean = pow(2, segMean);
-		
-		// ignoring amplifications
-		if(segMean > _neutral_level)
-			continue;
-
-		CNV *cnv = new CNV();
-		cnv->range.chrom = refGenome->queryChromID(chrom);
-		cnv->range.position = startLoc;
-		cnv->range.length = endLoc - startLoc;
-		cnv->frequency = segMean;
-
-		events.push_back(cnv);
-	}
-
 	// *******************************
 	// Cluster the CNVs based on ratio
 	// *******************************
 	std::vector<EventCluster *> clusters = EventCluster::clustering(events, _threshold);
 
+	std::ofstream eventsFile;
+	eventsFile.open("events.seg.txt");
+	eventsFile<<"ID\tchrom\tstart.loc\tend.loc\tnum.marks\tseg.mean"<<std::endl;
+	for(size_t i=0; i<events.size(); i++) {
+		CNV* theEvent = dynamic_cast<CNV*>(events[i]);
+		if(theEvent == NULL)
+			continue;
+		eventsFile<<"clustered\t"<<theEvent->range.chrom<<"\t"<<theEvent->range.position<<"\t"<<theEvent->range.position + theEvent->range.length;
+		eventsFile<<"\t"<<theEvent->range.length<<"\t"<<log2(theEvent->frequency)<<std::endl;
+	}
+
+	eventsFile.close();
+
+
 	// ************************************************
 	// Correct the clusters by purity and neutral level
 	// ************************************************
+	
+	// -------> If correction mode is automatic, find the modal neutral level <------
+	
+	if(_correct_model == CORR_AUTO) 
+		_neutral_level = SegmentalMeanModal(clusters);
+
 	SegmentalMeanCorrection(clusters);
 
 	// ************************
@@ -141,6 +233,20 @@ int main(int argc, char* argv[]) {
 		// do not save neutral segments
 		if(clusters[i]->cellFraction() < _EPISLON)
 			continue;
+
+		unsigned long cumLen = 0;
+		for(size_t j=0; j<clusters[i]->members().size(); j++) {
+			SegmentalMutation *theSeg = dynamic_cast<SegmentalMutation *>(clusters[i]->members()[j]);
+			if(theSeg == NULL)
+				cumLen += 1;
+			else
+				cumLen += theSeg->range.length;
+		}
+		if(cumLen < _min_length) {
+			std::cerr<<"cluster "<<i<<" removed because too short"<<std::endl;
+			continue;
+		}
+
 		sqlite3_int64 newClusterID = clusters[i]->archiveObjectToDB(database);
 		if(newClusterID == -1) {
 			std::cerr<<"Error occurred while writing cluster "<<i<<" into database"<<std::endl;
@@ -167,14 +273,15 @@ void SegmentalMeanCorrection(std::vector<EventCluster *>& clusters) {
 		}
 	}
 
-	std::cerr<<"correcting clusters to "<<clusters[closestClusterIdx]->cellFraction()<<std::endl;
+	double corrRatio = clusters[closestClusterIdx]->cellFraction();
+
+	std::cerr<<"correcting clusters to "<<corrRatio<<std::endl;
 
 	// --------> First pass, center around the neutral cluster <-------- //
-
 	for(size_t i=0; i<clusters.size(); i++) {
-		clusters[i]->setCellFraction(clusters[i]->cellFraction() / clusters[closestClusterIdx]->cellFraction());
+		clusters[i]->setCellFraction(clusters[i]->cellFraction() / corrRatio);
 		for(size_t j=0; j<clusters[i]->members().size(); j++) {
-			clusters[i]->members()[j]->frequency /= clusters[closestClusterIdx]->cellFraction();
+			clusters[i]->members()[j]->frequency /= corrRatio;
 		}
 	}
 
@@ -194,7 +301,31 @@ void SegmentalMeanCorrection(std::vector<EventCluster *>& clusters) {
 	}
 }
 
+double SegmentalMeanModal(const EventClusterPtr_vec& clusters) {
+	unsigned long maxLen = 0;
+	size_t maxLenIdx = 0;
+
+
+	for(size_t i=0; i<clusters.size(); i++) {
+		unsigned long len = 0;
+		for(size_t j=0; j<clusters[i]->members().size(); j++) {
+			CNV *member = dynamic_cast<CNV *>(clusters[i]->members()[j]);
+			if(member != NULL)
+				len += member->range.length;
+		}
+
+		if(len > maxLen) {
+			maxLen = len;
+			maxLenIdx = i;
+		}
+	}
+	std::cerr<<"correcting cluster len "<<maxLenIdx<<std::endl;
+
+	return clusters[maxLenIdx]->cellFraction();
+}
+
 void SegmentalMean2Frequency(std::vector<EventCluster *>& clusters) {
+	std::vector<size_t> toBeRemoved;
 	for(size_t i=0; i<clusters.size(); i++) {
 		double offset = clusters[i]->cellFraction() - 1;
 		double cnDelta = ceil(fabs(offset)*_ploidy)/(double)_ploidy;
@@ -208,10 +339,31 @@ void SegmentalMean2Frequency(std::vector<EventCluster *>& clusters) {
 		else
 			freq = offset / cnDelta;
 
-		std::cerr<<"setting cluster fraction to "<<freq<<std::endl;
+		if(cnDelta > 0) {
+			toBeRemoved.push_back(i);
+		}
+
+		if(cnDelta < -0.5 && _mask_fn==NULL) {
+			//output mask
+			for(size_t j=0; j<clusters[i]->members().size(); j++) {
+				CNV * member = dynamic_cast<CNV*>(clusters[i]->members()[j]);
+				if(member != NULL) {
+					std::cerr<<member->range.chrom<<"\t"<<member->range.position<<"\t"<<member->range.position+member->range.length<<std::endl;
+				}
+			}
+		}
+		
+		if(_mask_fn != NULL)
+			std::cerr<<"setting cluster "<<clusters[i]->getId()<<" fraction to "<<freq<<std::endl;
+		
 		clusters[i]->setCellFraction(freq);
+
 		for(size_t j=0; j<clusters[i]->members().size(); j++) {
 			clusters[i]->members()[j]->frequency = freq;
 		}
+	}
+
+	for(int i=toBeRemoved.size()-1; i>=0; i--) {
+		clusters.erase(clusters.begin() + toBeRemoved[i]);
 	}
 }
