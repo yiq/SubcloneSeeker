@@ -196,8 +196,22 @@ void TreeEnumeration(Subclone * root, std::vector<EventCluster> vecClusters, siz
 	newClone->setTreeFraction(-1);
 	newClone->addEventCluster(&vecClusters[symIdx]);
 
+	// add more cluster into the same subclone if they share
+	// the same frequency. This is unlikely to happen if
+	// the clusters are generated from a clustering algorithm
+	// run on the raw data. But when using external dataset this
+	// could be possible
+	float currentFraction = vecClusters[symIdx].cellFraction();
+	symIdx++;
+
+	while(symIdx < vecClusters.size() && 
+			fabs(vecClusters[symIdx].cellFraction() - currentFraction) < 0.01) {
+		newClone->addEventCluster(&vecClusters[symIdx]);
+		symIdx++;
+	}
+
 	// Configure the tree traverser
-	TreeEnumTraverser TreeEnumTraverserObj(vecClusters, ++symIdx, newClone, root);
+	TreeEnumTraverser TreeEnumTraverserObj(vecClusters, symIdx, newClone, root);
 	
 	// Traverse the tree
 	TreeNode::PreOrderTraverse(root, TreeEnumTraverserObj);
