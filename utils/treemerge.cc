@@ -300,11 +300,7 @@ bool TreeMerge(Subclone *p, Subclone *q) {
 
 				Subclone *wp = dynamic_cast<Subclone *>(node);
 
-				// ignores zero frequency subclones as their order cannot be reliably determined
-				if(wp->fraction()< 1e-2)
-					return;
-
-
+				
 				while(wp != NULL) {
 					for(size_t i=0; i<wp->vecEventCluster().size(); i++) {
 						for(size_t j=0; j<wp->vecEventCluster()[i]->members().size(); j++)
@@ -320,7 +316,7 @@ bool TreeMerge(Subclone *p, Subclone *q) {
 					std::cerr<<(dynamic_cast<CNV *>(subcloneEvents[i])->range.chrom)<<",";
 				std::cerr<<std::endl;
 #endif
-
+				
 				SomaticEventPtr_vec diff = checkPlacement(_proot, subcloneEvents, &placeable);
 				if(!placeable) {
 					isCompatible = false;
@@ -637,6 +633,37 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_aml1_1 ) {
 	r0->addChild(r1); r1->addChild(r3); r3->addChild(r4); r4->addChild(r5);
 
 	BOOST_CHECK(not TreeMerge(p0, r0));
+}
+
+// UPN426
+BOOST_AUTO_TEST_CASE( test_tree_merge_upn426 ) {
+	CNV a, b, c, d, e;
+	a.range.chrom = 1; b.range.chrom = 2; c.range.chrom = 3; d.range.chrom = 4; e.range.chrom = 5;
+
+	EventCluster cA, cB, cC, cD, cE;
+	cA.addEvent(&a); cB.addEvent(&b); cC.addEvent(&c); cD.addEvent(&d), cE.addEvent(&e);
+
+	Subclone *p0, *p1, *p2;
+	Subclone *r0, *r1, *r2, *r3;
+
+	p0 = new Subclone(); r0 = new Subclone();
+	p1 = new Subclone(); p1->addEventCluster(&cA); p1->addEventCluster(&cB); p1->addEventCluster(&cC);
+	p2 = new Subclone(); p2->addEventCluster(&cD);
+
+	r1 = new Subclone(); r1->addEventCluster(&cA);
+	r2 = new Subclone(); r2->addEventCluster(&cB);
+	r3 = new Subclone(); r3->addEventCluster(&cE);
+
+	p0->setId(10); r0->setId(20);
+	p1->setId(1123); r1->setId(21);
+	p2->setId(14); r2->setId(22);
+	r3->setId(25);
+
+	p0->addChild(p1); p1->addChild(p2);
+	r0->addChild(r1); r1->addChild(r2); r1->addChild(r3);
+
+	BOOST_CHECK(TreeMerge(p0, r0));
+
 }
 
 #endif
