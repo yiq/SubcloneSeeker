@@ -235,11 +235,11 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 									
 				double nodeFraction = ((Subclone *)node)->treeFraction() - childrenFraction;
 
-				if(nodeFraction < 1e-3 && nodeFraction > -1e-3)
+				if(nodeFraction < 1e-2 && nodeFraction > -1e-2)
 					nodeFraction = 0;
 				
 				// check tree viability
-				if(nodeFraction < 0) {
+				if(nodeFraction < -0.01) {
 					terminate();
 				}
 				else {
@@ -277,7 +277,7 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 	TreeNode::PostOrderTraverse(root, fracTraverser);
 	
 	// if the tree is viable, output it
-	if(root->fraction() >= 0) {
+	if(root->fraction() >= -0.01) {
 		TreePrintTraverser printTraverser;
 		std::cerr<<"Viable Tree! Pre-Orer: ";
 		TreeNode::PreOrderTraverse(root, printTraverser);
