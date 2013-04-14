@@ -15,6 +15,7 @@
 #endif
 #include <iostream>
 #include <sqlite3/sqlite3.h>
+#include <cmath>
 
 #include "Archivable.h"
 #include "SomaticEvent.h"
@@ -200,7 +201,7 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 		return(eventDiff);
 	}
 
-	// Leaf node won't it so far, so at least one children is present
+	// Leaf node won't make it so far, so at least one children is present
 
 	// check children placement
 	int numChildrenPlaceable = 0;
@@ -232,6 +233,8 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 			// if there is no child node that can contains eventDiff, the only chance for pnode to be able to contain
 			// it is that none of the child node contains any event in eventDiff. This can be checked by accessing whether
 			// the returned eventSet of all children after symbol consumption are all the same as eventDiff
+			//
+			// In the event that the floating contain only those events that are a intersect
 			for(size_t i=0; i<childEventDiffSet.size(); i++) {
 				if(childEventDiffSet[i].size() != eventDiff.size() || !eventSetContains(eventDiff, childEventDiffSet[i])) {
 					isCheckedOut = false;
@@ -302,6 +305,8 @@ bool TreeMerge(Subclone *p, Subclone *q) {
 
 				
 				while(wp != NULL) {
+
+					
 					for(size_t i=0; i<wp->vecEventCluster().size(); i++) {
 						for(size_t j=0; j<wp->vecEventCluster()[i]->members().size(); j++)
 							subcloneEvents.push_back(wp->vecEventCluster()[i]->members()[j]);
@@ -316,6 +321,14 @@ bool TreeMerge(Subclone *p, Subclone *q) {
 					std::cerr<<(dynamic_cast<CNV *>(subcloneEvents[i])->range.chrom)<<",";
 				std::cerr<<std::endl;
 #endif
+				wp = dynamic_cast<Subclone *>(node);
+				if(fabs(wp->fraction()) < 1e-2) {
+#ifdef TREEMERGE_TEST_VERBOSE
+					std::cerr<<"0 fraction, skipping"<<std::endl;
+#endif
+					return;
+				}
+
 				
 				SomaticEventPtr_vec diff = checkPlacement(_proot, subcloneEvents, &placeable);
 				if(!placeable) {
@@ -341,6 +354,9 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_0_0 ) {
 	Subclone *clone1 = new Subclone();
 	Subclone *clone2 = new Subclone();
 
+	clone1->setFraction(1);
+	clone2->setFraction(1);
+
 	BOOST_CHECK(TreeMerge(clone1, clone2));
 	delete clone1;
 	delete clone2;
@@ -361,6 +377,9 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_0_a ) {
 	cluster.addEvent(&cnv);
 
 	clone2->addEventCluster(&cluster);
+
+	clone1->setFraction(1);
+	clone2->setFraction(1);
 
 	BOOST_CHECK(TreeMerge(clone1, clone2));
 	delete clone1;
@@ -408,6 +427,9 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_a_a ) {
 	clone1->addChild(clone3);
 	clone2->addChild(clone4);
 
+	clone1->setFraction(0.6); clone2->setFraction(0.6);
+	clone3->setFraction(0.4); clone4->setFraction(0.4);
+
 	BOOST_CHECK(TreeMerge(clone1, clone2));
 
 	delete clone1;
@@ -448,6 +470,10 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_a_a1 ) {
 	clone1->addChild(clone3);
 	clone2->addChild(clone4);
 
+	clone1->setFraction(0.6); clone2->setFraction(0.6);
+	clone3->setFraction(0.4); clone4->setFraction(0.4);
+
+
 	BOOST_CHECK(TreeMerge(clone1, clone2));
 
 	delete clone1;
@@ -481,14 +507,15 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_3_1 ) {
 	p0->setId(10); pA->setId(11); pB->setId(12); pC->setId(13);
 	r0->setId(20); rA->setId(21); rB->setId(22); rC->setId(23);
 
-
-
 	pA->addEventCluster(&cA); rA->addEventCluster(&cA);
 	pB->addEventCluster(&cB); rB->addEventCluster(&cB);
 	pC->addEventCluster(&cC); rC->addEventCluster(&cC);
 
 	p0->addChild(pA); pA->addChild(pB); pB->addChild(pC);
 	r0->addChild(rA); rA->addChild(rB); rA->addChild(rC);
+
+	p0->setFraction(0.1); pA->setFraction(0.1); pB->setFraction(0.1); pC->setFraction(0.1);
+	r0->setFraction(0.1); rA->setFraction(0.1); rB->setFraction(0.1); rC->setFraction(0.1);
 
 	BOOST_CHECK(not TreeMerge(p0, r0));
 
@@ -528,6 +555,9 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_3_4 ) {
 	p0->addChild(pA); pA->addChild(pB); pB->addChild(pC);
 	r0->addChild(rACD);
 
+	p0->setFraction(0.1); pA->setFraction(0.1); pB->setFraction(0.1); pC->setFraction(0.1);
+	r0->setFraction(0.1); rACD->setFraction(0.1);
+
 	BOOST_CHECK(not TreeMerge(p0, r0));
 }
 
@@ -562,6 +592,9 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_3_2 ) {
 
 	p0->addChild(pA); pA->addChild(pB); pB->addChild(pC);
 	r0->addChild(rA); rA->addChild(rB); rA->addChild(rD);
+
+	p0->setFraction(0.1); pA->setFraction(0.1); pB->setFraction(0.1); pC->setFraction(0.1);
+	r0->setFraction(0.1); rA->setFraction(0.1); rB->setFraction(0.1); rD->setFraction(0.1);
 
 	BOOST_CHECK(TreeMerge(p0, r0));
 }
@@ -601,6 +634,9 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_3_3 ) {
 	p0->addChild(pA); pA->addChild(pB); pB->addChild(pC);
 	r0->addChild(rAD); rAD->addChild(rE);
 
+	p0->setFraction(0.1); pA->setFraction(0.1); pB->setFraction(0.1); pC->setFraction(0.1);
+	r0->setFraction(0.1); rAD->setFraction(0.1); rE->setFraction(0.1);
+
 	BOOST_CHECK(TreeMerge(p0, r0));
 }
 
@@ -632,11 +668,20 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_aml1_1 ) {
 	p0->addChild(p1); p1->addChild(p2); p1->addChild(p3); p2->addChild(p4);
 	r0->addChild(r1); r1->addChild(r3); r3->addChild(r4); r4->addChild(r5);
 
+	p0->setFraction(0.1); r0->setFraction(0.1);
+	p1->setFraction(0.1); r1->setFraction(0.1);
+	p2->setFraction(0.1);
+	p3->setFraction(0.1); r3->setFraction(0.1);
+	p4->setFraction(0.1); r4->setFraction(0.1);
+	r5->setFraction(0.1);
+
+
 	BOOST_CHECK(not TreeMerge(p0, r0));
 }
 
-// UPN426
+// UPN426980-rel-1
 BOOST_AUTO_TEST_CASE( test_tree_merge_upn426 ) {
+	std::cerr<<std::endl;
 	CNV a, b, c, d, e;
 	a.range.chrom = 1; b.range.chrom = 2; c.range.chrom = 3; d.range.chrom = 4; e.range.chrom = 5;
 
@@ -662,9 +707,49 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_upn426 ) {
 	p0->addChild(p1); p1->addChild(p2);
 	r0->addChild(r1); r1->addChild(r2); r1->addChild(r3);
 
+	p0->setFraction(0); p1->setFraction(0.6); p2->setFraction(0.4);
+	r0->setFraction(0); r1->setFraction(0); r2->setFraction(0.3); r3->setFraction(0.7);
+
 	BOOST_CHECK(TreeMerge(p0, r0));
 
 }
+
+// UPN426980-rel-2
+BOOST_AUTO_TEST_CASE( test_tree_merge_upn426_2 ) {
+	std::cerr.flush(); std::cout.flush();
+	std::cerr<<std::endl;
+	CNV a, b, c, d, e;
+	a.range.chrom = 1; b.range.chrom = 2; c.range.chrom = 3; d.range.chrom = 4; e.range.chrom = 5;
+
+	EventCluster cA, cB, cC, cD, cE;
+	cA.addEvent(&a); cB.addEvent(&b); cC.addEvent(&c); cD.addEvent(&d), cE.addEvent(&e);
+
+	Subclone *p0, *p1, *p2;
+	Subclone *r0, *r1, *r2, *r3;
+
+	p0 = new Subclone(); r0 = new Subclone();
+	p1 = new Subclone(); p1->addEventCluster(&cA); p1->addEventCluster(&cB); p1->addEventCluster(&cC);
+	p2 = new Subclone(); p2->addEventCluster(&cD);
+
+	r1 = new Subclone(); r1->addEventCluster(&cA);
+	r2 = new Subclone(); r2->addEventCluster(&cE);
+	r3 = new Subclone(); r3->addEventCluster(&cB);
+
+	p0->setId(10); r0->setId(20);
+	p1->setId(1123); r1->setId(21);
+	p2->setId(14); r2->setId(25);
+	r3->setId(22);
+
+	p0->addChild(p1); p1->addChild(p2);
+	r0->addChild(r1); r1->addChild(r2); r2->addChild(r3);
+
+	p0->setFraction(0); p1->setFraction(0.6); p2->setFraction(0.4);
+	r0->setFraction(0); r1->setFraction(0.3); r2->setFraction(0.45); r3->setFraction(0.25);
+
+	BOOST_CHECK(not TreeMerge(p0, r0));
+
+}
+
 
 #endif
 
