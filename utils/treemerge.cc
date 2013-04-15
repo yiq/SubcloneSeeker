@@ -16,7 +16,9 @@
 #include <iostream>
 #include <sqlite3/sqlite3.h>
 #include <cmath>
-
+#include <sstream>
+#include <algorithm>
+#include <assert.h>
 #include "Archivable.h"
 #include "SomaticEvent.h"
 #include "SegmentalMutation.h"
@@ -27,6 +29,9 @@
 #define BOUNDRY_RESOLUTION 20000000L
 
 using namespace SubcloneExplorer;
+
+SubclonePtr_vec extrudeNodeList;
+static int extSubId = 500;
 
 void usage(const char *prog_name) {
 	std::cout<<"Usage: "<<prog_name<<" <tree-set 1 database file> <tree-set 2 database file>"<<std::endl;
@@ -51,6 +56,34 @@ class SubclonePrintTraverser : public TreeTraverseDelegate {
 			}
 		}
 };
+
+
+//helper functions
+SomaticEventPtr_vec nodeEventsList(Subclone * node) {
+	SomaticEventPtr_vec subcloneEvents;
+	Subclone *wp = dynamic_cast<Subclone *>(node);
+	while(wp != NULL) {
+		for(size_t i=0; i<wp->vecEventCluster().size(); i++) {
+			for(size_t j=0; j<wp->vecEventCluster()[i]->members().size(); j++)
+				subcloneEvents.push_back(wp->vecEventCluster()[i]->members()[j]);
+		}
+		wp = dynamic_cast<Subclone *>(wp->getParent());
+	}
+	return subcloneEvents;
+}
+std::string nodeEvents(Subclone * node) {
+	std::stringstream buffer;
+	SomaticEventPtr_vec subcloneEvents;
+	Subclone *wp = dynamic_cast<Subclone *>(node);
+	while(wp != NULL) {
+		for(size_t i=0; i<wp->vecEventCluster().size(); i++) {
+			for(size_t j=0; j<wp->vecEventCluster()[i]->members().size(); j++)
+				buffer<<dynamic_cast<CNV*>(wp->vecEventCluster()[i]->members()[j])->range.chrom<<",";
+		}
+		wp = dynamic_cast<Subclone *>(wp->getParent());
+	}
+	return buffer.str();
+}
 
 #ifndef TREEMERGE_TEST
 
@@ -86,7 +119,18 @@ int main(int argc, char* argv[]) {
 
 	for(size_t i=0; i<ts1Roots.size(); i++) {
 		for(size_t j=0; j<ts2Roots.size(); j++) {
-			TreeMerge(ts1Roots[i], ts2Roots[j]);
+
+			// Duplicate primary tree for each comparison
+			sqlite3 *mem_db;
+			sqlite3_open(":memory:", &mem_db);
+			SubcloneSaveTreeTraverser stt(mem_db);
+			TreeNode::PreOrderTraverse(ts1Roots[i], stt);
+			Subclone *newPRoot = new Subclone();
+			newPRoot->unarchiveObjectFromDB(mem_db, ts1Roots[i]->getId());
+			SubcloneLoadTreeTraverser loadTraverser(mem_db);
+			TreeNode::PreOrderTraverse(newPRoot, loadTraverser);
+
+			TreeMerge(newPRoot, ts2Roots[j]);
 		}
 	}
 
@@ -145,6 +189,9 @@ bool resultSetComparator(const SomaticEventPtr_vec& v1, const SomaticEventPtr_ve
 bool eventSetContains(const SomaticEventPtr_vec& v_container, const SomaticEventPtr_vec& v_containee) {
 	bool contains = true;
 
+	if(v_container.size() < v_containee.size())
+		return false;
+
 	for(size_t i=0; i<v_containee.size(); i++) {
 		bool elementIsContained = false;
 		for(size_t j=0; j<v_container.size(); j++) {
@@ -172,11 +219,16 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 	}
 
 #ifdef TREEMERGE_TEST_VERBOSE
+	std::cerr<<"SomaticEvents:";
+	for(size_t i=0; i<somaticEvents.size(); i++)
+		std::cerr<<dynamic_cast<CNV*>(somaticEvents[i])->range.chrom<<",";
+	std::cerr<<std::endl;
+	
 	if(pnode->vecEventCluster().size() > 0)
 		std::cerr<<"trying to place under node "<<pnode->getId()<<" ";
-		//std::cerr<<"trying to place under node "<<dynamic_cast<CNV*>(pnode->vecEventCluster()[0]->members()[0])->range.chrom<<" ";
 	else
 		std::cerr<<"trying to place under root ";
+	std::cerr<<":"<<nodeEvents(pnode)<<std::endl;
 #endif
 
 	// if pnode is not completely contained by somaticEvent, it cannot be placed under pnode
@@ -234,7 +286,6 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 			// it is that none of the child node contains any event in eventDiff. This can be checked by accessing whether
 			// the returned eventSet of all children after symbol consumption are all the same as eventDiff
 			//
-			// In the event that the floating contain only those events that are a intersect
 			for(size_t i=0; i<childEventDiffSet.size(); i++) {
 				if(childEventDiffSet[i].size() != eventDiff.size() || !eventSetContains(eventDiff, childEventDiffSet[i])) {
 					isCheckedOut = false;
@@ -242,16 +293,193 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 				}
 			}
 
+			
 			if(isCheckedOut && didPassContainment) {
 #ifdef TREEMERGE_TEST_VERBOSE
-				std::cerr<<"success! (no-children)"<<std::endl;
+				std::cerr<<"success! (no-children) "<<pnode->getId()<<std::endl;
+				std::cerr<<"pnode addr: "<<pnode<<std::endl;
 #endif
 				*placeableOnSubtree = true;
+
+				// check if the relapse is being placed on a extruded node
+				if(std::find(extrudeNodeList.begin(), extrudeNodeList.end(), pnode) != extrudeNodeList.end()) {
+#ifdef TREEMERGE_TEST_VERBOSE
+					std::cerr<<"Relapse node being placed under an extruded node!"<<std::endl;
+#endif
+					Subclone * relExtNode = new Subclone();
+					relExtNode->setId(extSubId++);
+					EventCluster * relExtCluster = new EventCluster();
+#ifdef TREEMERGE_TEST_VERBOSE
+					std::cerr<<"Fixating relapse node onto primary with events: ";
+#endif
+					for(size_t i=0; i<somaticEvents.size(); i++) {
+						relExtCluster->addEvent(somaticEvents[i]);
+#ifdef TREEMERGE_TEST_VERBOSE
+						std::cerr<<dynamic_cast<CNV*>(somaticEvents[i])->range.chrom<<",";
+#endif
+					}
+#ifdef TREEMERGE_TEST_VERBOSE
+					std::cerr<<std::endl;
+#endif
+					relExtNode->addEventCluster(relExtCluster);
+					relExtNode->setFraction(0.1);
+					if(somaticEvents.size() > 0)
+						pnode->addChild(relExtNode);
+				}
 			}
-			else {
+			else if (didPassContainment) {
 #ifdef TREEMERGE_TEST_VERBOSE
 				std::cerr<<"failed (no-children)"<<std::endl;
 #endif
+
+				// But before quitting, a attempt to find a hidden node should be carried out. This is done by finding all children
+				// nodes that:
+				//   1. contains a subset of events in the float node that are also shared by other children nodes
+				//   2. does not contain any events not in the "shared" event set
+				//
+				// Right now only node with one childare considered, as this is a relatively simple case
+				if(pnode->getVecChildren().size() == 1) {
+					// if the symbols not contained by the child is also not found anywhere down the tree, those events shared
+					// by the child can be extruded.
+					Subclone * pExtNode = dynamic_cast<Subclone *>(pnode->getVecChildren()[0]);
+#ifdef TREEMERGE_TEST_VERBOSE
+					std::cerr<<"Attempting to extrude on pExtNode "<<pExtNode->getId()<<" : "<<nodeEvents(pExtNode)<<std::endl;
+#endif
+
+					// To test extrudability, three set of symbols are needed
+					// 1. Floating relapse node - current primary, which is the [eventDiff] set
+					// 2. Events contained in the child. [eventChild]
+					// 3. The shortest unconsumed event list, which is [childEventDiffSet[0]]
+					//
+					// A hidden node is in between the current node and its child node only if
+					//   [eventDiff] - [eventChild] is not found anywhere on any subtrees
+					// This is the same as testing whether [eventDiff] - [eventChild] == childEventDiffSet[0]
+					//
+					// The hidden node should contain those events that are shared by the floating relapse
+					// and the children, which is
+					// [eventChild] - ([eventChild] - eventDiff)
+
+					SomaticEventPtr_vec childEvents = nodeEventsList(dynamic_cast<Subclone *>(pExtNode));
+					SomaticEventPtr_vec uniqueEvents = SomaticEventDifference(eventDiff, childEvents);
+					SomaticEventPtr_vec extrudeEvents = SomaticEventDifference(childEvents, SomaticEventDifference(childEvents, eventDiff));
+
+
+#ifdef TREEMERGE_TEST_VERBOSE
+					std::cerr<<"before extrudable test"<<std::endl;
+					std::cerr<<"eventDiff: ";
+					for(size_t i=0; i<eventDiff.size(); i++)
+						std::cerr<<dynamic_cast<CNV*>(eventDiff[i])->range.chrom<<",";
+					std::cerr<<std::endl;
+
+					std::cerr<<"childEvent: ";
+					for(size_t i=0; i<childEvents.size(); i++)
+						std::cerr<<dynamic_cast<CNV*>(childEvents[i])->range.chrom<<",";
+					std::cerr<<std::endl;
+
+
+					std::cerr<<"Child EventDiff [0]: ";
+					for(size_t i=0; i<childEventDiffSet[0].size(); i++)
+						std::cerr<<dynamic_cast<CNV*>(childEventDiffSet[0][i])->range.chrom<<",";
+					std::cerr<<std::endl;
+
+					std::cerr<<"uniqueEvents: ";
+					for(size_t i=0; i<uniqueEvents.size(); i++)
+						std::cerr<<dynamic_cast<CNV*>(uniqueEvents[i])->range.chrom<<",";
+					std::cerr<<std::endl;
+
+					std::cerr<<"extrudeEvents: ";
+					for(size_t i=0; i<extrudeEvents.size(); i++)
+						std::cerr<<dynamic_cast<CNV*>(extrudeEvents[i])->range.chrom<<",";
+					std::cerr<<std::endl;
+
+
+#endif
+
+					if(uniqueEvents.size() == childEventDiffSet[0].size() && eventSetContains(uniqueEvents, childEventDiffSet[0])) {
+#ifdef TREEMERGE_TEST_VERBOSE
+						std::cerr<<"the child can be extruded"<<std::endl;
+#endif
+						*placeableOnSubtree = true;
+
+						// Create the extruded subclone
+						Subclone * extrudedSubclone = new Subclone();
+						// Aggregate the extruded events into one cluster, and put it into the new subclone
+						EventCluster *extrudedCluster = new EventCluster();
+#ifdef TREEMERGE_TEST_VERBOSE
+						std::cerr<<"EXTRUDE ITEMS:";
+#endif
+						for(size_t i=0; i<extrudeEvents.size(); i++) {
+							extrudedCluster->addEvent(extrudeEvents[i], false);
+#ifdef TREEMERGE_TEST_VERBOSE
+							std::cerr<<dynamic_cast<CNV*>(extrudeEvents[i])->range.chrom<<", ";
+#endif
+						}
+#ifdef TREEMERGE_TEST_VERBOSE
+						std::cerr<<std::endl;
+#endif
+						// Set the fraction of the extruded subclone to 0
+						extrudedCluster->setCellFraction(0);
+						extrudedSubclone->addEventCluster(extrudedCluster);
+						extrudedSubclone->setFraction(0);
+						// Remove the extruded events from the current node
+						// Note: a simple implementation is to remove any cluster
+						// which contains any events found in the extruded event list
+						// This is ok if an entire cluster will always be extruded away
+						for(int i=0; i<pExtNode->vecEventCluster().size(); i++) {
+							bool found = false;
+							for(size_t j=0; j<extrudeEvents.size(); j++) {
+								// check if the j-th event is present in the i-th cluster
+								for(size_t k=0; k<pExtNode->vecEventCluster()[i]->members().size(); k++) {
+									if(pExtNode->vecEventCluster()[i]->members()[k]->isEqualTo(extrudeEvents[j])) {
+#ifdef TREEMERGE_TEST_VERBOSE
+										std::cerr<<"EXT ITEM "<<dynamic_cast<CNV*>(pExtNode->vecEventCluster()[i]->members()[k])->range.chrom<<" FOUND"<<std::endl;
+#endif
+										found = true;
+										break;
+									}
+								}
+								if(found)
+									break;
+							}
+
+							if(found) {
+#ifdef TREEMERGE_TEST_VERBOSE
+								std::cerr<<"ITEM "<<dynamic_cast<CNV*>(pExtNode->vecEventCluster()[i]->members()[0])->range.chrom<<" REMOVED on pExtNode "<<pExtNode->getId()<<std::endl;
+#endif
+								pExtNode->vecEventCluster().erase(pExtNode->vecEventCluster().begin() + i);
+								i--;
+							}
+						}
+						// Change the tree structure
+						pnode->addChild(extrudedSubclone);
+						pnode->removeChild(pExtNode);
+						extrudedSubclone->addChild(pExtNode);
+						extrudeNodeList.push_back(extrudedSubclone);
+
+						// Also the merged relapse tree needs to be recorded to prevent future incorrect extrusion
+						Subclone * relExtNode = new Subclone();
+						relExtNode->setId(extSubId++);
+						EventCluster * relExtCluster = new EventCluster();
+						for(size_t i=0; i<uniqueEvents.size(); i++) {
+							relExtCluster->addEvent(uniqueEvents[i]);
+						}
+						relExtNode->addEventCluster(relExtCluster);
+						relExtNode->setFraction(0.1);
+						if(uniqueEvents.size() > 0)
+							extrudedSubclone->addChild(relExtNode);
+
+
+
+#ifdef TREEMERGE_TEST_VERBOSE
+						std::cerr<<"Extruded node "<<extrudedSubclone->getId()<<":"<<nodeEvents(extrudedSubclone)<<std::endl;
+#endif
+					}
+					else {
+#ifdef TREEMERGE_TEST_VERBOSE
+						std::cerr<<"pExtNode "<<pExtNode->getId()<<" cannot be extruded to contain relapse node"<<std::endl;
+#endif
+					}
+				}
 			}
 			break;
 		case 1:
@@ -301,12 +529,16 @@ bool TreeMerge(Subclone *p, Subclone *q) {
 				bool placeable;
 				SomaticEventPtr_vec subcloneEvents;
 
-				Subclone *wp = dynamic_cast<Subclone *>(node);
+				if(node->isRoot()) {
+#ifdef TREEMERGE_TEST_VERBOSE
+					std::cerr<<"relapse root, skipping"<<std::endl;
+#endif
+					return;				
+				}
 
+				Subclone *wp = dynamic_cast<Subclone *>(node);
 				
 				while(wp != NULL) {
-
-					
 					for(size_t i=0; i<wp->vecEventCluster().size(); i++) {
 						for(size_t j=0; j<wp->vecEventCluster()[i]->members().size(); j++)
 							subcloneEvents.push_back(wp->vecEventCluster()[i]->members()[j]);
@@ -351,6 +583,8 @@ bool TreeMerge(Subclone *p, Subclone *q) {
 #ifdef TREEMERGE_TEST
 // 0 == 0
 BOOST_AUTO_TEST_CASE( test_tree_merge_0_0 ) {
+	std::cerr<<std::endl<<"TEST CASE: test_tree_merge_0_0"<<std::endl;
+
 	Subclone *clone1 = new Subclone();
 	Subclone *clone2 = new Subclone();
 
@@ -364,6 +598,8 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_0_0 ) {
 
 // 0 == A
 BOOST_AUTO_TEST_CASE( test_tree_merge_0_a ) {
+	std::cerr<<std::endl<<"TEST CASE: test_tree_merge_0_a"<<std::endl;
+
 	Subclone *clone1 = new Subclone();
 	Subclone *clone2 = new Subclone();
 
@@ -389,6 +625,7 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_0_a ) {
 
 // A == A
 BOOST_AUTO_TEST_CASE( test_tree_merge_a_a ) {
+	std::cerr<<std::endl<<"TEST CASE: test_tree_merge_a_a"<<std::endl;
 
 	CNV *cnv = new CNV();
 	cnv->range.chrom = 1;
@@ -438,7 +675,7 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_a_a ) {
 
 // A ~= A'
 BOOST_AUTO_TEST_CASE( test_tree_merge_a_a1 ) {
-
+	std::cerr<<std::endl<<"TEST CASE: test_tree_merge_a_a1"<<std::endl;
 	CNV *cnv1 = new CNV();
 	CNV *cnv2 = new CNV();
 	cnv1->range.chrom = 1;
@@ -484,6 +721,7 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_a_a1 ) {
 
 // 0, (A, (B, (C) ) ) != 0, (A, (B, C) )
 BOOST_AUTO_TEST_CASE( test_tree_merge_3_1 ) {
+	std::cerr<<std::endl<<"TEST CASE: test_tree_merge_3_1"<<std::endl;
 	CNV A, B, C;
 	A.range.chrom = 1;
 	B.range.chrom = 2;
@@ -523,6 +761,7 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_3_1 ) {
 
 // 0, (A, (B, (C))) != 0, (ACD)
 BOOST_AUTO_TEST_CASE( test_tree_merge_3_4 ) {
+	std::cerr<<std::endl<<"TEST CASE: test_tree_merge_3_4"<<std::endl;
 	CNV A, B, C, D;
 	A.range.chrom = 1;
 	B.range.chrom = 2;
@@ -563,6 +802,7 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_3_4 ) {
 
 // 0, (A, (B, (C) ) ) == 0, (A, (B, D) )
 BOOST_AUTO_TEST_CASE( test_tree_merge_3_2 ) {
+	std::cerr<<std::endl<<"TEST CASE: test_tree_merge_3_2"<<std::endl;
 	CNV A, B, C, D;
 	A.range.chrom = 1;
 	B.range.chrom = 2;
@@ -601,6 +841,8 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_3_2 ) {
 
 // 0, (A, (B, (C) ) ) == 0, (AD, E) )
 BOOST_AUTO_TEST_CASE( test_tree_merge_3_3 ) {
+	std::cerr<<std::endl<<"TEST CASE: test_tree_merge_3_3"<<std::endl;
+
 	CNV A, B, C, D, E;
 	A.range.chrom = 1;
 	B.range.chrom = 2;
@@ -642,6 +884,8 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_3_3 ) {
 
 // aml1
 BOOST_AUTO_TEST_CASE( test_tree_merge_aml1_1 ) {
+	std::cerr<<std::endl<<"TEST CASE: test_tree_merge_aml1"<<std::endl;
+
 	CNV a, b, c, d, e;
 	a.range.chrom = 1; b.range.chrom = 2; c.range.chrom = 3; d.range.chrom = 4; e.range.chrom = 5;
 
@@ -681,7 +925,7 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_aml1_1 ) {
 
 // UPN426980-rel-1
 BOOST_AUTO_TEST_CASE( test_tree_merge_upn426 ) {
-	std::cerr<<std::endl;
+	std::cerr<<std::endl<<"STARTING TEST CASE upn426"<<std::endl;
 	CNV a, b, c, d, e;
 	a.range.chrom = 1; b.range.chrom = 2; c.range.chrom = 3; d.range.chrom = 4; e.range.chrom = 5;
 
@@ -717,7 +961,7 @@ BOOST_AUTO_TEST_CASE( test_tree_merge_upn426 ) {
 // UPN426980-rel-2
 BOOST_AUTO_TEST_CASE( test_tree_merge_upn426_2 ) {
 	std::cerr.flush(); std::cout.flush();
-	std::cerr<<std::endl;
+	std::cerr<<std::endl<<"STARTING TEST CASE upn427_2 <<<<<< "<<std::endl;
 	CNV a, b, c, d, e;
 	a.range.chrom = 1; b.range.chrom = 2; c.range.chrom = 3; d.range.chrom = 4; e.range.chrom = 5;
 
