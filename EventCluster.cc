@@ -9,7 +9,6 @@
 #include "SomaticEvent.h"
 #include "SegmentalMutation.h"
 #include <cmath>
-#include <iostream>
 
 using namespace SubcloneExplorer;
 

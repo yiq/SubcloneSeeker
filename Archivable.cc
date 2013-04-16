@@ -57,7 +57,7 @@ sqlite3_int64 Archivable::archiveObjectToDB(sqlite3 *database) {
 	rc = sqlite3_prepare_v2(database, select_str.c_str(), -1, &statement, 0);
 	if(rc != SQLITE_OK) {
 		sqlite3_finalize(statement);
-		return -1;
+		return -2;
 	}
 
 	sqlite3_bind_int64(statement, 1, id);
@@ -69,7 +69,7 @@ sqlite3_int64 Archivable::archiveObjectToDB(sqlite3 *database) {
 		rc = sqlite3_prepare_v2(database, updateObjectStatementStr().c_str(), -1, &statement, 0);
 		if(rc != SQLITE_OK) {
 			sqlite3_finalize(statement);
-			return -1;
+			return -3;
 		}
 
 		int bind_pos = bindObjectToStatement(statement);
@@ -78,7 +78,7 @@ sqlite3_int64 Archivable::archiveObjectToDB(sqlite3 *database) {
 		rc = sqlite3_step(statement);
 		sqlite3_finalize(statement);
 		if(rc != SQLITE_DONE) {
-			return -1;
+			return -4;
 		}
 
 		return id;
@@ -88,7 +88,7 @@ sqlite3_int64 Archivable::archiveObjectToDB(sqlite3 *database) {
 		rc = sqlite3_prepare_v2(database, createObjectStatementStr().c_str(), -1, &statement, 0);
 		if(rc != SQLITE_OK) {
 			sqlite3_finalize(statement);
-			return -1;
+			return -5;
 		}
 		
 		int bind_pos = bindObjectToStatement(statement);
@@ -96,7 +96,7 @@ sqlite3_int64 Archivable::archiveObjectToDB(sqlite3 *database) {
 		rc = sqlite3_step(statement);
 		sqlite3_finalize(statement);
 		if(rc != SQLITE_DONE) {
-			return -1;
+			return -6;
 		}
 
 		id = sqlite3_last_insert_rowid(database);
