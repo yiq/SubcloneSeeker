@@ -6,6 +6,7 @@
  * @author Yi Qiao
  */
 
+#include "Archivable.h"
 #include "Subclone.h"
 #include "EventCluster.h"
 #include <sqlite3/sqlite3.h>
@@ -31,10 +32,40 @@ class TreePrintTraverser: public TreeTraverseDelegate {
 		}
 };
 
+class NodePrintTraverser: public TreeTraverseDelegate {
+	public:
+		virtual void processNode(TreeNode * node) {
+			Subclone *clone = dynamic_cast<Subclone *>(node);
+			if(clone == NULL)
+				return;
+			double fracP = clone->fraction() * 100;
+			std::cout<<"\tn"<<clone->getId()<<" [label=\"n"<<clone->getId()<<": ";
+			std::cout.precision(3);
+			std::cout<<fracP<<"%\"];"<<std::endl;
+		}
+};
+
+class EdgePrintTraverser: public TreeTraverseDelegate {
+	public:
+		virtual void processNode(TreeNode * node) {
+			Subclone *clone = dynamic_cast<Subclone *>(node);
+			if(clone == NULL)
+				return;
+			if(clone->getParent() == NULL)
+				return;
+			Subclone *pClone = dynamic_cast<Subclone *>(node->getParent());
+			if(pClone == NULL)
+				return;
+
+			std::cout<<"\tn"<<pClone->getId()<<"->n"<<clone->getId()<<";"<<std::endl;
+		}
+};
+
 int main(int argc, char* argv[]) {
 
 	if(argc<3) {
-		std::cerr<<"Usage "<<argv[0]<<" <sqlite-db> <root-id>"<<std::endl;
+		std::cerr<<"Usage "<<argv[0]<<" <sqlite-db> <root-id> [-g]"<<std::endl;
+		std::cerr<<"The optional -g switch will produce dot file suitable to be visualized with GraphViz"<<std::endl;
 	}
 
 	sqlite3 *database;
@@ -52,8 +83,20 @@ int main(int argc, char* argv[]) {
 	SubcloneLoadTreeTraverser loadTr(database);
 	TreeNode::PreOrderTraverse(root, loadTr);
 
-	TreePrintTraverser traverser;
-	TreeNode::PreOrderTraverse(root, traverser);
+	if(argc<4) {
+		TreePrintTraverser traverser;
+		TreeNode::PreOrderTraverse(root, traverser);
+	} else if(strcmp(argv[3], "-g") == 0) {
+		std::cout<<"digraph {"<<std::endl;
+		// Node list
+		NodePrintTraverser npTrav;
+		TreeNode::PreOrderTraverse(root, npTrav);
+		
+		// Edge list
+		EdgePrintTraverser epTrav;
+		TreeNode::PreOrderTraverse(root, epTrav);
+		std::cout<<"}"<<std::endl;
+	}
 
 	std::cout<<std::endl;
 
