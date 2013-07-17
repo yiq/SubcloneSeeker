@@ -5,11 +5,19 @@
  * @author Yi Qiao
  */
 
-#include <iostream>
-#include <boost/test/unit_test.hpp>
-#include "../GenomicLocation.h"
+#include <UnitTest++/src/UnitTest++.h>
+#include "GenomicLocation.h"
 
-void testGenomicLocation() {
-	SubcloneExplorer::GenomicLocation loc;
-	BOOST_CHECK( true /* object creation should always pass */);
+SUITE(testGenomicLocation)
+{
+	TEST(ObjectCreation) 
+	{
+		SubcloneExplorer::GenomicLocation loc;
+		CHECK( true /* object creation should always pass */);
+	}
+}
+
+
+int main() {
+	return UnitTest::RunAllTests();
 }

@@ -28,5 +28,9 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_CHECK_FUNCS([pow strdup fabs])
 
-AC_CONFIG_FILES([Makefile src/Makefile utils/Makefile doc/Doxyfile])
+AC_CONFIG_FILES([Makefile 
+				 src/Makefile 
+				 utils/Makefile 
+				 test/Makefile
+				 doc/Doxyfile])
 AC_OUTPUT

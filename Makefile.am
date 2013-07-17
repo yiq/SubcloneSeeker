@@ -1,1 +1,1 @@
-SUBDIRS = src utils
+SUBDIRS = contrib src utils test
