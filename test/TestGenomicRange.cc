@@ -6,9 +6,9 @@
  */
 
 #include <iostream>
-#include <UnitTest++/src/UnitTest++.h>
 #include "GenomicRange.h"
 
+#include "common.h"
 using namespace SubcloneExplorer;
 
 SUITE(testGenomicRange) {
@@ -94,6 +94,4 @@ SUITE(testGenomicRange) {
 	}
 }
 
-int main() {
-	return UnitTest::RunAllTests();
-}
+TEST_MAIN

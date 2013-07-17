@@ -3,7 +3,6 @@ AM_LDFLAGS = -L$(srcdir)/../src
 
 bin_PROGRAMS = ssmain
 
-ssmain_SOURCES = SubcloneExplore.cc \
-				 $(srcdir)/../contrib/sqlite3/sqlite3.c
+ssmain_SOURCES = SubcloneExplore.cc 
 ssmain_LDADD = -lss
 

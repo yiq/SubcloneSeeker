@@ -4,9 +4,8 @@
  * @see GenomicLocation
  * @author Yi Qiao
  */
-
-#include <UnitTest++/src/UnitTest++.h>
 #include "GenomicLocation.h"
+#include "common.h"
 
 SUITE(testGenomicLocation)
 {
@@ -17,7 +16,4 @@ SUITE(testGenomicLocation)
 	}
 }
 
-
-int main() {
-	return UnitTest::RunAllTests();
-}
+TEST_MAIN

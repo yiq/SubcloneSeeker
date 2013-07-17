@@ -8,4 +8,5 @@ libss_a_SOURCES = Archivable.cc \
 				  RefGenome.cc \
 				  EventCluster.cc \
 				  TreeNode.cc \
-				  Subclone.cc
+				  Subclone.cc \
+				  $(srcdir)/../contrib/sqlite3/sqlite3.c
