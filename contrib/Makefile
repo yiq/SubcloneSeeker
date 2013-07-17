@@ -12,6 +12,6 @@ clean:
 
 .PHONY: clean
 
-check:
+check: all
 
 .PHONY: check
