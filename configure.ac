@@ -14,7 +14,11 @@ AC_PROG_RANLIB
 
 # Checks for libraries.
 
+AC_SEARCH_LIBS([fabs], [m])
+
 # Checks for header files.
+
+AC_CHECK_HEADERS([math.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -22,7 +26,7 @@ AC_C_INLINE
 AC_TYPE_SIZE_T
 
 # Checks for library functions.
-AC_CHECK_FUNCS([pow strdup])
+AC_CHECK_FUNCS([pow strdup fabs])
 
-AC_CONFIG_FILES([Makefile src/Makefile doc/Doxyfile])
+AC_CONFIG_FILES([Makefile src/Makefile utils/Makefile doc/Doxyfile])
 AC_OUTPUT
