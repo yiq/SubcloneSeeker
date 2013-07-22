@@ -5,8 +5,7 @@
 #include <assert.h>
 #include <algorithm>
 #include <numeric>
-
-#include <boost/lambda/lambda.hpp>
+#include <cmath>
 
 #include "EventCluster.h"
 #include "Subclone.h"

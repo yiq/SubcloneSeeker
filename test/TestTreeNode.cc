@@ -6,33 +6,38 @@
  */
 
 #include <iostream>
-#include <boost/test/unit_test.hpp>
-#include "../TreeNode.h"
+#include "TreeNode.h"
+
+#include "common.h"
 
 using namespace SubcloneExplorer;
 
-void testTreeNode() {
+SUITE(testTreeNode) {
+	TEST(ObjectCreation) {
 
-	TreeNode root;
+		TreeNode root;
 
-	BOOST_CHECK(root.getParent() == NULL);
-	BOOST_CHECK(root.getVecChildren().size() == 0);
-	BOOST_CHECK(root.isRoot());
-	BOOST_CHECK(root.isLeaf());
-	
-	TreeNode c1;
-	root.addChild(&c1);
-	
-	BOOST_CHECK(c1.getParent() == &root);
-	BOOST_CHECK(root.getVecChildren().size() == 1);
-	BOOST_CHECK(root.getVecChildren()[0] == &c1);
-	BOOST_CHECK(root.isRoot());
-	BOOST_CHECK(!root.isLeaf());
-	BOOST_CHECK(!c1.isRoot());
-	BOOST_CHECK(c1.isLeaf());
+		CHECK(root.getParent() == NULL);
+		CHECK(root.getVecChildren().size() == 0);
+		CHECK(root.isRoot());
+		CHECK(root.isLeaf());
 
-	root.removeChild(&c1);
+		TreeNode c1;
+		root.addChild(&c1);
 
-	BOOST_CHECK(c1.getParent() == NULL);
-	BOOST_CHECK(root.getVecChildren().size() == 0);
+		CHECK(c1.getParent() == &root);
+		CHECK(root.getVecChildren().size() == 1);
+		CHECK(root.getVecChildren()[0] == &c1);
+		CHECK(root.isRoot());
+		CHECK(!root.isLeaf());
+		CHECK(!c1.isRoot());
+		CHECK(c1.isLeaf());
+
+		root.removeChild(&c1);
+
+		CHECK(c1.getParent() == NULL);
+		CHECK(root.getVecChildren().size() == 0);
+	}
 }
+
+TEST_MAIN
