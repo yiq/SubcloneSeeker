@@ -66,6 +66,7 @@ int main(int argc, char* argv[]) {
 	if(argc<3) {
 		std::cerr<<"Usage "<<argv[0]<<" <sqlite-db> <root-id> [-g]"<<std::endl;
 		std::cerr<<"The optional -g switch will produce dot file suitable to be visualized with GraphViz"<<std::endl;
+		exit(0);
 	}
 
 	sqlite3 *database;
