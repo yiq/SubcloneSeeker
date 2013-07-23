@@ -85,7 +85,7 @@ bool resultSetComparator(const SomaticEventPtr_vec& v1, const SomaticEventPtr_ve
 }
 
 // Check if a node with certain events can be placed on a subtree
-SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticEvents, bool * placeableOnSubtree) {
+SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticEvents, bool * placeableOnSubtree, int * cp) {
 	SomaticEventPtr_vec pnodeEvents;
 	bool didPassContainment = true;
 
@@ -97,13 +97,14 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 	}
 
 	// if pnode is not completely contained by somaticEvent, it cannot be placed under pnode
-	if(!eventSetContains(somaticEvents, pnodeEvents)) {
-		didPassContainment = false;
-	}
-
+	didPassContainment = eventSetContains(somaticEvents, pnodeEvents);
+	
 	SomaticEventPtr_vec eventDiff = SomaticEventDifference(somaticEvents, pnodeEvents);
 
 	if(pnode->isLeaf()) {
+		if(cp != NULL)
+			*cp = -1;
+
 		// if passed containment test and this is a leaf, it's placeable
 		if(didPassContainment) *placeableOnSubtree = true;
 		// or, if this is a leaf but not contained, it's unplacable
@@ -139,6 +140,9 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 
 	bool isCheckedOut = true;
 	*placeableOnSubtree = false;
+
+	if(cp != NULL)
+		*cp = numChildrenPlaceable;
 
 	switch(numChildrenPlaceable) {
 		case 0:
@@ -177,7 +181,7 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 				}
 				*/
 			}
-			else if (didPassContainment) {
+			else if (didPassContainment) {/*
 				// But before quitting, a attempt to find a hidden node should be carried out. This is done by finding all children
 				// nodes that:
 				//   1. contains a subset of events in the float node that are also shared by other children nodes
@@ -297,7 +301,7 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 							extrudedSubclone->addChild(relExtNode);
 					}
 				}
-			}
+			*/}
 			break;
 		case 1:
 			// if exactly one child node is found to be able to contain eventDiff, then the node is placeable on this tree.
@@ -365,10 +369,6 @@ class TreeMergeTraverseSecondary : public TreeTraverseDelegate {
 bool TreeMerge(Subclone *p, Subclone *q) {
 		TreeMergeTraverseSecondary secondaryTraverser(p);
 	TreeNode::PreOrderTraverse(q, secondaryTraverser);
-	if(secondaryTraverser.isCompatible) {
-		std::cout<<"Primary SubcTree "<<p->getId()<<" is compatible with Secondary SubcTree "<<q->getId()<<std::endl;
-		return true;
-	}
 
-	return false;
+	return secondaryTraverser.isCompatible;
 }

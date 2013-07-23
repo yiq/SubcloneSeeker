@@ -8,6 +8,7 @@
 #include <UnitTest++/src/UnitTest++.h>
 #include <algorithm>
 #include <vector>
+#include <iostream>
 #include "treemerge_p.h"
 
 #include "SomaticEvent.h"
@@ -15,6 +16,12 @@
 #include "EventCluster.h"
 #include "TreeNode.h"
 #include "Subclone.h"
+
+#define OUTPUT_SEV(sev)													\
+	for(size_t i=0; i<(sev).size(); i++) {								\
+		std::cout<<dynamic_cast<CNV*>((sev)[i])->range.chrom<<", ";		\
+	}																	\
+	std::cout<<std::endl;
 
 using namespace SubcloneExplorer;
 
@@ -102,7 +109,6 @@ struct _SampleSomaticEventsFixture {
 	}
 };
 
-
 TEST_FIXTURE(_SampleSomaticEventsFixture, T_SomaticEventDifference) {
 	SomaticEventPtr_vec diff = SomaticEventDifference(v1, v2);
 	CHECK(diff.size() == 2);
@@ -137,6 +143,182 @@ TEST_FIXTURE(_SampleSomaticEventsFixture, T_resultSetComparator) {
 
 	CHECK(testSets[0].size() <= testSets[1].size());
 	CHECK(testSets[1].size() <= testSets[2].size());
+}
+
+struct _TestPlacementFixture {
+	CNV A, B, C, D, E, F, G, H, I;
+	EventCluster cA, cB, cC, cD, cE, cF, cG, cH, cI;
+	Subclone p0, p1, p2, p3, p4, p5, p6, p7;
+	Subclone r0, r1, r2, r3, r4, r5, r6, r7;
+
+	Subclone pp0, pp1, pp2;
+	Subclone rr0, rr1, rr2, rr3;
+
+	bool placable;
+	int cp;
+	Subclone * m_pnode;
+
+	SomaticEventPtr_vec events;
+	SomaticEventPtr_vec ppEvents;
+	SomaticEventPtr_vec eventsDiff;
+	SomaticEventPtr_vec diff;
+
+	_TestPlacementFixture() {
+		A.range.chrom = 1; B.range.chrom = 2; C.range.chrom = 3; D.range.chrom = 4;
+		E.range.chrom = 5; F.range.chrom = 6; G.range.chrom = 7; H.range.chrom = 8;
+		I.range.chrom = 9;
+
+		cA.addEvent(&A); cB.addEvent(&B); cC.addEvent(&C); cD.addEvent(&D);
+		cE.addEvent(&E); cF.addEvent(&F); cG.addEvent(&G); cH.addEvent(&H);
+		cI.addEvent(&I);
+
+		p1.addEventCluster(&cA); p2.addEventCluster(&cB); p3.addEventCluster(&cG);
+		p4.addEventCluster(&cC); p5.addEventCluster(&cD); p6.addEventCluster(&cH);
+		p7.addEventCluster(&cI);
+
+		r1.addEventCluster(&cA); r2.addEventCluster(&cB); r2.addEventCluster(&cD);
+		r3.addEventCluster(&cE); r4.addEventCluster(&cF); r5.addEventCluster(&cH);
+		r6.addEventCluster(&cI); r7.addEventCluster(&cC); r7.addEventCluster(&cD);
+
+		p0.addChild(&p1); p1.addChild(&p2); p1.addChild(&p3);
+		p2.addChild(&p4); p2.addChild(&p5); p4.addChild(&p6);
+		p3.addChild(&p7);
+
+		r0.addChild(&r1); r1.addChild(&r2); r1.addChild(&r3);
+		r2.addChild(&r4); r2.addChild(&r5);
+		r3.addChild(&r6); r3.addChild(&r7);
+
+
+		pp1.addEventCluster(&cA); pp1.addEventCluster(&cB); pp1.addEventCluster(&cC);
+		pp2.addEventCluster(&cD);
+
+		rr1.addEventCluster(&cA); rr2.addEventCluster(&cE); rr3.addEventCluster(&cB);
+
+		pp0.addChild(&pp1); pp1.addChild(&pp2);
+		rr0.addChild(&rr1); rr1.addChild(&rr2); rr2.addChild(&rr3);
+	}
+	~_TestPlacementFixture() {
+	}
+
+	void PrepareTestcase(Subclone * pnode, Subclone * rnode) {
+		m_pnode = pnode;
+		events = nodeEventsList(rnode);
+		ppEvents = nodeEventsList(dynamic_cast<Subclone *>(pnode->getParent()));
+		eventsDiff = SomaticEventDifference(events, ppEvents);
+	}
+
+	void PerformTestcase() {
+		diff = checkPlacement(m_pnode, eventsDiff, &placable, &cp);
+	}
+};
+
+SUITE(TestPlacement) {
+	TEST_FIXTURE(_TestPlacementFixture, T_Leaf) {
+		// Placeable by containment, leaf
+		PrepareTestcase(&p5, &r4);
+		CHECK(events.size() == 4);
+		CHECK(ppEvents.size() == 2);
+		CHECK(eventsDiff.size() == 2);
+
+		PerformTestcase();
+
+		CHECK(diff.size() == 1);
+		CHECK(cp == -1);
+		CHECK(placable);
+
+		// Not placable by containment, leaf
+		PrepareTestcase(&p6, &r4);
+		CHECK(events.size() == 4);
+		CHECK(ppEvents.size() == 3);
+		CHECK(eventsDiff.size() == 2);
+
+		PerformTestcase();
+		CHECK(diff.size() == 2);
+		CHECK(cp == -1);
+		CHECK(not placable);
+	}
+
+	TEST_FIXTURE(_TestPlacementFixture, T_0Child) {
+		// Zero child, placable
+		PrepareTestcase(&p1, &r3);
+		CHECK(events.size() == 2);
+		CHECK(ppEvents.size() == 0);
+		CHECK(eventsDiff.size() == 2);
+
+		PerformTestcase();
+
+		CHECK(diff.size() == 1);
+		CHECK(cp == 0);
+		CHECK(placable);
+
+		// Zero child, not placable
+		PrepareTestcase(&p1, &r6);
+		CHECK(events.size() == 3);
+		CHECK(ppEvents.size() == 0);
+		CHECK(eventsDiff.size() == 3);
+
+		PerformTestcase();
+
+		CHECK(diff.size() == 1);
+		CHECK(cp == 0);
+		CHECK(not placable);	
+	}
+
+	TEST_FIXTURE(_TestPlacementFixture, T_1Child) {
+		// One child, placable
+		PrepareTestcase(&p2, &r4);
+		CHECK(events.size() == 4);
+		CHECK(ppEvents.size() == 1);
+		CHECK(eventsDiff.size() == 3);
+
+		PerformTestcase();
+
+		CHECK(diff.size() == 1);
+		CHECK(cp == 1);
+		CHECK(placable);
+
+		// Zero child, not placable
+		PrepareTestcase(&p2, &r5);
+		CHECK(events.size() == 4);
+		CHECK(ppEvents.size() == 1);
+		CHECK(eventsDiff.size() == 3);
+
+		PerformTestcase();
+
+		CHECK(diff.size() == 1);
+		CHECK(cp == 1);
+		CHECK(not placable);	
+	}
+
+	TEST_FIXTURE(_TestPlacementFixture, T_2Child) {
+		PrepareTestcase(&p2, &r7);
+		CHECK(events.size() == 4);
+		CHECK(ppEvents.size() == 1);
+		CHECK(eventsDiff.size() == 3);
+
+		PerformTestcase();
+
+		CHECK(diff.size() == 2);
+		CHECK(cp > 1);
+		CHECK(not placable);
+	}
+
+	TEST_FIXTURE(_TestPlacementFixture, T_EX1) {
+		PrepareTestcase(&pp0, &rr1);
+		PerformTestcase();
+		CHECK(cp == 0);
+		CHECK(not placable);
+
+		PrepareTestcase(&pp0, &rr2);
+		PerformTestcase();
+		CHECK(cp == 0);
+		CHECK(not placable);
+
+		PrepareTestcase(&pp0, &rr3);
+		PerformTestcase();
+		CHECK(cp == 0);
+		CHECK(not placable);
+	}
 }
 
 
@@ -521,7 +703,6 @@ SUITE(SampleTumors) {
 		r0->setFraction(0); r1->setFraction(0.3); r2->setFraction(0.45); r3->setFraction(0.25);
 
 		CHECK(not TreeMerge(p0, r0));
-
 	}
 }
 

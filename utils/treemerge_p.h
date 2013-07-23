@@ -74,7 +74,8 @@ bool resultSetComparator(const SomaticEventPtr_vec& v1, const SomaticEventPtr_ve
 SomaticEventPtr_vec checkPlacement(
 		Subclone *pnode, 
 		SomaticEventPtr_vec somaticEvents, 
-		bool * placeableOnSubtree);
+		bool * placeableOnSubtree,
+		int * cp = NULL);
 
 /**
  * Check if two subclonal trees are compatible.
