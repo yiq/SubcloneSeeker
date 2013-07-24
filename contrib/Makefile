@@ -1,9 +1,13 @@
-all: unittest
+all: 
 
 .PHONY: all
 
+check: unittest
+
+.PHONY: check
+
 unittest:
-	$(MAKE) -C UnitTest++ all
+	$(MAKE) -C UnitTest++ libUnitTest++.a
 
 .PHONY: unittest
 
