@@ -369,7 +369,7 @@ class TreeMergeTraverseSecondary : public TreeTraverseDelegate {
 
 // Check if two trees are compatible
 bool TreeMerge(Subclone *p, Subclone *q) {
-		TreeMergeTraverseSecondary secondaryTraverser(p);
+	TreeMergeTraverseSecondary secondaryTraverser(p);
 	TreeNode::PreOrderTraverse(q, secondaryTraverser);
 
 	return secondaryTraverser.isCompatible;

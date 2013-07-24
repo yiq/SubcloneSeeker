@@ -30,28 +30,6 @@ void usage(const char *prog_name) {
 	exit(0);
 }
 
-SubclonePtr_vec loadTreeFromTreesetDB(sqlite3 *treesetDB) {
-
-	Subclone dummySubclone;
-	
-	DBObjectID_vec rootIDs = SubcloneLoadTreeTraverser::rootNodes(treesetDB);
-
-	if(rootIDs.size() == 0) {
-		std::cerr<<"No tree is found in tree-set 1 database"<<std::endl;
-		exit(2);
-	}
-
-	SubclonePtr_vec trees;
-	for(size_t i=0; i<rootIDs.size(); i++) {
-		Subclone *newRoot = new Subclone();
-		newRoot->unarchiveObjectFromDB(treesetDB, rootIDs[i]);
-		SubcloneLoadTreeTraverser loadTraverser(treesetDB);
-		TreeNode::PreOrderTraverse(newRoot, loadTraverser);
-		trees.push_back(newRoot);
-	}
-	return(trees);
-}
-
 int main(int argc, char* argv[]) {
 	sqlite3 *ts1_db, *ts2_db;
 	int rc;
@@ -65,36 +43,32 @@ int main(int argc, char* argv[]) {
 		std::cerr<<"Unable to open tree-set 1 database file "<<argv[1]<<std::endl;
 		return(1);
 	}
-	SubclonePtr_vec ts1Roots = loadTreeFromTreesetDB(ts1_db);
-	sqlite3_close(ts1_db);
-
-	std::cerr<<ts1Roots.size()<<" trees load from primary"<<std::endl;
+	DBObjectID_vec ts1RootIDs = SubcloneLoadTreeTraverser::rootNodes(ts1_db);
+	std::cerr<<ts1RootIDs.size()<<" primary trees found!"<<std::endl;
 
 	// ******** OPEN TREE-SET 2 DATABASE ********
 	if(sqlite3_open_v2(argv[2], &ts2_db, SQLITE_OPEN_READONLY, NULL) != SQLITE_OK) {
 		std::cerr<<"Unable to open tree-set 2 database file "<<argv[2]<<std::endl;
 		return(1);
 	}
-	SubclonePtr_vec ts2Roots = loadTreeFromTreesetDB(ts2_db);
-	sqlite3_close(ts2_db);
+	DBObjectID_vec ts2RootIDs = SubcloneLoadTreeTraverser::rootNodes(ts2_db);
+	std::cerr<<ts2RootIDs.size()<<" secondary trees found!"<<std::endl;
 
-	std::cerr<<ts2Roots.size()<<" trees load from secondary"<<std::endl;
+	SubcloneLoadTreeTraverser pLoadTraverser(ts1_db);
+	SubcloneLoadTreeTraverser sLoadTraverser(ts2_db);
 
-	for(size_t i=0; i<ts1Roots.size(); i++) {
-		for(size_t j=0; j<ts2Roots.size(); j++) {
+	for(size_t i=0; i<ts1RootIDs.size(); i++) {
+		Subclone *pRoot = new Subclone();
+		pRoot->unarchiveObjectFromDB(ts1_db, ts1RootIDs[i]);
+		TreeNode::PreOrderTraverse(pRoot, pLoadTraverser);
 
-			// Duplicate primary tree for each comparison
-			sqlite3 *mem_db;
-			sqlite3_open(":memory:", &mem_db);
-			SubcloneSaveTreeTraverser stt(mem_db);
-			TreeNode::PreOrderTraverse(ts1Roots[i], stt);
-			Subclone *newPRoot = new Subclone();
-			newPRoot->unarchiveObjectFromDB(mem_db, ts1Roots[i]->getId());
-			SubcloneLoadTreeTraverser loadTraverser(mem_db);
-			TreeNode::PreOrderTraverse(newPRoot, loadTraverser);
-
-			if(TreeMerge(newPRoot, ts2Roots[j])) {
-				std::cout<<"Primary tree "<<ts1Roots[i]->getId()<<" is compatible with Secondary tree "<<ts2Roots[j]->getId()<<std::endl;
+		for(size_t j=0; j<ts2RootIDs.size(); j++) {
+			Subclone *sRoot = new Subclone();
+			sRoot->unarchiveObjectFromDB(ts2_db, ts2RootIDs[j]);
+			TreeNode::PreOrderTraverse(sRoot, sLoadTraverser);
+		
+			if(TreeMerge(pRoot, sRoot)) {
+				std::cout<<"Primary tree "<<pRoot->getId()<<" is compatible with Secondary tree "<<sRoot->getId()<<std::endl;
 			}
 		}
 	}
