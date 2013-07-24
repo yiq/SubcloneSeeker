@@ -182,6 +182,7 @@ struct _TestPlacementFixture {
 
 	UPN933124 * upn933124_1;
 	UPN933124 * upn933124_2;
+	UPN933124 * upn768168_2;
 
 	bool placable;
 	int cp;
@@ -250,6 +251,17 @@ struct _TestPlacementFixture {
 		upn933124_2->p0.setFraction(0); upn933124_2->p1.setFraction(0.08); upn933124_2->p2.setFraction(0.53); upn933124_2->p3.setFraction(0.34); upn933124_2->p4.setFraction(0.05);
 		upn933124_2->r0.setFraction(0); upn933124_2->r1.setFraction(0.05); upn933124_2->r2.setFraction(0.03); upn933124_2->r3.setFraction(0.91);
 
+		upn768168_2 = new UPN933124();
+		upn768168_2->p1.addEventCluster(&cA); upn768168_2->p2.addEventCluster(&cB);
+		upn768168_2->r1.addEventCluster(&cA); upn768168_2->r2.addEventCluster(&cB); upn768168_2->r3.addEventCluster(&cC);
+
+		upn768168_2->p0.addChild(&upn768168_2->p1); upn768168_2->p1.addChild(&upn768168_2->p2);
+		upn768168_2->r0.addChild(&upn768168_2->r1); upn768168_2->r1.addChild(&upn768168_2->r2); upn768168_2->r2.addChild(&upn768168_2->r3); 
+
+		upn768168_2->p0.setFraction(0); upn768168_2->p1.setFraction(0.08); upn768168_2->p2.setFraction(0.92);
+		upn768168_2->r0.setFraction(0); upn768168_2->r1.setFraction(0.42); upn768168_2->r2.setFraction(0.2); upn768168_2->r3.setFraction(0.38);
+
+
 
 	}
 	~_TestPlacementFixture() {
@@ -317,7 +329,7 @@ SUITE(TestPlacement) {
 		PerformTestcase();
 
 		CHECK(diff.size() == 1);
-		CHECK(cp == 0);
+		CHECK(cp == 1);
 		CHECK(not placable);	
 	}
 
@@ -806,6 +818,23 @@ SUITE(SampleTumors) {
 		PerformTestcase();
 		std::cout<<cp<<std::endl;
 		CHECK(not placable);
+	}
+
+	TEST_FIXTURE(_TestPlacementFixture, test_upn933124_3) {
+		PrepareTestcase(&upn933124_2->p1, &upn933124_2->r1);
+		PerformTestcase();
+		CHECK(cp == 0);
+		CHECK(placable);
+
+		PrepareTestcase(&upn933124_2->p3, &upn933124_2->r3);
+		PerformTestcase();
+		std::cout<<cp<<std::endl;
+		CHECK(cp==1);
+		CHECK(placable);
+	}
+
+	TEST_FIXTURE(_TestPlacementFixture, test_upn758168_2) {
+		CHECK(TreeMerge(&upn768168_2->p0, &upn768168_2->r0));
 	}
 }
 

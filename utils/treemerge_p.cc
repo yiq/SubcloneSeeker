@@ -16,6 +16,8 @@
 #include "EventCluster.h"
 #include "Subclone.h"
 
+#define MIN_CLONE_FRAC 0.05
+
 #define OUTPUT_SEV(sev)															\
 	for(size_t output_sev_i=0; output_sev_i<(sev).size(); output_sev_i++) {		\
 		std::cout<<dynamic_cast<CNV*>((sev)[output_sev_i])->range.chrom<<", ";	\
@@ -113,7 +115,21 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 			*cp = -1;
 
 		// if passed containment test and this is a leaf, it's placeable
-		if(didPassContainment) *placeableOnSubtree = true;
+		if(didPassContainment) {
+			*placeableOnSubtree = true;
+			
+			// Merging the secondary node onto the primary tree
+			Subclone * relExtNode = new Subclone();
+			relExtNode->setId(extSubId++);
+			EventCluster * relExtCluster = new EventCluster();
+			for(size_t i=0; i<eventDiff.size(); i++) {
+				relExtCluster->addEvent(eventDiff[i]);
+			}
+			relExtNode->addEventCluster(relExtCluster);
+			relExtNode->setFraction(0.1);
+			if(eventDiff.size() > 0)
+				pnode->addChild(relExtNode);
+		} 
 		// or, if this is a leaf but not contained, it's unplacable
 		else *placeableOnSubtree = false;
 
@@ -179,23 +195,18 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 			if(isCheckedOut && didPassContainment) {
 				*placeableOnSubtree = true;
 
-				// check if the relapse is being placed on a extruded node
-				if(std::find(extrudeNodeList.begin(), extrudeNodeList.end(), pnode) != extrudeNodeList.end()) {
 
-					// if yes, create a dummy subclone that represents the change in topology
-					Subclone * relExtNode = new Subclone();
-					relExtNode->setId(extSubId++);
-					EventCluster * relExtCluster = new EventCluster();
-					SomaticEventPtr_vec pnodeEventsSoFar = nodeEventsList(pnode);
-					SomaticEventPtr_vec eventsForRelapse = SomaticEventDifference(somaticEvents, pnodeEventsSoFar);
-					for(size_t i=0; i<eventsForRelapse.size(); i++) {
-						relExtCluster->addEvent(eventsForRelapse[i]);
-					}
-					relExtNode->addEventCluster(relExtCluster);
-					relExtNode->setFraction(0.1);
-					if(eventsForRelapse.size() > 0)
-						pnode->addChild(relExtNode);
+				// merge the secondary subclone onto the primary tree
+				Subclone * relExtNode = new Subclone();
+				relExtNode->setId(extSubId++);
+				EventCluster * relExtCluster = new EventCluster();
+				for(size_t i=0; i<eventDiff.size(); i++) {
+					relExtCluster->addEvent(eventDiff[i]);
 				}
+				relExtNode->addEventCluster(relExtCluster);
+				relExtNode->setFraction(0.1);
+				if(eventDiff.size() > 0)
+					pnode->addChild(relExtNode);
 			}
 			else if (didPassContainment) {
 				// But before quitting, a attempt to find a hidden node should be carried out. This is done by finding all children
@@ -289,7 +300,6 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 					
 					// Change the tree structure
 					pnode->addChild(extrudedSubclone);
-					extrudeNodeList.push_back(extrudedSubclone);
 
 					// Also the merged relapse tree needs to be recorded to prevent future incorrect extrusion
 					Subclone * relExtNode = new Subclone();
@@ -354,7 +364,7 @@ class TreeMergeTraverseSecondary : public TreeTraverseDelegate {
 			if(node->isRoot()) return;
 
 			// If the subclone is very small in fraction, skip it.
-			if(fabs(wp->fraction()) < 1e-2) return;
+			if(fabs(wp->fraction()) < MIN_CLONE_FRAC) return;
 
 			SomaticEventPtr_vec subcloneEvents = nodeEventsList(wp);
 

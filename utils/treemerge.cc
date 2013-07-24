@@ -58,11 +58,11 @@ int main(int argc, char* argv[]) {
 	SubcloneLoadTreeTraverser sLoadTraverser(ts2_db);
 
 	for(size_t i=0; i<ts1RootIDs.size(); i++) {
-		Subclone *pRoot = new Subclone();
-		pRoot->unarchiveObjectFromDB(ts1_db, ts1RootIDs[i]);
-		TreeNode::PreOrderTraverse(pRoot, pLoadTraverser);
-
 		for(size_t j=0; j<ts2RootIDs.size(); j++) {
+			Subclone *pRoot = new Subclone();
+			pRoot->unarchiveObjectFromDB(ts1_db, ts1RootIDs[i]);
+			TreeNode::PreOrderTraverse(pRoot, pLoadTraverser);
+
 			Subclone *sRoot = new Subclone();
 			sRoot->unarchiveObjectFromDB(ts2_db, ts2RootIDs[j]);
 			TreeNode::PreOrderTraverse(sRoot, sLoadTraverser);
