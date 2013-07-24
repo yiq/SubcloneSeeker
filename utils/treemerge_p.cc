@@ -16,6 +16,13 @@
 #include "EventCluster.h"
 #include "Subclone.h"
 
+#define OUTPUT_SEV(sev)															\
+	for(size_t output_sev_i=0; output_sev_i<(sev).size(); output_sev_i++) {		\
+		std::cout<<dynamic_cast<CNV*>((sev)[output_sev_i])->range.chrom<<", ";	\
+	}																			\
+	std::cout<<std::endl;
+
+
 static SubclonePtr_vec extrudeNodeList;
 static int extSubId = 500;
 
@@ -137,12 +144,23 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 
 	// find the path that would leads to the most symbol consumption
 	std::sort(childEventDiffSet.begin(), childEventDiffSet.end(), resultSetComparator);
-
+	
 	bool isCheckedOut = true;
 	*placeableOnSubtree = false;
 
 	if(cp != NULL)
 		*cp = numChildrenPlaceable;
+
+	// if the shortest returned list does not agree with each other, subsets of the floating node have been
+	// found on different branches, and is automatically a fail
+	size_t minChildEventDiffSetSize = childEventDiffSet[0].size();
+	for(size_t i=1; i<childEventDiffSet.size() && minChildEventDiffSetSize == childEventDiffSet[i].size(); i++) {
+		bool equalVector = eventSetContains(childEventDiffSet[0], childEventDiffSet[i]);
+		if(not equalVector) {
+			*placeableOnSubtree = false;
+			return childEventDiffSet[0];
+		}
+	}
 
 	switch(numChildrenPlaceable) {
 		case 0:
@@ -161,7 +179,6 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 			if(isCheckedOut && didPassContainment) {
 				*placeableOnSubtree = true;
 
-				/*
 				// check if the relapse is being placed on a extruded node
 				if(std::find(extrudeNodeList.begin(), extrudeNodeList.end(), pnode) != extrudeNodeList.end()) {
 
@@ -169,139 +186,124 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 					Subclone * relExtNode = new Subclone();
 					relExtNode->setId(extSubId++);
 					EventCluster * relExtCluster = new EventCluster();
-					SomaticEventPtr pnodeEventsSoFar = nodeEventsList(pnode);
-					SomaticEventPtr eventsForRelapse = SomaticEventDifference(somaticEvents, pnodeEventsSoFar)
+					SomaticEventPtr_vec pnodeEventsSoFar = nodeEventsList(pnode);
+					SomaticEventPtr_vec eventsForRelapse = SomaticEventDifference(somaticEvents, pnodeEventsSoFar);
 					for(size_t i=0; i<eventsForRelapse.size(); i++) {
 						relExtCluster->addEvent(eventsForRelapse[i]);
 					}
 					relExtNode->addEventCluster(relExtCluster);
 					relExtNode->setFraction(0.1);
-					if(somaticEvents.size() > 0)
+					if(eventsForRelapse.size() > 0)
 						pnode->addChild(relExtNode);
 				}
-				*/
 			}
-			else if (didPassContainment) {/*
+			else if (didPassContainment) {
 				// But before quitting, a attempt to find a hidden node should be carried out. This is done by finding all children
 				// nodes that:
 				//   1. contains a subset of events in the float node that are also shared by other children nodes
 				//   2. does not contain any events not in the "shared" event set
 				//
 				// Right now only nodes with one child are considered, as this is a relatively simple case
-				if(pnode->getVecChildren().size() > 0) {
-					// if the symbols not contained by the child is also not found anywhere down the tree, those events shared
-					// by the child can be extruded.
+				
+				assert(pnode->getVecChildren().size() > 0);
 
-					// To test extrudability, three set of symbols are needed
-					// 1. Floating relapse node - current primary, which is the [eventDiff] set
-					// 2. Events contained in the child. [eventChild]
-					// 3. The shortest unconsumed event list, which is [childEventDiffSet[0]]
-					//
-					// A hidden node is in between the current node and its child node only if
-					//   [eventDiff] - [eventChild] is not found anywhere on any subtrees
-					// This is the same as testing whether [eventDiff] - [eventChild] == childEventDiffSet[0]
-					//
-					// The hidden node should contain those events that are shared by the floating relapse
-					// and the children, which is
-					// [eventChild] - ([eventChild] - eventDiff)
-					
-					SubclonePtr_vec extruableChildren;
-					SomaticEventPtr_vec extrudeEvents;
-					bool extruable = true;
-					for(size_t p=0; p<pnode->getVecChildren().size(); p++) {
-						Subclone *pExtNode = dynamic_cast<Subclone *>(pnode->getVecChildren()[p]);
-						SomaticEventPtr_vec childEvents = nodeEventsList(dynamic_cast<Subclone *>(pExtNode));
-						SomaticEventPtr_vec thisExtrudeEvents = SomaticEventDifference(childEvents, SomaticEventDifference(childEvents, eventDiff));
-						SomaticEventPtr_vec thisUniqueEvents = SomaticEventDifference(eventDiff, thisExtrudeEvents);
+				// if the symbols not contained by the child is also not found anywhere down the tree, those events shared
+				// by the child can be extruded.
 
-						if(thisExtrudeEvents.size() > 0) {
-							if(thisUniqueEvents.size() == childEventDiffSet[p].size() && eventSetContains(thisUniqueEvents, childEventDiffSet[p])) {
-								if(extrudeEvents.size() == 0) {
-									extrudeEvents = thisExtrudeEvents;
-									extruableChildren.push_back(pExtNode);
+				// To test extrudability, three set of symbols are needed
+				// 1. Floating relapse node - current primary, which is the [eventDiff] set
+				// 2. Events contained in the child. [eventChild]
+				// 3. The shortest unconsumed event list, which is [childEventDiffSet[0]]
+				//
+				// A hidden node is in between the current node and its child node only if
+				//   [eventDiff] - [eventChild] is not found anywhere on any subtrees
+				// This is the same as testing whether [eventDiff] - [eventChild] == childEventDiffSet[0]
+				//
+				// The hidden node should contain those events that are shared by the floating relapse
+				// and the children, which is
+				// [eventChild] - ([eventChild] - eventDiff)
+
+				SubclonePtr_vec extruableChildren;
+				SomaticEventPtr_vec extrudeEvents;
+				SomaticEventPtr_vec uniqueEvents;
+				Subclone * extrudeNode = NULL;
+
+				// search for the child from which the hidden node shall be extruded
+				for(size_t p=0; p<pnode->getVecChildren().size(); p++) {
+					Subclone *pExtNode = dynamic_cast<Subclone *>(pnode->getVecChildren()[p]);
+					SomaticEventPtr_vec eventChild = nodeEventsList(dynamic_cast<Subclone *>(pExtNode));
+					SomaticEventPtr_vec thisUniqueEvents = SomaticEventDifference(eventChild, eventDiff);
+					SomaticEventPtr_vec thisExtrudeEvents = SomaticEventDifference(eventChild, thisUniqueEvents);
+					SomaticEventPtr_vec otherUniqueEvents = SomaticEventDifference(eventDiff, eventChild);
+
+					// if [eventChild] .intersect. [eventDiff] != []
+					if(thisExtrudeEvents.size() > 0) {
+						// check if [eventChild] - [eventDiff] == childEventDiffSet[0]
+						if(otherUniqueEvents.size() == childEventDiffSet[0].size() && eventSetContains(otherUniqueEvents, childEventDiffSet[0])) {
+							extrudeEvents = thisExtrudeEvents;
+							uniqueEvents = otherUniqueEvents;
+							extrudeNode = pExtNode;
+						}
+					}
+				}
+
+				if(extrudeNode != NULL) {
+					*placeableOnSubtree = true;
+
+					// Create the extruded subclone
+					Subclone * extrudedSubclone = new Subclone();
+					extrudedSubclone->setId(extSubId++);
+					// Aggregate the extruded events into one cluster, and put it into the new subclone
+					EventCluster *extrudedCluster = new EventCluster();
+					for(size_t i=0; i<extrudeEvents.size(); i++) {
+						extrudedCluster->addEvent(extrudeEvents[i], false);
+					}
+					// Set the fraction of the extruded subclone to 0
+					extrudedCluster->setCellFraction(0);
+					extrudedSubclone->addEventCluster(extrudedCluster);
+					extrudedSubclone->setFraction(0);
+					// Remove the extruded events from the current node
+					// Note: a simple implementation is to remove any cluster
+					// which contains any events found in the extruded event list
+					// This is ok if an entire cluster will always be extruded away
+
+					for(size_t i=0; i<extrudeEvents.size(); i++) {
+						// look for the cluster that contains extrudeEvents[j]
+						for(size_t j=0; j<extrudeNode->vecEventCluster().size(); j++) {
+							bool found = false;
+							for(size_t k=0; k<extrudeNode->vecEventCluster()[j]->members().size(); k++) {
+								if(extrudeNode->vecEventCluster()[j]->members()[k]->isEqualTo(extrudeEvents[i])) {
+									found = true;
+									break;
 								}
-								else {
-
-									if(extrudeEvents.size() == thisExtrudeEvents.size() && eventSetContains(extrudeEvents, thisExtrudeEvents) ) {
-										extruableChildren.push_back(pExtNode);
-									}
-									else {
-										extruable = false;
-										break;
-									}
-								}
-							} else {
-								extruable = false;
+							}
+							if(found) {
+								extrudeNode->vecEventCluster().erase(extrudeNode->vecEventCluster().begin() + j);
 								break;
 							}
 						}
 					}
 
-					if(extruableChildren.size() == 0)
-						extruable = false;
+					pnode->removeChild(extrudeNode);
+					extrudedSubclone->addChild(extrudeNode);
+					
+					// Change the tree structure
+					pnode->addChild(extrudedSubclone);
+					extrudeNodeList.push_back(extrudedSubclone);
 
-					SomaticEventPtr_vec uniqueEvents = SomaticEventDifference(eventDiff, extrudeEvents);
-
-					if(extruable) {
-						*placeableOnSubtree = true;
-
-						// Create the extruded subclone
-						Subclone * extrudedSubclone = new Subclone();
-						// Aggregate the extruded events into one cluster, and put it into the new subclone
-						EventCluster *extrudedCluster = new EventCluster();
-						for(size_t i=0; i<extrudeEvents.size(); i++) {
-							extrudedCluster->addEvent(extrudeEvents[i], false);
-						}
-						// Set the fraction of the extruded subclone to 0
-						extrudedCluster->setCellFraction(0);
-						extrudedSubclone->addEventCluster(extrudedCluster);
-						extrudedSubclone->setFraction(0);
-						// Remove the extruded events from the current node
-						// Note: a simple implementation is to remove any cluster
-						// which contains any events found in the extruded event list
-						// This is ok if an entire cluster will always be extruded away
-						for(int p=0; p<extruableChildren.size(); p++) {
-							Subclone * pExtNode = dynamic_cast<Subclone *>(extruableChildren[p]);
-							for(int i=0; i<pExtNode->vecEventCluster().size(); i++) {
-								bool found = false;
-								for(size_t j=0; j<extrudeEvents.size(); j++) {
-									// check if the j-th event is present in the i-th cluster
-									for(size_t k=0; k<pExtNode->vecEventCluster()[i]->members().size(); k++) {
-										if(pExtNode->vecEventCluster()[i]->members()[k]->isEqualTo(extrudeEvents[j])) {
-											found = true;
-											break;
-										}
-									}
-									if(found)
-										break;
-								}
-
-								if(found) {
-									pExtNode->vecEventCluster().erase(pExtNode->vecEventCluster().begin() + i);
-									i--;
-								}
-							}
-							pnode->removeChild(pExtNode);
-							extrudedSubclone->addChild(pExtNode);
-						}
-						// Change the tree structure
-						pnode->addChild(extrudedSubclone);
-						extrudeNodeList.push_back(extrudedSubclone);
-
-						// Also the merged relapse tree needs to be recorded to prevent future incorrect extrusion
-						Subclone * relExtNode = new Subclone();
-						relExtNode->setId(extSubId++);
-						EventCluster * relExtCluster = new EventCluster();
-						for(size_t i=0; i<uniqueEvents.size(); i++) {
-							relExtCluster->addEvent(uniqueEvents[i]);
-						}
-						relExtNode->addEventCluster(relExtCluster);
-						relExtNode->setFraction(0.1);
-						if(uniqueEvents.size() > 0)
-							extrudedSubclone->addChild(relExtNode);
+					// Also the merged relapse tree needs to be recorded to prevent future incorrect extrusion
+					Subclone * relExtNode = new Subclone();
+					relExtNode->setId(extSubId++);
+					EventCluster * relExtCluster = new EventCluster();
+					for(size_t i=0; i<uniqueEvents.size(); i++) {
+						relExtCluster->addEvent(uniqueEvents[i]);
 					}
+					relExtNode->addEventCluster(relExtCluster);
+					relExtNode->setFraction(0.1);
+					if(uniqueEvents.size() > 0)
+						extrudedSubclone->addChild(relExtNode);
 				}
-			*/}
+			}
 			break;
 		case 1:
 			// if exactly one child node is found to be able to contain eventDiff, then the node is placeable on this tree.

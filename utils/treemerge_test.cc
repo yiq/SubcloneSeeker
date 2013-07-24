@@ -145,6 +145,27 @@ TEST_FIXTURE(_SampleSomaticEventsFixture, T_resultSetComparator) {
 	CHECK(testSets[1].size() <= testSets[2].size());
 }
 
+struct _placementRtnVal {
+	SomaticEventPtr_vec events;
+	SomaticEventPtr_vec ppEvents;
+	SomaticEventPtr_vec eventsDiff;
+	SomaticEventPtr_vec diff;
+	bool placable;
+	int cp;
+};
+
+_placementRtnVal checkPlacementWithNodes(Subclone *pnode, Subclone *rnode) {
+	_placementRtnVal rtn;
+
+	rtn.events = nodeEventsList(rnode);
+	rtn.ppEvents = nodeEventsList(dynamic_cast<Subclone *>(pnode->getParent()));
+	rtn.eventsDiff = SomaticEventDifference(rtn.events, rtn.ppEvents);
+
+	rtn.diff = checkPlacement(pnode, rtn.eventsDiff, &rtn.placable, &rtn.cp);
+
+	return rtn;
+}
+
 struct _TestPlacementFixture {
 	CNV A, B, C, D, E, F, G, H, I;
 	EventCluster cA, cB, cC, cD, cE, cF, cG, cH, cI;
@@ -196,6 +217,9 @@ struct _TestPlacementFixture {
 
 		pp0.addChild(&pp1); pp1.addChild(&pp2);
 		rr0.addChild(&rr1); rr1.addChild(&rr2); rr2.addChild(&rr3);
+
+		pp0.setId(10); pp1.setId(11); pp2.setId(12);
+		rr0.setId(20); rr1.setId(21); rr2.setId(22); rr3.setId(23);
 	}
 	~_TestPlacementFixture() {
 	}
@@ -307,16 +331,14 @@ SUITE(TestPlacement) {
 		PrepareTestcase(&pp0, &rr1);
 		PerformTestcase();
 		CHECK(cp == 0);
-		CHECK(not placable);
-
+		CHECK(placable);
+		
 		PrepareTestcase(&pp0, &rr2);
 		PerformTestcase();
-		CHECK(cp == 0);
-		CHECK(not placable);
-
+		CHECK(placable);
+		
 		PrepareTestcase(&pp0, &rr3);
 		PerformTestcase();
-		CHECK(cp == 0);
 		CHECK(not placable);
 	}
 }
@@ -474,6 +496,19 @@ SUITE(SampleTumors) {
 
 		p0->setFraction(0.1); pA->setFraction(0.1); pB->setFraction(0.1); pC->setFraction(0.1);
 		r0->setFraction(0.1); rA->setFraction(0.1); rB->setFraction(0.1); rC->setFraction(0.1);
+
+
+		_placementRtnVal rtn;
+		rtn = checkPlacementWithNodes(p0, rA);
+		CHECK(rtn.placable);
+
+		rtn = checkPlacementWithNodes(p0, rB);
+		CHECK(rtn.placable);
+
+		rtn = checkPlacementWithNodes(p0, rC);
+		CHECK(not rtn.placable);
+
+
 
 		CHECK(not TreeMerge(p0, r0));
 	}
