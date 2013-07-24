@@ -93,7 +93,9 @@ int main(int argc, char* argv[]) {
 			SubcloneLoadTreeTraverser loadTraverser(mem_db);
 			TreeNode::PreOrderTraverse(newPRoot, loadTraverser);
 
-			TreeMerge(newPRoot, ts2Roots[j]);
+			if(TreeMerge(newPRoot, ts2Roots[j])) {
+				std::cout<<"Primary tree "<<ts1Roots[i]->getId()<<" is compatible with Secondary tree "<<ts2Roots[j]->getId()<<std::endl;
+			}
 		}
 	}
 
