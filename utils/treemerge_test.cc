@@ -175,6 +175,14 @@ struct _TestPlacementFixture {
 	Subclone pp0, pp1, pp2;
 	Subclone rr0, rr1, rr2, rr3;
 
+	struct UPN933124 {
+		Subclone p0, p1, p2, p3, p4;
+		Subclone r0, r1, r2, r3;
+	};
+
+	UPN933124 * upn933124_1;
+	UPN933124 * upn933124_2;
+
 	bool placable;
 	int cp;
 	Subclone * m_pnode;
@@ -183,6 +191,7 @@ struct _TestPlacementFixture {
 	SomaticEventPtr_vec ppEvents;
 	SomaticEventPtr_vec eventsDiff;
 	SomaticEventPtr_vec diff;
+
 
 	_TestPlacementFixture() {
 		A.range.chrom = 1; B.range.chrom = 2; C.range.chrom = 3; D.range.chrom = 4;
@@ -220,8 +229,32 @@ struct _TestPlacementFixture {
 
 		pp0.setId(10); pp1.setId(11); pp2.setId(12);
 		rr0.setId(20); rr1.setId(21); rr2.setId(22); rr3.setId(23);
+
+		upn933124_1 = new UPN933124();
+		upn933124_1->p1.addEventCluster(&cA); upn933124_1->p2.addEventCluster(&cB); upn933124_1->p3.addEventCluster(&cC); upn933124_1->p4.addEventCluster(&cD);
+		upn933124_1->r1.addEventCluster(&cA); upn933124_1->r2.addEventCluster(&cC); upn933124_1->r2.addEventCluster(&cE); upn933124_1->r3.addEventCluster(&cD);
+
+		upn933124_1->p0.addChild(&upn933124_1->p1); upn933124_1->p1.addChild(&upn933124_1->p2); upn933124_1->p1.addChild(&upn933124_1->p3); upn933124_1->p1.addChild(&upn933124_1->p4);
+		upn933124_1->r0.addChild(&upn933124_1->r1); upn933124_1->r1.addChild(&upn933124_1->r2); upn933124_1->r2.addChild(&upn933124_1->r3);
+
+		upn933124_1->p0.setFraction(0); upn933124_1->p1.setFraction(0.08); upn933124_1->p2.setFraction(0.53); upn933124_1->p3.setFraction(0.34); upn933124_1->p4.setFraction(0.05);
+		upn933124_1->r0.setFraction(0); upn933124_1->r1.setFraction(0.05); upn933124_1->r2.setFraction(0.03); upn933124_1->r3.setFraction(0.91);
+
+		upn933124_2 = new UPN933124();
+		upn933124_2->p1.addEventCluster(&cA); upn933124_2->p2.addEventCluster(&cB); upn933124_2->p3.addEventCluster(&cC); upn933124_2->p4.addEventCluster(&cD);
+		upn933124_2->r1.addEventCluster(&cA); upn933124_2->r2.addEventCluster(&cC); upn933124_2->r2.addEventCluster(&cE); upn933124_2->r3.addEventCluster(&cD);
+
+		upn933124_2->p0.addChild(&upn933124_2->p1); upn933124_2->p1.addChild(&upn933124_2->p2); upn933124_2->p1.addChild(&upn933124_2->p3); upn933124_2->p3.addChild(&upn933124_2->p4);
+		upn933124_2->r0.addChild(&upn933124_2->r1); upn933124_2->r1.addChild(&upn933124_2->r2); upn933124_2->r2.addChild(&upn933124_2->r3);
+
+		upn933124_2->p0.setFraction(0); upn933124_2->p1.setFraction(0.08); upn933124_2->p2.setFraction(0.53); upn933124_2->p3.setFraction(0.34); upn933124_2->p4.setFraction(0.05);
+		upn933124_2->r0.setFraction(0); upn933124_2->r1.setFraction(0.05); upn933124_2->r2.setFraction(0.03); upn933124_2->r3.setFraction(0.91);
+
+
 	}
 	~_TestPlacementFixture() {
+		delete upn933124_1;
+		delete upn933124_2;
 	}
 
 	void PrepareTestcase(Subclone * pnode, Subclone * rnode) {
@@ -738,6 +771,41 @@ SUITE(SampleTumors) {
 		r0->setFraction(0); r1->setFraction(0.3); r2->setFraction(0.45); r3->setFraction(0.25);
 
 		CHECK(not TreeMerge(p0, r0));
+	}
+
+	TEST_FIXTURE(_TestPlacementFixture, test_upn933124_1) {
+		PrepareTestcase(&upn933124_1->p1, &upn933124_1->r1);
+		PerformTestcase();
+		CHECK(cp == 0);
+		CHECK(placable);
+
+		PrepareTestcase(&upn933124_1->p1, &upn933124_1->r2);
+		PerformTestcase();
+		CHECK(cp == 1);
+		CHECK(placable);
+
+		PrepareTestcase(&upn933124_1->p1, &upn933124_1->r3);
+		PerformTestcase();
+		CHECK(not placable);
+
+		CHECK(not TreeMerge(&upn933124_1->p0, &upn933124_1->r0));
+	}
+
+	TEST_FIXTURE(_TestPlacementFixture, test_upn933124_2) {
+		PrepareTestcase(&upn933124_2->p1, &upn933124_2->r1);
+		PerformTestcase();
+		CHECK(cp == 0);
+		CHECK(placable);
+
+		PrepareTestcase(&upn933124_2->p3, &upn933124_2->r2);
+		PerformTestcase();
+		CHECK(cp == 0);
+		CHECK(placable);
+
+		PrepareTestcase(&upn933124_2->p3, &upn933124_2->r3);
+		PerformTestcase();
+		std::cout<<cp<<std::endl;
+		CHECK(not placable);
 	}
 }
 
