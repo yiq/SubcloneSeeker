@@ -17,6 +17,9 @@
 #include "SomaticEvent.h"
 #include "Subclone.h"
 
+/**
+ * The boundary resolution when comparing SomaticEvents
+ */
 #define BOUNDRY_RESOLUTION 20000000L
 
 using namespace SubcloneExplorer;
@@ -66,9 +69,10 @@ bool resultSetComparator(const SomaticEventPtr_vec& v1, const SomaticEventPtr_ve
 /**
  * Check if a node with certain somatic events can be placed on a subtree of a different subclonal structure.
  *
- * @param pnode The root of a subtree of the subclonal structure, to which the new node is being placed on
+ * @param pnode The root of a subtree of the subclonal structure, to which the new node is being placed on.
  * @param somaticEvents The somatic events found in the new node, containing all its parents' ones.
- * @param placeableOnSubtree An output boolean variable indicating whether the placement is successful or not
+ * @param placeableOnSubtree An output boolean variable indicating whether the placement is successful or not.
+ * @param cp The number of children nodes that are able to contain the floating node. Used for debugging purpose.
  * @return A vector containing events not found on the subtree to the point the node is placed.
  */
 SomaticEventPtr_vec checkPlacement(

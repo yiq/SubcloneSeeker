@@ -20,6 +20,7 @@ namespace SubcloneExplorer{
 	typedef std::vector<sqlite3_int64> DBObjectID_vec;
 
 	/**
+	 * @interface Archivable
 	 * @brief Abstract class that defines the interface to handle archiving objects into sqlite3 database
 	 * 
 	 * This abstract class defines the required behaviors when handling object archiving to and from a

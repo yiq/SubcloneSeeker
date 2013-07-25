@@ -15,6 +15,11 @@
 using namespace SubcloneExplorer;
 
 // Traverser borrowed from SubcloneExplore.cc
+/**
+ * @brief A tree traverser that prints tree in a text format
+ *
+ * if B and C are children of A, the final output will look like A (B, C)
+ */
 class TreePrintTraverser: public TreeTraverseDelegate {
 	public:
 		virtual void preprocessNode(TreeNode *node) {
@@ -32,6 +37,9 @@ class TreePrintTraverser: public TreeTraverseDelegate {
 		}
 };
 
+/**
+ * @brief A tree traverser that prints the nodes in Graphviz .dot format
+ */
 class NodePrintTraverser: public TreeTraverseDelegate {
 	public:
 		virtual void processNode(TreeNode * node) {
@@ -45,6 +53,9 @@ class NodePrintTraverser: public TreeTraverseDelegate {
 		}
 };
 
+/**
+ * @brief A tree traverser that prints the edges in Graphviz .dot format
+ */
 class EdgePrintTraverser: public TreeTraverseDelegate {
 	public:
 		virtual void processNode(TreeNode * node) {
@@ -61,6 +72,9 @@ class EdgePrintTraverser: public TreeTraverseDelegate {
 		}
 };
 
+/**
+ * Main function of the treeprint utility
+ */
 int main(int argc, char* argv[]) {
 
 	if(argc<3) {

@@ -1,0 +1,2 @@
+check:
+	make -C UnitTest++

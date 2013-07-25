@@ -16,8 +16,14 @@
 #include "EventCluster.h"
 #include "Subclone.h"
 
+/**
+ * The minimal fraction a subclone has to have to be considered in the merging process
+ */
 #define MIN_CLONE_FRAC 0.05
 
+/**
+ * Print a SomaticEventPtr_vec that contains CNVs, for debugging propose
+ */
 #define OUTPUT_SEV(sev)															\
 	for(size_t output_sev_i=0; output_sev_i<(sev).size(); output_sev_i++) {		\
 		std::cout<<dynamic_cast<CNV*>((sev)[output_sev_i])->range.chrom<<", ";	\
@@ -342,15 +348,21 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 	return(childEventDiffSet[0]);
 }
 
-// Traverse the secondary tree, and try to place every node it encounters
-// onto the primary tree, which was given as a constructor parameter
+/**
+ * @brief Traverse the secondary tree, and try to place every node it encounters onto the primary tree, which was given as a constructor parameter.
+ */
 class TreeMergeTraverseSecondary : public TreeTraverseDelegate {
 	protected:
-		Subclone *_proot;
+		Subclone *_proot; /**< The root of the primary tree */
 
 	public:
-		bool isCompatible;
+		bool isCompatible; /**< Whether two trees are compatible or not. */
 
+		/** 
+		 * Constructor of the TreeMergeTraverseSecondary class
+		 *
+		 * @param proot To which primary tree are all the secondary nodes being placed on
+		 */
 		TreeMergeTraverseSecondary(Subclone *proot): TreeTraverseDelegate(), _proot(proot), isCompatible(true) {;}
 
 		void processNode(TreeNode *node) {

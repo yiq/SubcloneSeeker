@@ -59,7 +59,7 @@ namespace SubcloneExplorer{
 		/**
 		 * Hook to call before children nodes are recursively processed
 		 *
-		 * @param the node whose children nodes are to be recursively processed
+		 * @param node the node whose children nodes are to be recursively processed
 		 */
 		virtual void preprocessNode(TreeNode * node) {;}
 		
@@ -73,7 +73,7 @@ namespace SubcloneExplorer{
 		/**
 		 * Hook to call after children nodes are recursively processed
 		 *
-		 * @param the node whose children nodes are recursively processed
+		 * @param node the node whose children nodes are recursively processed
 		 */
 		virtual void postprocessNode(TreeNode * node) {;}
 	};
@@ -144,7 +144,7 @@ namespace SubcloneExplorer{
 		 * then process the root. The actual action performed on the nodes are
 		 * defined by the TreeTraverseDelegate object
 		 *
-		 * @prarm root The root node of the (sub)tree the traversing takes place
+		 * @param root The root node of the (sub)tree the traversing takes place
 		 * @param traverseDelegate An TreeTraverseDelegate object which defines the action performed on nodes
 		 */
 		static void PreOrderTraverse(TreeNode * root, TreeTraverseDelegate &traverseDelegate);
@@ -156,7 +156,7 @@ namespace SubcloneExplorer{
 		 * nodes (recursively), The actual action performed on the nodes are
 		 * defined by the TreeTraverseDelegate object
 		 *
-		 * @prarm root The root node of the (sub)tree the traversing takes place
+		 * @param root The root node of the (sub)tree the traversing takes place
 		 * @param traverseDelegate An TreeTraverseDelegate object which defines the action performed on nodes
 		 */
 		static void PostOrderTraverse(TreeNode * root, TreeTraverseDelegate &traverseDelegate);

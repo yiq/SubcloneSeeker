@@ -12,6 +12,14 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_RANLIB
 
+AC_CHECK_PROGS([DOXYGEN], [doxygen])
+if test -z "$DOXYGEN";
+then AC_MSG_WARN([Doxygen not found - continuing without Doxygen support])
+fi
+AM_CONDITIONAL([HAVE_DOXYGEN],
+			   [test -n "$DOXYGEN"])
+AM_COND_IF([HAVE_DOXYGEN], [AC_CONFIG_FILES([doc/Doxyfile])])
+
 # Checks for libraries.
 
 AC_SEARCH_LIBS([fabs], [m])
@@ -29,8 +37,8 @@ AC_TYPE_SIZE_T
 AC_CHECK_FUNCS([pow strdup fabs])
 
 AC_CONFIG_FILES([Makefile 
+				 contrib/Makefile
 				 src/Makefile 
 				 utils/Makefile 
-				 test/Makefile
-				 doc/Doxyfile])
+				 test/Makefile])
 AC_OUTPUT

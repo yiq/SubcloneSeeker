@@ -62,7 +62,7 @@ namespace SubcloneExplorer {
 			/**
 			 * Return all objects with the given cluster id as their parent
 			 *
-			 * @returm a vector of objectIDs (whose type depends on concrete class)
+			 * @return a vector of objectIDs (whose type depends on concrete class)
 			 */
 			virtual DBObjectID_vec allObjectsOfCluster(sqlite3 *database, sqlite3_int64 clusterID);
 
