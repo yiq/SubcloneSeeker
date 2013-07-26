@@ -2,16 +2,16 @@ Installation
 ============
 
 SubcloneSeeker distributes in the format of source code. You can compile and
-install it on your platform with relative ease since it the project is managed
-by GNU autotools. 
+install it on your platform with relative ease since the project is managed by
+GNU autotools. 
 
 Requirement
 -----------
 
 In order to successfully compile the project, you will need no more than a
-working c++ compiler on a Unix / Linux system. In order to build the
-documentation, you will then need Doxygen installed at places where its binary
-can be found in PATH environment variable. 
+working c++ compiler on a Unix / Linux system. For generating the
+documentation, you will, in addition, need Doxygen installed at places where
+its binary can be found in PATH environment variable. 
 
 Getting the source code
 -----------------------
@@ -41,8 +41,8 @@ source tree directly
 Installation
 ------------
 
-All the command-line utilities will be found in the 'utils' directory. They can
-be run directly from there, or should you choose to, be installed into your
+All the command-line utilities will be created in the 'utils' directory. They
+can be run directly from there, or should you choose to, be installed into your
 system (usually defaults to /usr/local/bin) with the following command
 
 	make install
@@ -57,5 +57,5 @@ Simply execute
 
 	make uninstall
 
-From the source tree to uninstall the binaries from your system
+from the source tree to uninstall the binaries from your system
 
