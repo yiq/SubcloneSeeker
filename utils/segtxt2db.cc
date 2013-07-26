@@ -10,6 +10,7 @@
 #include <fstream>
 #include <cmath>
 #include <getopt.h>
+#include <cstdlib>
 #include <cstring>
 
 #include "SomaticEvent.h"

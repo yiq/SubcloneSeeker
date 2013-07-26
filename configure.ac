@@ -22,10 +22,13 @@ AM_COND_IF([HAVE_DOXYGEN], [AC_CONFIG_FILES([doc/Doxyfile])])
 
 # Checks for libraries.
 
+AC_SEARCH_LIBS([pthread_mutex_trylock], [pthread])
+AC_SEARCH_LIBS([dlopen], [dl])
 AC_SEARCH_LIBS([fabs], [m])
 
 # Checks for header files.
 
+AC_CHECK_HEADERS([pthread.h])
 AC_CHECK_HEADERS([math.h])
 
 # Checks for typedefs, structures, and compiler characteristics.

@@ -9,6 +9,7 @@
  */
 
 #include <vector>
+#include <cstdio>
 
 namespace SubcloneExplorer{
 		

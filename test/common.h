@@ -3,6 +3,7 @@
 
 #include <UnitTest++/src/UnitTest++.h>
 #include <sqlite3/sqlite3.h>
+#include <cstdio>
 
 /* Fixtures */
 

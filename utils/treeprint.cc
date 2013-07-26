@@ -11,6 +11,9 @@
 #include "EventCluster.h"
 #include <sqlite3/sqlite3.h>
 #include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 using namespace SubcloneExplorer;
 

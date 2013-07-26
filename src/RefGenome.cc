@@ -1,3 +1,5 @@
+#include <cstdlib>
+
 #include "RefGenome.h"
 
 RefGenome * RefGenome::_refGenome = NULL;

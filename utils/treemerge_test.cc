@@ -28,12 +28,11 @@ using namespace SubcloneExplorer;
 struct _SampleSubclonesFixture {
 
 	Subclone * tumor1;
+	CNV a, b, c, d, e;
+	EventCluster cA, cB, cC, cD, cE;
 
 	_SampleSubclonesFixture() {
-		CNV a, b, c, d, e;
 		a.range.chrom = 1; b.range.chrom = 2; c.range.chrom = 3; d.range.chrom = 4; e.range.chrom = 5;
-
-		EventCluster cA, cB, cC, cD, cE;
 		cA.addEvent(&a); cB.addEvent(&b); cC.addEvent(&c); cD.addEvent(&d), cE.addEvent(&e);
 
 		Subclone *p0, *p1, *p2, *p3;
