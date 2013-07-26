@@ -11,6 +11,16 @@ lookup. If you run the following command
 And see an absolute path, such as '/usr/bin/R', then the requirement is
 satisfied
 
+Getting the example tarball
+---------------------------
+
+The example tarball consists of four examples presented in the paper mentioned
+in the Introduction section. It can be downloaded at
+
+http://www.qiaoy.info/subcloneseeker/examples.tar.gz
+
+
+
 Setup the variables
 -------------------
 

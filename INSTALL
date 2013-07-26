@@ -13,6 +13,12 @@ working c++ compiler on a Unix / Linux system. In order to build the
 documentation, you will then need Doxygen installed at places where its binary
 can be found in PATH environment variable. 
 
+Getting the source code
+-----------------------
+
+The latest release of SubcloneSeeker is 1.0, which can be downloaded at
+http://www.qiaoy.info/subcloneseeker/subcloneseeker-1.0.tar.gz
+
 Compile
 -------
 
@@ -28,6 +34,9 @@ If you like to run the test suite, execute the following
 
 These are unit tests to ensure the correctness of the source code. They would
 come in handy if you want to modify the source code
+
+Note: The project does not support VPATH build yet. It needs to be built in the
+source tree directly
 
 Installation
 ------------

@@ -1,4 +1,13 @@
 SUBDIRS = contrib src test utils
+EXTRA_DIST = contrib \
+			 src/*.h \
+			 src/*.cc \
+			 test/*.h \
+			 test/*.cc \
+			 utils/*.h \
+			 utils/*.cc \
+			 doc/Doxyfile.in \
+			 doc/*.md
 
 if HAVE_DOXYGEN
 
