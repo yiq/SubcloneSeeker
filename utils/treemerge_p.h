@@ -10,6 +10,28 @@
  * @author Yi Qiao
  */
 
+/*
+The MIT License (MIT)
+
+Copyright (c) 2013 Yi Qiao
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 
 #ifndef TREEMERGE_P_H
 #define TREEMERGE_P_H
@@ -17,6 +39,9 @@
 #include "SomaticEvent.h"
 #include "Subclone.h"
 
+/**
+ * The boundary resolution when comparing SomaticEvents
+ */
 #define BOUNDRY_RESOLUTION 20000000L
 
 using namespace SubcloneExplorer;
@@ -66,9 +91,10 @@ bool resultSetComparator(const SomaticEventPtr_vec& v1, const SomaticEventPtr_ve
 /**
  * Check if a node with certain somatic events can be placed on a subtree of a different subclonal structure.
  *
- * @param pnode The root of a subtree of the subclonal structure, to which the new node is being placed on
+ * @param pnode The root of a subtree of the subclonal structure, to which the new node is being placed on.
  * @param somaticEvents The somatic events found in the new node, containing all its parents' ones.
- * @param placeableOnSubtree An output boolean variable indicating whether the placement is successful or not
+ * @param placeableOnSubtree An output boolean variable indicating whether the placement is successful or not.
+ * @param cp The number of children nodes that are able to contain the floating node. Used for debugging purpose.
  * @return A vector containing events not found on the subtree to the point the node is placed.
  */
 SomaticEventPtr_vec checkPlacement(

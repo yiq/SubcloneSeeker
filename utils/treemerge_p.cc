@@ -5,6 +5,29 @@
  * @author Yi Qiao
  */
 
+/*
+The MIT License (MIT)
+
+Copyright (c) 2013 Yi Qiao
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #include "treemerge_p.h"
 #include <assert.h>
 #include <cmath>
@@ -16,8 +39,14 @@
 #include "EventCluster.h"
 #include "Subclone.h"
 
+/**
+ * The minimal fraction a subclone has to have to be considered in the merging process
+ */
 #define MIN_CLONE_FRAC 0.05
 
+/**
+ * Print a SomaticEventPtr_vec that contains CNVs, for debugging propose
+ */
 #define OUTPUT_SEV(sev)															\
 	for(size_t output_sev_i=0; output_sev_i<(sev).size(); output_sev_i++) {		\
 		std::cout<<dynamic_cast<CNV*>((sev)[output_sev_i])->range.chrom<<", ";	\
@@ -342,15 +371,21 @@ SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticE
 	return(childEventDiffSet[0]);
 }
 
-// Traverse the secondary tree, and try to place every node it encounters
-// onto the primary tree, which was given as a constructor parameter
+/**
+ * @brief Traverse the secondary tree, and try to place every node it encounters onto the primary tree, which was given as a constructor parameter.
+ */
 class TreeMergeTraverseSecondary : public TreeTraverseDelegate {
 	protected:
-		Subclone *_proot;
+		Subclone *_proot; /**< The root of the primary tree */
 
 	public:
-		bool isCompatible;
+		bool isCompatible; /**< Whether two trees are compatible or not. */
 
+		/** 
+		 * Constructor of the TreeMergeTraverseSecondary class
+		 *
+		 * @param proot To which primary tree are all the secondary nodes being placed on
+		 */
 		TreeMergeTraverseSecondary(Subclone *proot): TreeTraverseDelegate(), _proot(proot), isCompatible(true) {;}
 
 		void processNode(TreeNode *node) {

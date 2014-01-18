@@ -5,6 +5,29 @@
  * @author Yi Qiao
  */
 
+/*
+The MIT License (MIT)
+
+Copyright (c) 2013 Yi Qiao
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #include <UnitTest++/src/UnitTest++.h>
 #include <algorithm>
 #include <vector>
@@ -28,12 +51,11 @@ using namespace SubcloneExplorer;
 struct _SampleSubclonesFixture {
 
 	Subclone * tumor1;
+	CNV a, b, c, d, e;
+	EventCluster cA, cB, cC, cD, cE;
 
 	_SampleSubclonesFixture() {
-		CNV a, b, c, d, e;
 		a.range.chrom = 1; b.range.chrom = 2; c.range.chrom = 3; d.range.chrom = 4; e.range.chrom = 5;
-
-		EventCluster cA, cB, cC, cD, cE;
 		cA.addEvent(&a); cB.addEvent(&b); cC.addEvent(&c); cD.addEvent(&d), cE.addEvent(&e);
 
 		Subclone *p0, *p1, *p2, *p3;

@@ -8,6 +8,29 @@
  * @author Yi Qiao
  */
 
+/*
+The MIT License (MIT)
+
+Copyright (c) 2013 Yi Qiao
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #include "TreeNode.h"
 #include "Archivable.h"
 #include <vector>
@@ -96,24 +119,67 @@ namespace SubcloneExplorer {
 			void addEventCluster(EventCluster *cluster);
 	};
 
+	/**
+	 * @brief A tree traverser that saves an entire tree structure from a database
+	 *
+	 * The traverser takes one argument at construction, which is the database pointer to which the 
+	 * entire subclone structure will be saved. When performing the actual load, a pre-order traverse
+	 * should be performed on the root node of the tree being archived. The traverser will archive the
+	 * root node, then traverse its children node.
+	 */
 	class SubcloneSaveTreeTraverser : public TreeTraverseDelegate {
 		protected:
-			sqlite3* _database;
+			sqlite3* _database; /**< To which database will the tree be saved */
 
 		public:
+			/**
+			 * Constructor of the SubcloneSaveTreeTraverser class 
+			 *
+			 * @param database To which database will the tree be saved
+			 */
 			SubcloneSaveTreeTraverser(sqlite3 *database): _database(database) {;}
+
 			virtual void processNode(TreeNode *node);
 			virtual void preprocessNode(TreeNode *node);
 	};
 
+	/**
+	 * @brief A tree traverser that loads an entire tree structure from a database
+	 *
+	 * The traverser takes one argument at construction, which is the database pointer from which the 
+	 * entire subclone structure will be loaded. When performing the actual load, a pre-order traverse
+	 * should be performed on a node that is initialized through unarchiving (which would have its id 
+	 * field populated). The traverser will find all the children nodes in the database, unarchive them, 
+	 * add them as children to the node currently being processed, and continue the traverse.
+	 */
 	class SubcloneLoadTreeTraverser : public TreeTraverseDelegate {
 		protected:
-			sqlite3* _database;
+			sqlite3* _database; /**< From which database will be tree be loaded */
 
 		public:
+			/**
+			 * Constructor of the SubcloneLoadTreeTraverser class 
+			 *
+			 * @param database From which database will the tree be load
+			 */
 			SubcloneLoadTreeTraverser(sqlite3 *database): _database(database) {;}
 			virtual void processNode(TreeNode *node);
+
+			/**
+			 * @brief Query the database for a set of nodes that appears to be root
+			 *
+			 * @param database The database to which the query is sent
+			 * @return A vector of IDs representing nodes in the database that appears to be root nodes.
+			 */
 			static std::vector<sqlite3_int64> rootNodes(sqlite3 *database);
+
+			/**
+			 * @brief Query the database for a set of nodes that appears to be the children of a given node ID
+			 *
+			 * @param database The database to which the query is sent
+			 * @param parentId The ID representing a node in the database
+			 * @return a vector of IDs representing nodes in the database that appears to be the direct children of the given parent ID
+			 */
 			static std::vector<sqlite3_int64> nodesOfParentID(sqlite3 *database, sqlite3_int64 parentId);
 	};
 

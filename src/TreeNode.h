@@ -8,7 +8,31 @@
  * @author Yi Qiao
  */
 
+/*
+The MIT License (MIT)
+
+Copyright (c) 2013 Yi Qiao
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #include <vector>
+#include <cstdio>
 
 namespace SubcloneExplorer{
 		
@@ -59,7 +83,7 @@ namespace SubcloneExplorer{
 		/**
 		 * Hook to call before children nodes are recursively processed
 		 *
-		 * @param the node whose children nodes are to be recursively processed
+		 * @param node the node whose children nodes are to be recursively processed
 		 */
 		virtual void preprocessNode(TreeNode * node) {;}
 		
@@ -73,7 +97,7 @@ namespace SubcloneExplorer{
 		/**
 		 * Hook to call after children nodes are recursively processed
 		 *
-		 * @param the node whose children nodes are recursively processed
+		 * @param node the node whose children nodes are recursively processed
 		 */
 		virtual void postprocessNode(TreeNode * node) {;}
 	};
@@ -144,7 +168,7 @@ namespace SubcloneExplorer{
 		 * then process the root. The actual action performed on the nodes are
 		 * defined by the TreeTraverseDelegate object
 		 *
-		 * @prarm root The root node of the (sub)tree the traversing takes place
+		 * @param root The root node of the (sub)tree the traversing takes place
 		 * @param traverseDelegate An TreeTraverseDelegate object which defines the action performed on nodes
 		 */
 		static void PreOrderTraverse(TreeNode * root, TreeTraverseDelegate &traverseDelegate);
@@ -156,7 +180,7 @@ namespace SubcloneExplorer{
 		 * nodes (recursively), The actual action performed on the nodes are
 		 * defined by the TreeTraverseDelegate object
 		 *
-		 * @prarm root The root node of the (sub)tree the traversing takes place
+		 * @param root The root node of the (sub)tree the traversing takes place
 		 * @param traverseDelegate An TreeTraverseDelegate object which defines the action performed on nodes
 		 */
 		static void PostOrderTraverse(TreeNode * root, TreeTraverseDelegate &traverseDelegate);
