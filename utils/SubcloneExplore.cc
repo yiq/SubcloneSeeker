@@ -35,6 +35,8 @@ THE SOFTWARE.
 #include "SubcloneExplore.h"
 #include "SegmentalMutation.h"
 
+#define EPISLON (0.01)
+
 sqlite3 *res_database;
 
 static int _num_solutions;
@@ -227,7 +229,7 @@ void TreeEnumeration(Subclone * root, std::vector<EventCluster> vecClusters, siz
 	symIdx++;
 
 	while(symIdx < vecClusters.size() && 
-			fabs(vecClusters[symIdx].cellFraction() - currentFraction) < 0.01) {
+			fabs(vecClusters[symIdx].cellFraction() - currentFraction) < EPISLON) {
 		newClone->addEventCluster(&vecClusters[symIdx]);
 		symIdx++;
 	}
@@ -250,6 +252,9 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 	public:
 		FracAsnTraverser(std::vector<EventCluster>& vecClusters): _vecClusters(vecClusters) {;}
 		virtual void processNode(TreeNode * node) {
+
+			Subclone *clone = dynamic_cast<Subclone *>(node);
+
 			if(node->isLeaf()) {
 				// direct assign
 				((Subclone *)node)->setFraction(((Subclone *)node)->vecEventCluster()[0]->cellFraction());
@@ -258,12 +263,12 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 			else {
 				// intermediate node. assign it's mutation fraction - subtree_fraction
 				// actually, if it's root, assign 1
-				if(node->isRoot())
-					((Subclone *)node)->setTreeFraction(1);
-				else
-					((Subclone *)node)->setTreeFraction(((Subclone *)node)->vecEventCluster()[0]->cellFraction());
+				if(clone->isRoot()) 
+					clone->setTreeFraction(1);
+				else 
+					clone->setTreeFraction(clone->vecEventCluster()[0]->cellFraction());
 				
-				assert(((Subclone *)node)->treeFraction() >= 0 && ((Subclone *)node)->treeFraction() <= 1);
+				assert(clone->treeFraction() >= -EPISLON && clone->treeFraction() <= 1 + EPISLON);
 							
 				double childrenFraction = 0;
 				for(size_t i=0; i<node->getVecChildren().size(); i++) 
@@ -271,16 +276,16 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 									
 				double nodeFraction = ((Subclone *)node)->treeFraction() - childrenFraction;
 
-				if(nodeFraction < 1e-2 && nodeFraction > -1e-2)
+				if(nodeFraction < EPISLON && nodeFraction > -EPISLON)
 					nodeFraction = 0;
 				
 				// check tree viability
-				if(nodeFraction < -0.01) {
+				if(nodeFraction < -EPISLON) {
 					terminate();
 				}
 				else {
 					((Subclone *)node)->setFraction(nodeFraction);
-					assert(((Subclone *)node)->fraction() >= 0 && ((Subclone *)node)->fraction() <= 1);
+					assert(((Subclone *)node)->fraction() >= -EPISLON && ((Subclone *)node)->fraction() <= 1+EPISLON);
 				}
 			}
 		}
@@ -313,7 +318,7 @@ void TreeAssessment(Subclone * root, std::vector<EventCluster> vecClusters)
 	TreeNode::PostOrderTraverse(root, fracTraverser);
 	
 	// if the tree is viable, output it
-	if(root->fraction() >= -0.01) {
+	if(root->fraction() >= -EPISLON) {
 		TreePrintTraverser printTraverser;
 		std::cerr<<"Viable Tree! Pre-Orer: ";
 		TreeNode::PreOrderTraverse(root, printTraverser);
