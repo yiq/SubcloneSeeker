@@ -85,21 +85,21 @@ namespace SubcloneExplorer{
 		 *
 		 * @param node the node whose children nodes are to be recursively processed
 		 */
-		virtual void preprocessNode(TreeNode * node) {;}
+		virtual void preprocessNode(TreeNode * /* node */) {;}
 		
 		/**
 		 * Process the given node during a tree traverse
 		 *
 		 * @param node the Node which needs to be processed
 		 */
-		virtual void processNode(TreeNode * node) = 0;
+		virtual void processNode(TreeNode * /* node */) = 0;
 
 		/**
 		 * Hook to call after children nodes are recursively processed
 		 *
 		 * @param node the node whose children nodes are recursively processed
 		 */
-		virtual void postprocessNode(TreeNode * node) {;}
+		virtual void postprocessNode(TreeNode * /* node */) {;}
 	};
 
 	/**
