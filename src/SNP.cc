@@ -67,7 +67,7 @@ void SNP::updateObjectFromStatement(sqlite3_stmt *statement) {
 	frequency = sqlite3_column_double(statement, col_pos++);
 	location.chrom = sqlite3_column_int(statement, col_pos++);
 	location.position = sqlite3_column_int64(statement, col_pos++);
-	if(!sqlite3_column_type(statement, col_pos) != SQLITE_NULL) {
+	if(sqlite3_column_type(statement, col_pos) != SQLITE_NULL) {
 		ofClusterID = sqlite3_column_int64(statement, col_pos++);
 	}
 	else {
