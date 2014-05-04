@@ -30,7 +30,7 @@ perform the following from the project's source tree:
 
 If you like to run the test suite, execute the following
 
-	make test
+	make check
 
 These are unit tests to ensure the correctness of the source code. They would
 come in handy if you want to modify the source code
