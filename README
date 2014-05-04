@@ -1,3 +1,8 @@
+SubcloneSeeker
+==============
+
+Computational Framework to reconstructing tumor clone structures
+
 Introduction
 ============
 
@@ -8,8 +13,7 @@ relapse, and metastasis. We developed a software framework, SubcloneSeeker,
 that examines somatic variation events (such as copy number changes, loss of
 heterozygosity, or point mutations) in order to identify the underlying
 subclone structure, i.e. the subclones including the normal (non-cancerous)
-cells and their cellular frequencies within the tumor tissue. This is the c++
-implementation of the algorithm that is outlined in PMID:xxxxxx
+cells and their cellular frequencies within the tumor tissue. 
 
 Directory Structure
 ------------------- 
@@ -53,4 +57,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
