@@ -6,16 +6,9 @@ config.h
 config.h.in~
 config.log
 config.status
-configure
-autom4te.cache
-doc/Doxyfile
-doc/mainpage.md
-doc/html
 doc/latex
 src/Makefile
 src/Makefile.in
-stamp-h1
-test-driver
 test.old
 test/Makefile
 test/Makefile.in
@@ -24,4 +17,3 @@ utils/Makefile
 utils/Makefile.in
 Makefile
 Makefile.in
-aclocal.m4
