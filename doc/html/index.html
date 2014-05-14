@@ -151,9 +151,9 @@ make
 </pre><p>Note that this will take some time to finish, especially in the case 7 or 8 subclones per tumor. Results will be stored in 'result' directory. To plot the results, launch R in the example directory and run the 'plot.r' scriot </p><pre class="fragment">R
 source('plot.r');
 </pre><p>A result set from a run executed on my computer is also provided, if you just want to plot the results. In that case, please use the 'plot_prerun.r' script</p>
-<h3>Example-2: Purity estimation with the thyroid cancer cell-line dataset</h3>
-<p><b>Directory: 02-thyroid</b></p>
-<p>In this example, a thyroid cancer cell line (thus very high purity) was sequenced, and its sequencing reads were combined with those reads from sequencing the paired-normal sample at various ratios. Subclone deconvolution is performed on each of the digitally created samples, and purity estimation is reported. In order to run the example, simple type </p><pre class="fragment">make
+<h3>Example-2: Purity estimation with the snuc cancer cell-line dataset</h3>
+<p><b>Directory: 02-snuc</b></p>
+<p>In this example, a snuc cancer cell line (thus very high purity) was sequenced, and its sequencing reads were combined with those reads from sequencing the paired-normal sample at various ratios. Subclone deconvolution is performed on each of the digitally created samples, and purity estimation is reported. In order to run the example, simple type </p><pre class="fragment">make
 </pre><p>in the example directory, as it will take care of removing old results (if you run it before), creating required directories, running the deconvolution and plotting the result. After the execution, a file 'SamplePurity.pdf' should be created in the same directory, which contains the plotted result.</p>
 <h3>Example-3: Re-analysis of the dataset presented in Ding et, al. 2012</h3>
 <p>execute </p><pre class="fragment">make
@@ -168,7 +168,7 @@ source('plot.r');
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed May 14 2014 15:25:40 for SubcloneSeeker by
+    <li class="footer">Generated on Wed May 14 2014 15:29:44 for SubcloneSeeker by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>
