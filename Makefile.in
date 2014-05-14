@@ -792,9 +792,9 @@ uninstall-am:
 
 @HAVE_DOXYGEN_TRUE@.PHONY: doc
 
-@HAVE_DOXYGEN_TRUE@doc/mainpage.md: README INSTALL doc/mainpage_header.md doc/mainpage_additional.md
+@HAVE_DOXYGEN_TRUE@doc/mainpage.md: README.md INSTALL doc/mainpage_header.md doc/mainpage_additional.md
 @HAVE_DOXYGEN_TRUE@	cat doc/mainpage_header.md > doc/mainpage.md
-@HAVE_DOXYGEN_TRUE@	cat README >> doc/mainpage.md
+@HAVE_DOXYGEN_TRUE@	cat README.md >> doc/mainpage.md
 @HAVE_DOXYGEN_TRUE@	cat INSTALL >> doc/mainpage.md
 @HAVE_DOXYGEN_TRUE@	cat doc/mainpage_additional.md >> doc/mainpage.md
 
