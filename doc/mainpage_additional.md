@@ -14,10 +14,10 @@ satisfied
 Getting the example tarball
 ---------------------------
 
-The example tarball consists of four examples presented in the paper mentioned
-in the Introduction section. It can be downloaded at
+The example tarball consists of four results presented in the paper. The
+tarball is at the root directory of the source tree.
 
-http://www.qiaoy.info/subcloneseeker/examples.tar.gz
+https://github.com/yiq/SubcloneSeeker/blob/master/examples.tar.gz
 
 
 
