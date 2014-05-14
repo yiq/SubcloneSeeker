@@ -50,11 +50,11 @@ results, launch R in the example directory and run the 'plot.r' scriot
 A result set from a run executed on my computer is also provided, if you just
 want to plot the results. In that case, please use the 'plot\_prerun.r' script
 
-###Example-2: Purity estimation with the thyroid cancer cell-line dataset
+###Example-2: Purity estimation with the snuc cancer cell-line dataset
 
-__Directory: 02-thyroid__
+__Directory: 02-snuc__
 
-In this example, a thyroid cancer cell line (thus very high purity) was
+In this example, a snuc cancer cell line (thus very high purity) was
 sequenced, and its sequencing reads were combined with those reads from
 sequencing the paired-normal sample at various ratios. Subclone deconvolution
 is performed on each of the digitally created samples, and purity estimation is
