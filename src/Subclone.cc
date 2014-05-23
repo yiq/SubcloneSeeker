@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "SomaticEvent.h"
 #include "SegmentalMutation.h"
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 void Subclone::addEventCluster(EventCluster *cluster) {
 	bool alreadyExist = false;

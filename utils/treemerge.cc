@@ -46,7 +46,7 @@ THE SOFTWARE.
 #include "TreeNode.h"
 #include "treemerge_p.h"
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 void usage(const char *prog_name) {
 	std::cout<<"Usage: "<<prog_name<<" <tree-set 1 database file> <tree-set 2 database file>"<<std::endl;

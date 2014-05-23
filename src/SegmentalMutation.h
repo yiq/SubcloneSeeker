@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "GenomicRange.h"
 #include "SomaticEvent.h"
 
-namespace SubcloneExplorer {
+namespace SubcloneSeeker {
 
 	/**
 	 * @brief Abstract data structure class that represents any segmental somatic mutation

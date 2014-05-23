@@ -46,7 +46,7 @@ THE SOFTWARE.
 	}																	\
 	std::cout<<std::endl;
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 struct _SampleSubclonesFixture {
 

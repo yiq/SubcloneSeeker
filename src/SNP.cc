@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "SNP.h"
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 std::string SNP::getTableName() {
 	return "Events_SNP";

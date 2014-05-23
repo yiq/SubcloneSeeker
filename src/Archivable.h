@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include <sqlite3/sqlite3.h>
 
 
-namespace SubcloneExplorer{
+namespace SubcloneSeeker {
 
 	/**
 	 * a vector of database object ids, in the type of sqlite3_int64

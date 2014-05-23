@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include <vector>
 #include <cstdio>
 
-namespace SubcloneExplorer{
+namespace SubcloneSeeker{
 		
 	// Forward Declaration so that the TreeTraverseDelegate
 	// class can declare a pointer to it

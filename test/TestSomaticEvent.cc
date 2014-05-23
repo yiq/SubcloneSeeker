@@ -40,7 +40,7 @@ THE SOFTWARE.
 
 SUITE(TestSomaticEvent) {
 	TEST(CNV) {
-		SubcloneExplorer::CNV cnv;
+		SubcloneSeeker::CNV cnv;
 
 		CHECK_CLOSE( cnv.frequency, 0, 1e-3);
 		CHECK(cnv.range.chrom==0);
@@ -57,7 +57,7 @@ SUITE(TestSomaticEvent) {
 		CHECK(cnv.range.position==1000000L);
 		CHECK(cnv.range.length==1000L);
 
-		SubcloneExplorer::CNV *cnv2 = new SubcloneExplorer::CNV();
+		SubcloneSeeker::CNV *cnv2 = new SubcloneSeeker::CNV();
 		cnv2->frequency = 0.4;
 		cnv2->range.chrom=1;
 		cnv2->range.position = 1000123L;
@@ -65,7 +65,7 @@ SUITE(TestSomaticEvent) {
 
 		CHECK(cnv.isEqualTo(cnv2));
 
-		SubcloneExplorer::LOH *loh = new SubcloneExplorer::LOH();
+		SubcloneSeeker::LOH *loh = new SubcloneSeeker::LOH();
 		loh->frequency = 0.4;
 		loh->range.chrom=1;
 		loh->range.position = 1000123L;
@@ -77,7 +77,7 @@ SUITE(TestSomaticEvent) {
 	}
 
 	TEST_FIXTURE(DBFixture, CNVToDB) {
-		SubcloneExplorer::CNV cnv;
+		SubcloneSeeker::CNV cnv;
 
 		cnv.frequency=0.2;
 		cnv.range.chrom=1;
@@ -96,7 +96,7 @@ SUITE(TestSomaticEvent) {
 		CHECK(id != 0);
 
 		// read
-		SubcloneExplorer::CNV cnv2;
+		SubcloneSeeker::CNV cnv2;
 		bool status = cnv2.unarchiveObjectFromDB(database, id);
 
 		CHECK(status);
@@ -107,7 +107,7 @@ SUITE(TestSomaticEvent) {
 	}
 
 	TEST(LOH) {
-		SubcloneExplorer::LOH loh;
+		SubcloneSeeker::LOH loh;
 		CHECK_CLOSE( loh.frequency, 0, 1e-3);
 		CHECK(loh.range.chrom==0);
 		CHECK(loh.range.position==0);
@@ -125,7 +125,7 @@ SUITE(TestSomaticEvent) {
 	}
 
 	TEST_FIXTURE(DBFixture, LOHToDB) {
-		SubcloneExplorer::LOH loh;
+		SubcloneSeeker::LOH loh;
 
 		loh.frequency=0.2;
 		loh.range.chrom=1;
@@ -144,7 +144,7 @@ SUITE(TestSomaticEvent) {
 		CHECK(id != 0);
 
 		// read
-		SubcloneExplorer::LOH loh2;
+		SubcloneSeeker::LOH loh2;
 		bool status = loh2.unarchiveObjectFromDB(database, id);
 
 		CHECK(status);
@@ -155,7 +155,7 @@ SUITE(TestSomaticEvent) {
 	}
 
 	TEST(SNP) {
-		SubcloneExplorer::SNP snp;
+		SubcloneSeeker::SNP snp;
 
 		CHECK_CLOSE(snp.frequency, 0, 1e-3);
 		CHECK(snp.location.chrom==0);
@@ -174,7 +174,7 @@ SUITE(TestSomaticEvent) {
 	}
 
 	TEST_FIXTURE(DBFixture, SNPToDB) {
-		SubcloneExplorer::SNP snp;
+		SubcloneSeeker::SNP snp;
 
 		snp.frequency=0.2;
 		snp.location.chrom=1;
@@ -191,7 +191,7 @@ SUITE(TestSomaticEvent) {
 		CHECK(id != 0);
 
 		// read
-		SubcloneExplorer::SNP snp2;
+		SubcloneSeeker::SNP snp2;
 		bool status = snp2.unarchiveObjectFromDB(database, id);
 
 		CHECK(status);

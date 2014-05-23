@@ -10,7 +10,7 @@
 #include "SegmentalMutation.h"
 #include <cmath>
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 void EventCluster::addEvent(SomaticEvent *event, bool updateFraction) {
 	// check if the event already is a member

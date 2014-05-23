@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 #include "GenomicLocation.h"
 
-namespace SubcloneExplorer {
+namespace SubcloneSeeker {
 
 	/**
 	 * @brief A segment on a reference genome

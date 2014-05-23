@@ -44,7 +44,7 @@ THE SOFTWARE.
  */
 #define BOUNDRY_RESOLUTION 20000000L
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 /**
  * Generate a list of events from a given subclone node. 

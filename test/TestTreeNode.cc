@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 #include "common.h"
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 SUITE(testTreeNode) {
 	TEST(ObjectCreation) {

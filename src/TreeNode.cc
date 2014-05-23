@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include <vector>
 #include <algorithm>
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 void TreeNode::addChild(TreeNode *child)
 {

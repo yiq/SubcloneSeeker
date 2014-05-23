@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "GenomicRange.h"
 
 #include "common.h"
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 SUITE(testGenomicRange) {
 	TEST(ObjectCreation) {

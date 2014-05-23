@@ -38,7 +38,7 @@ THE SOFTWARE.
 #include <cstdlib>
 #include <cstring>
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 // Traverser borrowed from SubcloneExplore.cc
 /**

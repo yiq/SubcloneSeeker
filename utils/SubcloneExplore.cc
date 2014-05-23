@@ -32,7 +32,6 @@ THE SOFTWARE.
 
 #include "EventCluster.h"
 #include "Subclone.h"
-#include "SubcloneExplore.h"
 #include "SegmentalMutation.h"
 
 #define EPISLON (0.01)
@@ -42,7 +41,7 @@ sqlite3 *res_database;
 static int _num_solutions;
 static std::vector<int> _tree_depth;
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 int treeDepth(TreeNode *root) {
 	if(root->isLeaf())

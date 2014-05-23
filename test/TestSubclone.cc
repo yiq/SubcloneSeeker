@@ -40,14 +40,14 @@ THE SOFTWARE.
 
 SUITE(TestSubclone) {
 	TEST(ObjectCreation) {
-		SubcloneExplorer::Subclone subclone;
+		SubcloneSeeker::Subclone subclone;
 
 		// default vault check
 		CHECK_CLOSE(subclone.fraction(), 0, 1e-3);
 		CHECK_CLOSE(subclone.treeFraction(), 0, 1e-3);
 		CHECK(subclone.vecEventCluster().size() == 0);
 
-		SubcloneExplorer::EventCluster cluster;
+		SubcloneSeeker::EventCluster cluster;
 
 		subclone.addEventCluster(&cluster);
 
@@ -56,7 +56,7 @@ SUITE(TestSubclone) {
 	}
 
 	TEST_FIXTURE(DBFixture, SubcloneToDB) {
-		SubcloneExplorer::Subclone root, child1, child2, child11;
+		SubcloneSeeker::Subclone root, child1, child2, child11;
 
 		root.setFraction(0.7);
 		child1.setFraction(0.5);
@@ -68,21 +68,21 @@ SUITE(TestSubclone) {
 		child1.addChild(&child11);
 
 		// write
-		SubcloneExplorer::SubcloneSaveTreeTraverser stt(database);
-		SubcloneExplorer::TreeNode::PreOrderTraverse(&root, stt);
+		SubcloneSeeker::SubcloneSaveTreeTraverser stt(database);
+		SubcloneSeeker::TreeNode::PreOrderTraverse(&root, stt);
 
 		// read
-		SubcloneExplorer::EventCluster cluster2;
+		SubcloneSeeker::EventCluster cluster2;
 
-		std::vector<sqlite3_int64> rootNodes = SubcloneExplorer::SubcloneLoadTreeTraverser::rootNodes(database);
+		std::vector<sqlite3_int64> rootNodes = SubcloneSeeker::SubcloneLoadTreeTraverser::rootNodes(database);
 		
 		CHECK(rootNodes.size() == 1);
 
-		SubcloneExplorer::Subclone *newRoot = new SubcloneExplorer::Subclone();
+		SubcloneSeeker::Subclone *newRoot = new SubcloneSeeker::Subclone();
 		newRoot->unarchiveObjectFromDB(database, rootNodes[0]);
 
-		SubcloneExplorer::SubcloneLoadTreeTraverser ltt(database);
-		SubcloneExplorer::TreeNode::PreOrderTraverse(newRoot, ltt);
+		SubcloneSeeker::SubcloneLoadTreeTraverser ltt(database);
+		SubcloneSeeker::TreeNode::PreOrderTraverse(newRoot, ltt);
 
 
 		CHECK_CLOSE(newRoot->fraction(), 0.7, 1e-3);
@@ -90,12 +90,12 @@ SUITE(TestSubclone) {
 		CHECK(newRoot->isRoot());
 		CHECK(!newRoot->isLeaf());
 
-		SubcloneExplorer::Subclone *newChild1 = dynamic_cast<SubcloneExplorer::Subclone *>( newRoot->getVecChildren()[0] );
-		SubcloneExplorer::Subclone *newChild2 = dynamic_cast<SubcloneExplorer::Subclone *>( newRoot->getVecChildren()[1] );
+		SubcloneSeeker::Subclone *newChild1 = dynamic_cast<SubcloneSeeker::Subclone *>( newRoot->getVecChildren()[0] );
+		SubcloneSeeker::Subclone *newChild2 = dynamic_cast<SubcloneSeeker::Subclone *>( newRoot->getVecChildren()[1] );
 
 		CHECK(newChild1->fraction() > 0.1 && newChild1->fraction() < 0.6);
 		if(newChild1->fraction() < 0.3) {
-			SubcloneExplorer::Subclone *tmp;
+			SubcloneSeeker::Subclone *tmp;
 			tmp = newChild1;
 			newChild1 = newChild2;
 			newChild2 = tmp;
@@ -107,7 +107,7 @@ SUITE(TestSubclone) {
 		CHECK(newChild1->getVecChildren().size() == 1);
 		CHECK(newChild2->isLeaf());
 
-		SubcloneExplorer::Subclone *newChild11 = dynamic_cast<SubcloneExplorer::Subclone *>(newChild1->getVecChildren()[0]);
+		SubcloneSeeker::Subclone *newChild11 = dynamic_cast<SubcloneSeeker::Subclone *>(newChild1->getVecChildren()[0]);
 
 		CHECK_CLOSE(newChild11->fraction(), 0.1, 1e-3);
 		CHECK(newChild11->isLeaf());

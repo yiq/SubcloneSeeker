@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "Archivable.h"
 #include <vector>
 
-namespace SubcloneExplorer {
+namespace SubcloneSeeker {
 
 	// Forward declaration of SomaticEvent so that pointers can be made
 	class SomaticEvent;

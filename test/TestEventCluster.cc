@@ -40,13 +40,13 @@ THE SOFTWARE.
 SUITE(testEventCluster) 
 {
 	TEST(ObjectCreation) {
-		SubcloneExplorer::EventCluster cluster;
+		SubcloneSeeker::EventCluster cluster;
 
 		// default vault check
 		CHECK_CLOSE(cluster.cellFraction(), 0, 1e-3);
 		CHECK(cluster.members().size() == 0);
 
-		SubcloneExplorer::CNV cnv;
+		SubcloneSeeker::CNV cnv;
 
 		cnv.frequency=0.2;
 		cnv.range.chrom=1;
@@ -59,7 +59,7 @@ SUITE(testEventCluster)
 		CHECK(cluster.members().size() == 1);
 
 
-		SubcloneExplorer::CNV cnv2;
+		SubcloneSeeker::CNV cnv2;
 
 		cnv2.frequency=0.3;
 		cnv2.range.chrom=1;
@@ -73,8 +73,8 @@ SUITE(testEventCluster)
 	}
 
 	TEST(EventClusterComparator) {
-		SubcloneExplorer::EventCluster cluster1, cluster2;
-		SubcloneExplorer::CNV cnv1, cnv2;
+		SubcloneSeeker::EventCluster cluster1, cluster2;
+		SubcloneSeeker::CNV cnv1, cnv2;
 
 		cnv1.frequency = 0.2;
 		cnv1.range.length = 1000L;
@@ -89,8 +89,8 @@ SUITE(testEventCluster)
 	}
 
 	TEST(EventClusterToDB) {
-		SubcloneExplorer::EventCluster cluster;
-		SubcloneExplorer::CNV cnv;
+		SubcloneSeeker::EventCluster cluster;
+		SubcloneSeeker::CNV cnv;
 
 		cnv.frequency=0.2;
 		cnv.range.chrom=1;
@@ -112,7 +112,7 @@ SUITE(testEventCluster)
 		database = 0;
 
 		// read
-		SubcloneExplorer::EventCluster cluster2;
+		SubcloneSeeker::EventCluster cluster2;
 		sqlite3_open("test.sqlite", &database);
 
 		bool status = cluster2.unarchiveObjectFromDB(database, id);

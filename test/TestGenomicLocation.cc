@@ -35,7 +35,7 @@ SUITE(testGenomicLocation)
 {
 	TEST(ObjectCreation) 
 	{
-		SubcloneExplorer::GenomicLocation loc;
+		SubcloneSeeker::GenomicLocation loc;
 		CHECK( true /* object creation should always pass */);
 	}
 }

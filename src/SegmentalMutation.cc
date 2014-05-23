@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "SegmentalMutation.h"
 #include <iostream>
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 std::string SegmentalMutation::createObjectStatementStr() {
 	return "INSERT INTO " + getTableName() + " (frequency, chrom, start, length, ofClusterID) VALUES (?,?,?,?,?);";

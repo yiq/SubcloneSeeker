@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include <string>
 #include <vector>
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 bool Archivable::createTableInDB(sqlite3 *database) {
 	sqlite3_stmt *stmt;

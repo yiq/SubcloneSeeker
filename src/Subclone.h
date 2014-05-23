@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "Archivable.h"
 #include <vector>
 
-namespace SubcloneExplorer {
+namespace SubcloneSeeker {
 
 	// forward declaration of EventCluster, so that pointers can be made
 	class EventCluster;

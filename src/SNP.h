@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "GenomicLocation.h"
 #include "SomaticEvent.h"
 
-namespace SubcloneExplorer {
+namespace SubcloneSeeker {
 
 	/**
 	 * @brief Single Nucleotide Polymorphism

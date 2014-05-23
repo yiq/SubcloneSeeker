@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "Archivable.h"
 #include <vector>
 
-namespace SubcloneExplorer {
+namespace SubcloneSeeker {
 
 	/**
 	 * @brief Abstract data structure class that represents any type of somatic mutation

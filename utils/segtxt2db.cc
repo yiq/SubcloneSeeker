@@ -55,7 +55,7 @@ static char *_prog_name;
 static char *_mask_fn;
 static unsigned long _min_length;
 
-using namespace SubcloneExplorer;
+using namespace SubcloneSeeker;
 
 void SegmentalMeanCorrection(std::vector<EventCluster *>& clusters);
 void SegmentalMean2Frequency(std::vector<EventCluster *>& clusters);
