@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['length',['length',['../class_subclone_explorer_1_1_genomic_range.html#a2d79990de739173b7c87aabc3886c24c',1,'SubcloneExplorer::GenomicRange']]],
-  ['location',['location',['../class_subclone_explorer_1_1_s_n_p.html#aacf3436a54ca0b4fe8b1843962a96204',1,'SubcloneExplorer::SNP']]]
+  ['length',['length',['../class_subclone_seeker_1_1_genomic_range.html#a667113ce76e665a988707cb3c0af0a96',1,'SubcloneSeeker::GenomicRange']]],
+  ['location',['location',['../class_subclone_seeker_1_1_s_n_p.html#a75f6f776c0a95ccb97011566e8fe2660',1,'SubcloneSeeker::SNP']]]
 ];

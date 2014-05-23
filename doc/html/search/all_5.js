@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['fraction',['fraction',['../class_subclone_explorer_1_1_subclone.html#ade2f888fe51eac039f7cc0de2930dc97',1,'SubcloneExplorer::Subclone']]],
-  ['frequency',['frequency',['../class_subclone_explorer_1_1_somatic_event.html#a42f108dc0bc7bc0119bb6e0da2af32f3',1,'SubcloneExplorer::SomaticEvent']]]
+  ['fraction',['fraction',['../class_subclone_seeker_1_1_subclone.html#ad250d3e7338d579a98e9b0a1cb66d1ea',1,'SubcloneSeeker::Subclone']]],
+  ['frequency',['frequency',['../class_subclone_seeker_1_1_somatic_event.html#aef56c53d7eb294a6063b4a5043a0ed87',1,'SubcloneSeeker::SomaticEvent']]]
 ];

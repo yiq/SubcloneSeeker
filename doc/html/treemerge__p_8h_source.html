@@ -138,9 +138,9 @@ $(document).ready(function(){initNavTree('treemerge__p_8h_source.html','');});
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="treemerge__p_8h.html#a63777350dacef4ba0869630657870963">   45</a></span>&#160;<span class="preprocessor">#define BOUNDRY_RESOLUTION 20000000L</span></div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">using namespace </span>SubcloneExplorer;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">using namespace </span>SubcloneSeeker;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;SomaticEventPtr_vec <a class="code" href="treemerge__p_8h.html#a7fd00f1249526144d7d3afb0cb6b5bb1">nodeEventsList</a>(<a class="code" href="class_subclone_explorer_1_1_subclone.html">Subclone</a> * node);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;SomaticEventPtr_vec <a class="code" href="treemerge__p_8h.html#a7fd00f1249526144d7d3afb0cb6b5bb1">nodeEventsList</a>(<a class="code" href="class_subclone_seeker_1_1_subclone.html">Subclone</a> * node);</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;SomaticEventPtr_vec <a class="code" href="treemerge__p_8h.html#a079749a809b7e71b2ae3d75a134f5eee">SomaticEventDifference</a>(</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keyword">const</span> SomaticEventPtr_vec&amp; master, </div>
@@ -153,21 +153,21 @@ $(document).ready(function(){initNavTree('treemerge__p_8h_source.html','');});
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="treemerge__p_8h.html#a545793e62441d9f1bff284749b7069df">resultSetComparator</a>(<span class="keyword">const</span> SomaticEventPtr_vec&amp; v1, <span class="keyword">const</span> SomaticEventPtr_vec &amp;v2);</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;SomaticEventPtr_vec <a class="code" href="treemerge__p_8h.html#a65b4cce7423497687bb0d27f026d1a53">checkPlacement</a>(</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        <a class="code" href="class_subclone_explorer_1_1_subclone.html">Subclone</a> *pnode, </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        <a class="code" href="class_subclone_seeker_1_1_subclone.html">Subclone</a> *pnode, </div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        SomaticEventPtr_vec somaticEvents, </div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="keywordtype">bool</span> * placeableOnSubtree,</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        <span class="keywordtype">int</span> * cp = NULL);</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="treemerge__p_8h.html#a85bc0ada4190a2a82a56527fc31aa98e">TreeMerge</a>(<a class="code" href="class_subclone_explorer_1_1_subclone.html">Subclone</a> *p, <a class="code" href="class_subclone_explorer_1_1_subclone.html">Subclone</a> *q);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="treemerge__p_8h.html#a85bc0ada4190a2a82a56527fc31aa98e">TreeMerge</a>(<a class="code" href="class_subclone_seeker_1_1_subclone.html">Subclone</a> *p, <a class="code" href="class_subclone_seeker_1_1_subclone.html">Subclone</a> *q);</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="treemerge__p_8h_html_a079749a809b7e71b2ae3d75a134f5eee"><div class="ttname"><a href="treemerge__p_8h.html#a079749a809b7e71b2ae3d75a134f5eee">SomaticEventDifference</a></div><div class="ttdeci">SomaticEventPtr_vec SomaticEventDifference(const SomaticEventPtr_vec &amp;master, const SomaticEventPtr_vec &amp;unwanted)</div><div class="ttdef"><b>Definition:</b> treemerge_p.cc:73</div></div>
 <div class="ttc" id="treemerge__p_8h_html_a36790025b1a9580a7089bbabf0b5b0f2"><div class="ttname"><a href="treemerge__p_8h.html#a36790025b1a9580a7089bbabf0b5b0f2">eventSetContains</a></div><div class="ttdeci">bool eventSetContains(const SomaticEventPtr_vec &amp;v_container, const SomaticEventPtr_vec &amp;v_containee)</div><div class="ttdef"><b>Definition:</b> treemerge_p.cc:93</div></div>
 <div class="ttc" id="_subclone_8h_html"><div class="ttname"><a href="_subclone_8h.html">Subclone.h</a></div></div>
 <div class="ttc" id="treemerge__p_8h_html_a545793e62441d9f1bff284749b7069df"><div class="ttname"><a href="treemerge__p_8h.html#a545793e62441d9f1bff284749b7069df">resultSetComparator</a></div><div class="ttdeci">bool resultSetComparator(const SomaticEventPtr_vec &amp;v1, const SomaticEventPtr_vec &amp;v2)</div><div class="ttdef"><b>Definition:</b> treemerge_p.cc:121</div></div>
+<div class="ttc" id="class_subclone_seeker_1_1_subclone_html"><div class="ttname"><a href="class_subclone_seeker_1_1_subclone.html">SubcloneSeeker::Subclone</a></div><div class="ttdoc">The class that represents a subclone in a subclonal structure tree. </div><div class="ttdef"><b>Definition:</b> Subclone.h:52</div></div>
 <div class="ttc" id="treemerge__p_8h_html_a7fd00f1249526144d7d3afb0cb6b5bb1"><div class="ttname"><a href="treemerge__p_8h.html#a7fd00f1249526144d7d3afb0cb6b5bb1">nodeEventsList</a></div><div class="ttdeci">SomaticEventPtr_vec nodeEventsList(Subclone *node)</div><div class="ttdef"><b>Definition:</b> treemerge_p.cc:60</div></div>
 <div class="ttc" id="_somatic_event_8h_html"><div class="ttname"><a href="_somatic_event_8h.html">SomaticEvent.h</a></div></div>
 <div class="ttc" id="treemerge__p_8h_html_a65b4cce7423497687bb0d27f026d1a53"><div class="ttname"><a href="treemerge__p_8h.html#a65b4cce7423497687bb0d27f026d1a53">checkPlacement</a></div><div class="ttdeci">SomaticEventPtr_vec checkPlacement(Subclone *pnode, SomaticEventPtr_vec somaticEvents, bool *placeableOnSubtree, int *cp=NULL)</div><div class="ttdef"><b>Definition:</b> treemerge_p.cc:126</div></div>
-<div class="ttc" id="class_subclone_explorer_1_1_subclone_html"><div class="ttname"><a href="class_subclone_explorer_1_1_subclone.html">SubcloneExplorer::Subclone</a></div><div class="ttdoc">The class that represents a subclone in a subclonal structure tree. </div><div class="ttdef"><b>Definition:</b> Subclone.h:52</div></div>
 <div class="ttc" id="treemerge__p_8h_html_a85bc0ada4190a2a82a56527fc31aa98e"><div class="ttname"><a href="treemerge__p_8h.html#a85bc0ada4190a2a82a56527fc31aa98e">TreeMerge</a></div><div class="ttdeci">bool TreeMerge(Subclone *p, Subclone *q)</div><div class="ttdef"><b>Definition:</b> treemerge_p.cc:416</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
@@ -175,7 +175,7 @@ $(document).ready(function(){initNavTree('treemerge__p_8h_source.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_cbdb8362360e11eafe2fa3bc74cf0ffd.html">utils</a></li><li class="navelem"><a class="el" href="treemerge__p_8h.html">treemerge_p.h</a></li>
-    <li class="footer">Generated on Wed May 14 2014 15:29:40 for SubcloneSeeker by
+    <li class="footer">Generated on Fri May 23 2014 11:29:23 for SubcloneSeeker by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

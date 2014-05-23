@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['frequency',['frequency',['../class_subclone_explorer_1_1_somatic_event.html#a42f108dc0bc7bc0119bb6e0da2af32f3',1,'SubcloneExplorer::SomaticEvent']]]
+  ['frequency',['frequency',['../class_subclone_seeker_1_1_somatic_event.html#aef56c53d7eb294a6063b4a5043a0ed87',1,'SubcloneSeeker::SomaticEvent']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['range',['range',['../class_subclone_explorer_1_1_segmental_mutation.html#a126dc16608ec7cc57f5f890ec498a7dc',1,'SubcloneExplorer::SegmentalMutation']]]
+  ['range',['range',['../class_subclone_seeker_1_1_segmental_mutation.html#a03db5155dd9091e8a142877df83cd7ce',1,'SubcloneSeeker::SegmentalMutation']]]
 ];
