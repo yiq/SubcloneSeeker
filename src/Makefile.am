@@ -19,7 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-AM_CPPFLAGS = -I$(srcdir)/../contrib
+AM_CPPFLAGS = -I$(srcdir)/../vendor
 
 lib_LIBRARIES = libss.a
 libss_a_SOURCES = Archivable.cc \
@@ -30,4 +30,4 @@ libss_a_SOURCES = Archivable.cc \
 				  EventCluster.cc \
 				  TreeNode.cc \
 				  Subclone.cc \
-				  $(srcdir)/../contrib/sqlite3/sqlite3.c
+				  $(srcdir)/../vendor/sqlite3/sqlite3.c

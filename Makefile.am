@@ -20,9 +20,8 @@
 # THE SOFTWARE.
 
 
-
-SUBDIRS = contrib src test utils
-EXTRA_DIST = contrib \
+SUBDIRS = vendor src test utils
+EXTRA_DIST = vendor \
 			 src/*.h \
 			 src/*.cc \
 			 test/*.h \

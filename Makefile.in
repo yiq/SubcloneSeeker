@@ -304,8 +304,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = contrib src test utils
-EXTRA_DIST = contrib \
+SUBDIRS = vendor src test utils
+EXTRA_DIST = vendor \
 			 src/*.h \
 			 src/*.cc \
 			 test/*.h \

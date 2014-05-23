@@ -20,8 +20,8 @@
 # THE SOFTWARE.
 
 
-AM_CPPFLAGS = -I$(srcdir)/../contrib -I$(srcdir)/../src
-AM_LDFLAGS = -L$(srcdir)/../src -L$(srcdir)/../contrib/UnitTest++
+AM_CPPFLAGS = -I$(srcdir)/../vendor -I$(srcdir)/../src
+AM_LDFLAGS = -L$(srcdir)/../src -L$(srcdir)/../vendor/UnitTest++
 LDADD = -lss -lUnitTest++
 
 check_PROGRAMS = TestGenomicLocation \

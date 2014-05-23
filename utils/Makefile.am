@@ -20,7 +20,7 @@
 # THE SOFTWARE.
 
 
-AM_CPPFLAGS = -I$(srcdir)/../src -I$(srcdir)/../contrib
+AM_CPPFLAGS = -I$(srcdir)/../src -I$(srcdir)/../vendor
 AM_LDFLAGS = -L$(srcdir)/../src
 LDADD = -lss
 
@@ -29,13 +29,13 @@ check_PROGRAMS = treemerge_test
 
 TESTS = $(check_PROGRAMS)
 
-ssmain_SOURCES = SubcloneExplore.cc 
+ssmain_SOURCES = SubcloneSeeker.cc 
 
 treeprint_SOURCES = treeprint.cc
 
 treemerge_SOURCES = treemerge.cc treemerge_p.cc
 
 treemerge_test_SOURCES = treemerge_test.cc treemerge_p.cc
-treemerge_test_LDADD = $(LDADD) -L$(srcdir)/../contrib/UnitTest++ -lUnitTest++
+treemerge_test_LDADD = $(LDADD) -L$(srcdir)/../vendor/UnitTest++ -lUnitTest++
 
 segtxt2db_SOURCES = segtxt2db.cc

@@ -117,7 +117,7 @@ am_segtxt2db_OBJECTS = segtxt2db.$(OBJEXT)
 segtxt2db_OBJECTS = $(am_segtxt2db_OBJECTS)
 segtxt2db_LDADD = $(LDADD)
 segtxt2db_DEPENDENCIES =
-am_ssmain_OBJECTS = SubcloneExplore.$(OBJEXT)
+am_ssmain_OBJECTS = SubcloneSeeker.$(OBJEXT)
 ssmain_OBJECTS = $(am_ssmain_OBJECTS)
 ssmain_LDADD = $(LDADD)
 ssmain_DEPENDENCIES =
@@ -490,15 +490,15 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -I$(srcdir)/../src -I$(srcdir)/../contrib
+AM_CPPFLAGS = -I$(srcdir)/../src -I$(srcdir)/../vendor
 AM_LDFLAGS = -L$(srcdir)/../src
 LDADD = -lss
 TESTS = $(check_PROGRAMS)
-ssmain_SOURCES = SubcloneExplore.cc 
+ssmain_SOURCES = SubcloneSeeker.cc 
 treeprint_SOURCES = treeprint.cc
 treemerge_SOURCES = treemerge.cc treemerge_p.cc
 treemerge_test_SOURCES = treemerge_test.cc treemerge_p.cc
-treemerge_test_LDADD = $(LDADD) -L$(srcdir)/../contrib/UnitTest++ -lUnitTest++
+treemerge_test_LDADD = $(LDADD) -L$(srcdir)/../vendor/UnitTest++ -lUnitTest++
 segtxt2db_SOURCES = segtxt2db.cc
 all: all-am
 
@@ -606,7 +606,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SubcloneExplore.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SubcloneSeeker.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/segtxt2db.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/treemerge.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/treemerge_p.Po@am__quote@

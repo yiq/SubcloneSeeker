@@ -61,7 +61,7 @@ AC_TYPE_SIZE_T
 AC_CHECK_FUNCS([pow strdup fabs])
 
 AC_CONFIG_FILES([Makefile 
-				 contrib/Makefile
+				 vendor/Makefile
 				 src/Makefile 
 				 utils/Makefile 
 				 test/Makefile])
