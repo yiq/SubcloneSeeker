@@ -9,6 +9,7 @@ utils: libss
 doc: DOXYGEN-exists doc/mainpage.md
 
 DOXYGEN-exists: ; @which doxygen > /dev/null
+	$(error doxygen is not found in your PATH, cannot compile documentation)
 
 doc/mainpage.md: README.md
 	cp $< $@
