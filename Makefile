@@ -1,7 +1,3 @@
-subdirs = vendor \
-		  src \
-		  utils
-
 all: libss utils
 
 libss:
@@ -9,6 +5,13 @@ libss:
 
 utils: libss
 	make -C utils
+
+doc: DOXYGEN-exists doc/mainpage.md
+
+DOXYGEN-exists: ; @which doxygen > /dev/null
+
+doc/mainpage.md: README.md
+	cp $< $@
 
 check: libss utils
 	make -C vendor/UnitTest++
