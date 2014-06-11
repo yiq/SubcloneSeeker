@@ -7,9 +7,9 @@ utils: libss
 	make -C utils
 
 doc: DOXYGEN-exists doc/mainpage.md
+	doxygen doc/Doxyfile
 
-DOXYGEN-exists: ; @which doxygen > /dev/null
-	$(error doxygen is not found in your PATH, cannot compile documentation)
+DOXYGEN-exists: ; @which doxygen > /dev/null 2>&1
 
 doc/mainpage.md: README.md
 	cp $< $@
@@ -25,4 +25,4 @@ clean:
 	make -C utils clean
 	make -C test clean
 
-.PHONY: all libss utils check clean
+.PHONY: all libss utils check clean doc
