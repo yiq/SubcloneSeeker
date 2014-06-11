@@ -1,0 +1,24 @@
+subdirs = vendor \
+		  src \
+		  utils
+
+all: libss utils
+
+libss:
+	make -C src
+
+utils: libss
+	make -C utils
+
+check: libss utils
+	make -C vendor/UnitTest++
+	make -C test check
+	make -C utils check
+
+clean:
+	make -C vendor/UnitTest++ clean
+	make -C src clean
+	make -C utils clean
+	make -C test clean
+
+.PHONY: all libss utils check clean

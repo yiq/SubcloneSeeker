@@ -68,7 +68,7 @@ define make-depend
 endef
 
 
-all: $(test)
+all: $(lib)
 
 
 $(lib): $(objects) 

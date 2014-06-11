@@ -1,15 +1,2 @@
 .DS_Store
-.deps
 *.o
-*.d
-config.h
-config.h.in~
-config.log
-config.status
-doc/latex
-src/Makefile
-test.old
-test/Makefile
-test/data
-utils/Makefile
-Makefile
