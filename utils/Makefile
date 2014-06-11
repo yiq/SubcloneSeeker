@@ -10,7 +10,7 @@ CFLAGS=-I../vendor -I../src
 CXXFLAGS=$(CFLAGS)
 TEST_FLAGS=-I../vendor/UnitTest++
 LDFLAGS=-L../src
-LDADDS=../src/libss.a
+LDADDS=../src/libss.a -lpthread -ldl
 LDADDS_TEST=../vendor/UnitTest++/libUnitTest++.a
 
 SSMAIN=ssmain
