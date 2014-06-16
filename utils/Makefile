@@ -26,6 +26,10 @@ TREEMERGE_OBJS=treemerge.o \
 TREEPRINT=treeprint
 TREEPRINT_OBJS=treeprint.o
 
+COEXIST_MATRIX=coexist_matrix
+COEXIST_MATRIX_OBJS=coexist_matrix.o \
+					CoexistanceTable.o
+
 TEST_TREEMERGE = treemerge.test
 TEST_TREEMERGE_OBJS = treemerge_test.o \
 					  treemerge_p.o
@@ -33,12 +37,14 @@ TEST_TREEMERGE_OBJS = treemerge_test.o \
 TARGETS=$(SSMAIN) \
 		$(SEGTXT2DB) \
 		$(TREEMERGE) \
-		$(TREEPRINT)
+		$(TREEPRINT) \
+		$(COEXIST_MATRIX)
 
 OBJECTS=$(SSMAIN_OBJS) \
 		$(SEGTXT2DB_OBJS) \
 		$(TREEMERGE_OBJS) \
-		$(TREEPRINT_OBJS)
+		$(TREEPRINT_OBJS) \
+		$(COEXIST_MATRIX_OBJS)
 
 TEST_OBJECTS=$(TEST_TREEMERGE_OBJS)
 
@@ -50,7 +56,9 @@ SOURCES=SubcloneSeeker.cc \
 		segtxt2db.cc \
 		treemerge.cc \
 		treemerge_p.cc \
-		treeprint.cc
+		treeprint.cc \
+		CoexistanceTable.cpp \
+		coexist_matrix.cpp
 
 .cc.o:
 	$(CXX) $(CFLAGS) -c -o $@ $<
@@ -69,6 +77,10 @@ $(TREEMERGE): $(TREEMERGE_OBJS)
 
 $(TREEPRINT): $(TREEPRINT_OBJS)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDADDS)
+
+$(COEXIST_MATRIX): $(COEXIST_MATRIX_OBJS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDADDS)
+
 
 $(TEST_TREEMERGE): $(TEST_TREEMERGE_OBJS)
 	$(CXX) $(CXXFLAGS) $(TEST_FLAGS) $(LDFLAGS) -o $@ $^ $(LDADDS) $(LDADDS_TEST)
