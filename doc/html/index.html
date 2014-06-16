@@ -100,7 +100,8 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="title">SubcloneSeeker Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Computational Framework to reconstructing tumor clone structures</p>
+<div class="textblock"><h1>SubcloneSeeker </h1>
+<p>Computational Framework to reconstructing tumor clone structures</p>
 <h1>Introduction </h1>
 <p>Clonal heterogeneity is a defining feature of many tumor types, and the elucidation of the subclones that exist within the tumor sample, together with the corresponding cellular fractions, is essential to understand tumorigenesis, relapse, and metastasis. We developed a software framework, SubcloneSeeker, that examines somatic variation events (such as copy number changes, loss of heterozygosity, or point mutations) in order to identify the underlying subclone structure, i.e. the subclones including the normal (non-cancerous) cells and their cellular frequencies within the tumor tissue.</p>
 <h2>Getting Started </h2>
@@ -118,13 +119,36 @@ $(document).ready(function(){initNavTree('index.html','');});
 <p>Copyright (c) 2013 Yi Qiao</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
 <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. </p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. </p><h1>Running the examples </h1>
+<p>There are four examples prepared for you in a easy-to-run fashion. Each of the example represents a figure in the article. In order reproduce the figures, make sure you have R installed, and the binary can be found through PATH lookup. If you run the following command </p><pre class="fragment">which R
+</pre><p>And see an absolute path, such as '/usr/bin/R', then the requirement is satisfied</p>
+<h2>Getting the example tarball </h2>
+<p>The example tarball consists of four results presented in the paper. The tarball is at the root directory of the source tree.</p>
+<p><a href="https://github.com/yiq/SubcloneSeeker/blob/master/examples.tar.gz">https://github.com/yiq/SubcloneSeeker/blob/master/examples.tar.gz</a></p>
+<h2>Setup the variables </h2>
+<p>Navigate to the example directory on a commandline. Edit the file 'setup.sh' so that it reflects how you organized the project files. Make sure that you have compiled the binaries in the SubcloneSeeker project. If you haven't done so, please refer to the 'INSTALLATION' section in this document.</p>
+<h3>Example-1: Simulation</h3>
+<p><b>Directory: 01-simulation</b></p>
+<p>The first example simulates 1000 tumors, each with 3, 4, ..., 8 subclones. Subclone Deconvolution is then performed on all the samples, and statistics will be collected as in how many possible solutions for each tumor. You can initiate the simulation by running the 'sim.sh' script </p><pre class="fragment">./sim.sh
+</pre><p>Note that this will take some time to finish, especially in the case 7 or 8 subclones per tumor. Results will be stored in 'result' directory. To plot the results, launch R in the example directory and run the 'plot.r' scriot </p><pre class="fragment">R
+source('plot.r');
+</pre><p>A result set from a run executed on my computer is also provided, if you just want to plot the results. In that case, please use the 'plot_prerun.r' script</p>
+<h3>Example-2: Purity estimation with the snuc cancer cell-line dataset</h3>
+<p><b>Directory: 02-snuc</b></p>
+<p>In this example, a snuc cancer cell line (thus very high purity) was sequenced, and its sequencing reads were combined with those reads from sequencing the paired-normal sample at various ratios. Subclone deconvolution is performed on each of the digitally created samples, and purity estimation is reported. In order to run the example, simple type </p><pre class="fragment">make
+</pre><p>in the example directory, as it will take care of removing old results (if you run it before), creating required directories, running the deconvolution and plotting the result. After the execution, a file 'SamplePurity.pdf' should be created in the same directory, which contains the plotted result.</p>
+<h3>Example-3: Re-analysis of the dataset presented in Ding et, al. 2012</h3>
+<p>execute </p><pre class="fragment">make
+</pre><p>(More content to be written......)</p>
+<h3>Example-4: Analysis of two OvCa cancer sample Single Nucleotide Polymorphism dataset</h3>
+<p>execute </p><pre class="fragment">make
+</pre><p>(More content to be written......) </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Sun Jun 15 2014 22:34:22 for SubcloneSeeker by
+    <li class="footer">Generated on Sun Jun 15 2014 22:39:35 for SubcloneSeeker by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

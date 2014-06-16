@@ -11,8 +11,8 @@ doc: DOXYGEN-exists doc/mainpage.md
 
 DOXYGEN-exists: ; @which doxygen > /dev/null 2>&1
 
-doc/mainpage.md: README.md
-	cp $< $@
+doc/mainpage.md: README.md doc/mainpage_header.md doc/mainpage_additional.md
+	cat doc/mainpage_header.md $< doc/mainpage_additional.md > $@
 
 check: libss utils
 	make -C vendor/UnitTest++
