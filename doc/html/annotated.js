@@ -16,6 +16,8 @@ var annotated =
       [ "TreeNode", "class_subclone_seeker_1_1_tree_node.html", "class_subclone_seeker_1_1_tree_node" ],
       [ "TreeTraverseDelegate", "class_subclone_seeker_1_1_tree_traverse_delegate.html", "class_subclone_seeker_1_1_tree_traverse_delegate" ]
     ] ],
+    [ "CoexistanceTable", "class_coexistance_table.html", "class_coexistance_table" ],
+    [ "CoexistanceTraverseDelegate", "class_coexistance_traverse_delegate.html", "class_coexistance_traverse_delegate" ],
     [ "EdgePrintTraverser", "class_edge_print_traverser.html", "class_edge_print_traverser" ],
     [ "NodePrintTraverser", "class_node_print_traverser.html", "class_node_print_traverser" ],
     [ "RefGenome", "class_ref_genome.html", "class_ref_genome" ],

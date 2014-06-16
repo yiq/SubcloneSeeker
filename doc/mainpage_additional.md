@@ -73,8 +73,6 @@ execute
 
 	make
 
-and marvel at the results ......
-
 (More content to be written......)
 
 ###Example-4: Analysis of two OvCa cancer sample Single Nucleotide Polymorphism dataset
@@ -82,7 +80,5 @@ and marvel at the results ......
 execute
 
 	make
-
-and marvel at the results ......
 
 (More content to be written......)

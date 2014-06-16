@@ -123,13 +123,14 @@ Inheritance diagram for SubcloneSeeker::TreeTraverseDelegate:</div>
  <div class="center">
   <img src="class_subclone_seeker_1_1_tree_traverse_delegate.png" usemap="#SubcloneSeeker::TreeTraverseDelegate_map" alt=""/>
   <map id="SubcloneSeeker::TreeTraverseDelegate_map" name="SubcloneSeeker::TreeTraverseDelegate_map">
-<area href="class_edge_print_traverser.html" title="A tree traverser that prints the edges in Graphviz .dot format. " alt="EdgePrintTraverser" shape="rect" coords="0,56,275,80"/>
-<area href="class_node_print_traverser.html" title="A tree traverser that prints the nodes in Graphviz .dot format. " alt="NodePrintTraverser" shape="rect" coords="285,56,560,80"/>
-<area href="class_subclone_seeker_1_1_subclone_load_tree_traverser.html" title="A tree traverser that loads an entire tree structure from a database. " alt="SubcloneSeeker::SubcloneLoadTreeTraverser" shape="rect" coords="570,56,845,80"/>
-<area href="class_subclone_seeker_1_1_subclone_save_tree_traverser.html" title="A tree traverser that saves an entire tree structure from a database. " alt="SubcloneSeeker::SubcloneSaveTreeTraverser" shape="rect" coords="855,56,1130,80"/>
-<area href="class_tree_merge_traverse_secondary.html" title="Traverse the secondary tree, and try to place every node it encounters onto the primary tree..." alt="TreeMergeTraverseSecondary" shape="rect" coords="1140,56,1415,80"/>
-<area href="class_tree_print_traverser.html" title="A tree traverser that prints tree in a text format. " alt="TreePrintTraverser" shape="rect" coords="1425,56,1700,80"/>
-<area href="class_tree_print_traverser.html" title="A tree traverser that prints tree in a text format. " alt="TreePrintTraverser" shape="rect" coords="1710,56,1985,80"/>
+<area href="class_coexistance_traverse_delegate.html" alt="CoexistanceTraverseDelegate" shape="rect" coords="285,56,560,80"/>
+<area href="class_edge_print_traverser.html" title="A tree traverser that prints the edges in Graphviz .dot format. " alt="EdgePrintTraverser" shape="rect" coords="285,112,560,136"/>
+<area href="class_node_print_traverser.html" title="A tree traverser that prints the nodes in Graphviz .dot format. " alt="NodePrintTraverser" shape="rect" coords="285,168,560,192"/>
+<area href="class_subclone_seeker_1_1_subclone_load_tree_traverser.html" title="A tree traverser that loads an entire tree structure from a database. " alt="SubcloneSeeker::SubcloneLoadTreeTraverser" shape="rect" coords="285,224,560,248"/>
+<area href="class_subclone_seeker_1_1_subclone_save_tree_traverser.html" title="A tree traverser that saves an entire tree structure from a database. " alt="SubcloneSeeker::SubcloneSaveTreeTraverser" shape="rect" coords="285,280,560,304"/>
+<area href="class_tree_merge_traverse_secondary.html" title="Traverse the secondary tree, and try to place every node it encounters onto the primary tree..." alt="TreeMergeTraverseSecondary" shape="rect" coords="285,336,560,360"/>
+<area href="class_tree_print_traverser.html" title="A tree traverser that prints tree in a text format. " alt="TreePrintTraverser" shape="rect" coords="285,392,560,416"/>
+<area href="class_tree_print_traverser.html" title="A tree traverser that prints tree in a text format. " alt="TreePrintTraverser" shape="rect" coords="285,448,560,472"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -262,7 +263,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="class_tree_print_traverser.html#aebd7ac61ef639b769e0d7de4597e3202">TreePrintTraverser</a>, and <a class="el" href="class_tree_print_traverser.html#aebd7ac61ef639b769e0d7de4597e3202">TreePrintTraverser</a>.</p>
+<p>Reimplemented in <a class="el" href="class_tree_print_traverser.html#aebd7ac61ef639b769e0d7de4597e3202">TreePrintTraverser</a>, <a class="el" href="class_coexistance_traverse_delegate.html#a72de7175ef7d904d64083e0f8140b2db">CoexistanceTraverseDelegate</a>, and <a class="el" href="class_tree_print_traverser.html#aebd7ac61ef639b769e0d7de4597e3202">TreePrintTraverser</a>.</p>
 
 </div>
 </div>
@@ -295,7 +296,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="class_tree_print_traverser.html#a1a430034a5f0637b3eda13bc54f779a3">TreePrintTraverser</a>, <a class="el" href="class_subclone_seeker_1_1_subclone_save_tree_traverser.html#a692c3e5f4da6bbfe1289a27897d05af2">SubcloneSeeker::SubcloneSaveTreeTraverser</a>, and <a class="el" href="class_tree_print_traverser.html#a1a430034a5f0637b3eda13bc54f779a3">TreePrintTraverser</a>.</p>
+<p>Reimplemented in <a class="el" href="class_tree_print_traverser.html#a1a430034a5f0637b3eda13bc54f779a3">TreePrintTraverser</a>, <a class="el" href="class_subclone_seeker_1_1_subclone_save_tree_traverser.html#a692c3e5f4da6bbfe1289a27897d05af2">SubcloneSeeker::SubcloneSaveTreeTraverser</a>, <a class="el" href="class_tree_print_traverser.html#a1a430034a5f0637b3eda13bc54f779a3">TreePrintTraverser</a>, and <a class="el" href="class_coexistance_traverse_delegate.html#aec3d767c91054010b05a0593b460032f">CoexistanceTraverseDelegate</a>.</p>
 
 </div>
 </div>
@@ -328,7 +329,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="class_tree_merge_traverse_secondary.html#aa5fa4ed5c31a5cf2c6b9dca0468f838b">TreeMergeTraverseSecondary</a>, <a class="el" href="class_subclone_seeker_1_1_subclone_load_tree_traverser.html#af122b6eee81a899220561f0f9370e9a1">SubcloneSeeker::SubcloneLoadTreeTraverser</a>, <a class="el" href="class_tree_print_traverser.html#a826b9309cf08e779dcc52d3ed0414167">TreePrintTraverser</a>, <a class="el" href="class_subclone_seeker_1_1_subclone_save_tree_traverser.html#a870dba44b5383681499c97aa15324434">SubcloneSeeker::SubcloneSaveTreeTraverser</a>, <a class="el" href="class_edge_print_traverser.html#a5f23e1ab91343811bc5761d07b479bfa">EdgePrintTraverser</a>, <a class="el" href="class_node_print_traverser.html#ae62459af6a4d939021dc081dfdad55d8">NodePrintTraverser</a>, and <a class="el" href="class_tree_print_traverser.html#a826b9309cf08e779dcc52d3ed0414167">TreePrintTraverser</a>.</p>
+<p>Implemented in <a class="el" href="class_tree_merge_traverse_secondary.html#aa5fa4ed5c31a5cf2c6b9dca0468f838b">TreeMergeTraverseSecondary</a>, <a class="el" href="class_subclone_seeker_1_1_subclone_load_tree_traverser.html#af122b6eee81a899220561f0f9370e9a1">SubcloneSeeker::SubcloneLoadTreeTraverser</a>, <a class="el" href="class_tree_print_traverser.html#a826b9309cf08e779dcc52d3ed0414167">TreePrintTraverser</a>, <a class="el" href="class_subclone_seeker_1_1_subclone_save_tree_traverser.html#a870dba44b5383681499c97aa15324434">SubcloneSeeker::SubcloneSaveTreeTraverser</a>, <a class="el" href="class_edge_print_traverser.html#a5f23e1ab91343811bc5761d07b479bfa">EdgePrintTraverser</a>, <a class="el" href="class_node_print_traverser.html#ae62459af6a4d939021dc081dfdad55d8">NodePrintTraverser</a>, <a class="el" href="class_tree_print_traverser.html#a826b9309cf08e779dcc52d3ed0414167">TreePrintTraverser</a>, and <a class="el" href="class_coexistance_traverse_delegate.html#aa3d80848e6da455ef4594def83c71eb1">CoexistanceTraverseDelegate</a>.</p>
 
 </div>
 </div>
@@ -387,7 +388,7 @@ Protected Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>SubcloneSeeker</b></li><li class="navelem"><a class="el" href="class_subclone_seeker_1_1_tree_traverse_delegate.html">TreeTraverseDelegate</a></li>
-    <li class="footer">Generated on Wed Jun 11 2014 15:55:57 for SubcloneSeeker by
+    <li class="footer">Generated on Sun Jun 15 2014 22:34:22 for SubcloneSeeker by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

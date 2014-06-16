@@ -11,6 +11,9 @@ var hierarchy =
       ] ],
       [ "SubcloneSeeker::Subclone", "class_subclone_seeker_1_1_subclone.html", null ]
     ] ],
+    [ "CoexistanceTable::ClusterNotFoundError", "class_coexistance_table_1_1_cluster_not_found_error.html", null ],
+    [ "CoexistanceTable::ClusterPairAlreadyObservedError", "class_coexistance_table_1_1_cluster_pair_already_observed_error.html", null ],
+    [ "CoexistanceTable", "class_coexistance_table.html", null ],
     [ "SubcloneSeeker::GenomicLocation", "class_subclone_seeker_1_1_genomic_location.html", [
       [ "SubcloneSeeker::GenomicRange", "class_subclone_seeker_1_1_genomic_range.html", null ]
     ] ],
@@ -19,6 +22,7 @@ var hierarchy =
       [ "SubcloneSeeker::Subclone", "class_subclone_seeker_1_1_subclone.html", null ]
     ] ],
     [ "SubcloneSeeker::TreeTraverseDelegate", "class_subclone_seeker_1_1_tree_traverse_delegate.html", [
+      [ "CoexistanceTraverseDelegate", "class_coexistance_traverse_delegate.html", null ],
       [ "EdgePrintTraverser", "class_edge_print_traverser.html", null ],
       [ "NodePrintTraverser", "class_node_print_traverser.html", null ],
       [ "SubcloneSeeker::SubcloneLoadTreeTraverser", "class_subclone_seeker_1_1_subclone_load_tree_traverser.html", null ],
