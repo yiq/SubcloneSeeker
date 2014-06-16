@@ -156,10 +156,11 @@ $(document).ready(function(){initNavTree('utils.html','');});
  -e length      [default=0]             The minimal cumulative length of a cluster to be included in the result
 </pre><p> </code></p>
 <p>Most of the parameters are self explainatory. if <code>-m</code> is specified, segMean will be normalized by the modal segMean value. <code>-r</code> can be used to specify a file, with three columns Chrom, StartLoc and endLoc without header line, that describes regions to be excluded from analysis (e.g. centromere). The result database will have both the segments serialized as SegmentalMutation objects, and clusters as EventCluster objects, which will be suitable for <code>ssmain</code> to perform subclone deconvolution</p>
+<p>An example can be seen in the <code>run.sh</code> script in 02-sunc folder inside the example package</p>
 <h4>cluster2db</h4>
 <p><code>Usage: ./cluster2db &lt;Cluster-List-File&gt;</code></p>
 <p>cluster2db is a very specialized tool, which was initially developed for the re-analysis of the WashU AML dataset (Ding et al.). The argument is the filename to a flat text file that describes the cell prevalence of each event cluster in the Primary - Relapse plane. Each line corresponds to a cluster, and the first column represent the CP in the primary sample, and second column the CP in the relapse sample. The utility will then create two files, ORIGINAL-FILENAME-pri.sqlite and ORIGINAL-FILENAME-rel.sqlite, that contains the EventCluster objects of each sample. Since only the cluster CP values are given, instead of the actual events, dummy events are created as copy number variations whose chromosome id field is reused as a generic serial id number, and <code>start</code> and <code>length</code> values uninitialized. The database files are suitable to be used as the input to <code>ssmain</code>.</p>
-<p>An example can be seen in the 03-washu folder inside the example package.</p>
+<p>An example can be seen in the <code>run.sh</code> script in 03-washu folder inside the example package.</p>
 <h4>treeprint</h4>
 <p><code>Usage: ./treeprint &lt;sqlite-db&gt; &lt;root-id&gt; [-g]</code></p>
 <p>A simple utility to print the subclone structure in the database sqlite-db, with a root node id number root-id, to the standard output. Maybe more useful is the switch <code>-g</code>, which will print the structure in GraphViz format to be directly visualized. </p>
@@ -168,7 +169,7 @@ $(document).ready(function(){initNavTree('utils.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Jun 16 2014 19:29:01 for SubcloneSeeker by
+    <li class="footer">Generated on Mon Jun 16 2014 19:49:24 for SubcloneSeeker by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

@@ -89,13 +89,15 @@ Usage: ./segtxt2db \<seg.txt file\> \<result database\>
 
 Most of the parameters are self explainatory. if `-m` is specified, segMean will be normalized by the modal segMean value. `-r` can be used to specify a file, with three columns Chrom, StartLoc and endLoc without header line, that describes regions to be excluded from analysis (e.g. centromere). The result database will have both the segments serialized as SegmentalMutation objects, and clusters as EventCluster objects, which will be suitable for `ssmain` to perform subclone deconvolution
 
+An example can be seen in the `run.sh` script in 02-sunc folder inside the example package
+
 #### cluster2db
 
 `Usage: ./cluster2db <Cluster-List-File>`
 
 cluster2db is a very specialized tool, which was initially developed for the re-analysis of the WashU AML dataset (Ding et al.). The argument is the filename to a flat text file that describes the cell prevalence of each event cluster in the Primary - Relapse plane. Each line corresponds to a cluster, and the first column represent the CP in the primary sample, and second column the CP in the relapse sample. The utility will then create two files, ORIGINAL-FILENAME-pri.sqlite and ORIGINAL-FILENAME-rel.sqlite, that contains the EventCluster objects of each sample. Since only the cluster CP values are given, instead of the actual events, dummy events are created as copy number variations whose chromosome id field is reused as a generic serial id number, and `start` and `length` values uninitialized. The database files are suitable to be used as the input to `ssmain`.
 
-An example can be seen in the 03-washu folder inside the example package.
+An example can be seen in the `run.sh` script in 03-washu folder inside the example package.
 
 #### treeprint
 
