@@ -1,3 +1,8 @@
+Command line utilities
+======================
+
+Descriptions and usage about the included command line utilities can be found at the [Command line utilities](utils.html) page
+
 Running the examples
 ====================
 

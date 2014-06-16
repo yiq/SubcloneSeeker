@@ -80,8 +80,8 @@ void usage() {
 	std::cout<<"\t\t Options:"<<std::endl;
 	std::cout<<"\t\t -p purity\t[default = 1]\t\tA number between 0-1 specifying the purity of the sample"<<std::endl;
 	std::cout<<"\t\t -q ploidy\t[default = 2]\t\tA integer number specifying the ploidy of the copy number neutral regions"<<std::endl;
-	std::cout<<"\t\t -n ratio\t[default = 1]\t\tA tumor/normal ratio at where the copy number neutral regions are found"<<std::endl;
-	std::cout<<"\t\t -m model\t[default = 2]\t\tFraction correction model. 1=MODAL, 2=PROXIMITY"<<std::endl;
+	std::cout<<"\t\t -n ratio\t[default = 1]\t\tA tumor/normal ratio where the copy number neutral regions are found"<<std::endl;
+	std::cout<<"\t\t -m \t\t\t\t\tFraction correction by modal value"<<std::endl;
 	std::cout<<"\t\t -r mask-file\t\t\t\tA mask file for regions to exclude"<<std::endl;
 	std::cout<<"\t\t -t threshold\t[default = 0.05]\tThe ratio threshold for merging two segments into a cluster"<<std::endl;
 	std::cout<<"\t\t -e length\t[default=0]\tThe minimal cumulative length of a cluster to be included in the result"<<std::endl;
@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
 	_min_length = 0;
 
 	int c;
-	while((c = getopt(argc, argv, "p:q:n:m:r:t:e:h")) != -1) {
+	while((c = getopt(argc, argv, "p:q:n:mr:t:e:h")) != -1) {
 		switch(c) {
 			case 'p':
 				_purity = atof(optarg); break;
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 			case 'n':
 				_neutral_level = atof(optarg); break;
 			case 'm':
-				_correct_model = atoi(optarg); break;
+				_correct_model = 1; break;
 			case 'r':
 				_mask_fn = strdup(optarg); break;
 			case 't':

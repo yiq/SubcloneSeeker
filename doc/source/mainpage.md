@@ -68,6 +68,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+Command line utilities
+======================
+
+Descriptions and usage about the included command line utilities can be found at the [Command line utilities](utils.html) page
+
 Running the examples
 ====================
 
