@@ -2,6 +2,7 @@
 #include <map>
 #include <sqlite3/sqlite3.h>
 #include <cassert>
+#include <cstdlib>
 #include "SegmentalMutation.h"
 #include "EventCluster.h"
 #include "SomaticEvent.h"
@@ -64,7 +65,7 @@ class CoexistanceTraverseDelegate : public TreeTraverseDelegate {
 
 				CNV *cnv = dynamic_cast<CNV *>(ec->members()[0]);
 				vector<int>::const_iterator cit;
-				for(cit = preceedingStack.cbegin(); cit != preceedingStack.cend(); cit++) {
+				for(cit = preceedingStack.begin(); cit != preceedingStack.end(); cit++) {
 					countOccurrance(cnv->range.chrom, *cit);
 				}
 			}
@@ -107,7 +108,7 @@ int main(int argc, char* argv[])
 	cout<<rootIDs.size()<<endl;
 
 	DBObjectID_vec::const_iterator it;
-	for(it = rootIDs.cbegin(); it != rootIDs.cend(); it++) {
+	for(it = rootIDs.begin(); it != rootIDs.end(); it++) {
 		Subclone *root = new Subclone();
 		assert(preceedingStack.size() == 0);
 		root->unarchiveObjectFromDB(dbh, *it);
@@ -118,8 +119,8 @@ int main(int argc, char* argv[])
 	map< int, map<int, int> >::const_iterator it1;
 	map<int, int>::const_iterator it2;
 
-	for(it1 = occuranceMap.cbegin(); it1 != occuranceMap.cend(); it1++) {
-		for(it2 = occuranceMap[it1->first].cbegin(); it2 != occuranceMap[it1->first].cend(); it2++) {
+	for(it1 = occuranceMap.begin(); it1 != occuranceMap.end(); it1++) {
+		for(it2 = occuranceMap[it1->first].begin(); it2 != occuranceMap[it1->first].end(); it2++) {
 			cout<<it1->first<<"\t"<<it2->first<<"\t"<<it2->second<<endl;
 		}
 	}

@@ -21,9 +21,9 @@ CoexistanceTable::CoexistanceTable(const std::vector<EventCluster>& clusters)
 
 
 	clusterIndexMap.clear();
-	std::vector<EventCluster>::const_iterator cit = clusters.cbegin();
+	std::vector<EventCluster>::const_iterator cit = clusters.begin();
 	size_t idx = 0;
-	for(; cit != clusters.cend(); cit++, idx++)
+	for(; cit != clusters.end(); cit++, idx++)
 		clusterIndexMap[*cit] = idx;
 }
 
@@ -54,7 +54,7 @@ void CoexistanceTable::ObserveCoexistance(const EventCluster& cluster1, const Ev
 	clusterIndexMapT::const_iterator it1 = clusterIndexMap.find(cluster1);
 	clusterIndexMapT::const_iterator it2 = clusterIndexMap.find(cluster2);
 
-	if(it1 == clusterIndexMap.cend() || it2 == clusterIndexMap.cend()) throw new ClusterNotFoundError;
+	if(it1 == clusterIndexMap.end() || it2 == clusterIndexMap.end()) throw new ClusterNotFoundError;
 	if(clusterCoexistanceOnceMap[it1->second][it2->second]) throw new ClusterPairAlreadyObservedError; 
 
 	clusterCoexistanceMap[it1->second][it2->second]++;
