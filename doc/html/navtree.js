@@ -1,6 +1,8 @@
 var NAVTREE =
 [
   [ "SubcloneSeeker", "index.html", [
+    [ "SubcloneSeeker Documentation", "index.html", null ],
+    [ "Command line utilities", "utils.html", null ],
     [ "Classes", null, [
       [ "Class List", "annotated.html", "annotated" ],
       [ "Class Index", "classes.html", null ],

@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['subcloneseeker_20documentation',['SubcloneSeeker Documentation',['../index.html',1,'']]],
   ['segmentalmutation',['SegmentalMutation',['../class_subclone_seeker_1_1_segmental_mutation.html',1,'SubcloneSeeker']]],
   ['segmentalmutation',['SegmentalMutation',['../class_subclone_seeker_1_1_segmental_mutation.html#a6cb4611d13dba7d4b90e4d664f66a5fb',1,'SubcloneSeeker::SegmentalMutation']]],
   ['segmentalmutation_2ecc',['SegmentalMutation.cc',['../_segmental_mutation_8cc.html',1,'']]],
