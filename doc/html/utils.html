@@ -121,10 +121,9 @@ $(document).ready(function(){initNavTree('utils.html','');});
 <p>This is the main entrance to the SubcloneSeeker structure enumeration algorithm. It takes one required parameter, cluster-archive-sqlite-db, which is the filename to a sqlite database that already contains serialized EventCluster objects. If the second parameter, output-db is also provided, the resulting structures will be written to the named database, creating one if not already existing, by serializing the Subclone objects into it. For multiple solutions, each solution will have a unique subclone object that has no parent node.</p>
 <h4>treemerge</h4>
 <p><code>Usage: ./treemerge &lt;tree-set 1 database file&gt; &lt;tree-set 2 database file&gt;</code></p>
-<p>this is the implementation of the algorithm to trim solution space by merging e.g. primary and relapse solutions. It expects two filenames are arguments, each corresponds to a sample. The compatible structures will be directly reported to standard output. E.g.</p>
-<p><code> Primary tree 1 is compatible with Secondary tree 1</code></p>
-<p><code>Primary tree 1 is compatible with Secondary tree 5 </code></p>
-<p>This means that, for this specific sample pair, the primary subclone structure, whose root node has an ID number of 1 in the database, is compatible with both of the relapse structures, with a root node ID of 1 and 5, in the relapse database.</p>
+<p>this is the implementation of the algorithm to trim solution space by merging e.g. primary and relapse solutions. It expects two filenames are arguments, each corresponds to a sample. The compatible structures will be directly reported to standard output. E.g. </p><pre class="fragment">Primary tree 1 is compatible with Secondary tree 1
+Primary tree 1 is compatible with Secondary tree 5
+</pre><p>This means that, for this specific sample pair, the primary subclone structure, whose root node has an ID number of 1 in the database, is compatible with both of the relapse structures, with a root node ID of 1 and 5, in the relapse database.</p>
 <h4>coexist_matrix</h4>
 <p><code>Usage: ./colocal_matrix &lt;subclone-sqlite-db&gt;</code></p>
 <p>Calculate the co-localization matrix. The parameter subclone-sqlite-db is the filename of a databaes with potentially multiple solution structures. The utility calculates the number of subclones in which each EventCluster pair co-localize, and dump the result to standard output. The first line is the number of unique pairs, followed by lines that the first two columns are the EventCluster object IDs of a pair, and the third column is the number of subclones in which they co-localize.</p>
@@ -138,38 +137,38 @@ $(document).ready(function(){initNavTree('utils.html','');});
 <li>numMark</li>
 <li>segMean</li>
 </ul>
-<p>The ID has nothing to do with the database ID. the numMark usually represents the number of probes located in a segment. The segMean needs to be in the format of log 2 of the segment's cell prevalence value. Some of the other parameters are</p>
-<p><code> Usage: ./segtxt2db &lt;seg.txt file&gt; &lt;result database&gt; </p><pre class="fragment">Options: 
-
- -p purity      [default = 1]           A number between 0-1 specifying the purity of the sample
-
- -q ploidy      [default = 2]           A integer number specifying the ploidy of the copy number neutral regions
-
- -n ratio       [default = 1]           A tumor/normal ratio where the copy number neutral regions are found
-
- -m                                     Fraction correction by modal value
-
- -r mask-file                           A mask file for regions to exclude
-
- -t threshold   [default = 0.05]        The ratio threshold for merging two segments into a cluster
-
- -e length      [default=0]             The minimal cumulative length of a cluster to be included in the result
-</pre><p> </code></p>
-<p>Most of the parameters are self explainatory. if <code>-m</code> is specified, segMean will be normalized by the modal segMean value. <code>-r</code> can be used to specify a file, with three columns Chrom, StartLoc and endLoc without header line, that describes regions to be excluded from analysis (e.g. centromere). The result database will have both the segments serialized as SegmentalMutation objects, and clusters as EventCluster objects, which will be suitable for <code>ssmain</code> to perform subclone deconvolution</p>
+<p>The ID has nothing to do with the database ID. the numMark usually represents the number of probes located in a segment. The segMean needs to be in the format of log 2 of the segment's cell prevalence value. Some of the other parameters are </p><pre class="fragment">Usage: ./segtxt2db \&lt;seg.txt file\&gt; \&lt;result database\&gt;
+    Options: 
+      -p purity      [default = 1]      A number between 0-1 specifying the purity of the sample
+      -q ploidy      [default = 2]      A integer number specifying the ploidy of the copy number neutral regions
+      -n ratio       [default = 1]      A tumor/normal ratio where the copy number neutral regions are found
+      -m                                Fraction correction by modal value
+      -r mask-file                      A mask file for regions to exclude
+      -t threshold   [default = 0.05]   The ratio threshold for merging two segments into a cluster
+      -e length      [default=0]        The minimal cumulative length of a cluster to be included in the result
+</pre><p>Most of the parameters are self explainatory. if <code>-m</code> is specified, segMean will be normalized by the modal segMean value. <code>-r</code> can be used to specify a file, with three columns Chrom, StartLoc and endLoc without header line, that describes regions to be excluded from analysis (e.g. centromere). The result database will have both the segments serialized as SegmentalMutation objects, and clusters as EventCluster objects, which will be suitable for <code>ssmain</code> to perform subclone deconvolution</p>
 <p>An example can be seen in the <code>run.sh</code> script in 02-sunc folder inside the example package</p>
 <h4>cluster2db</h4>
 <p><code>Usage: ./cluster2db &lt;Cluster-List-File&gt;</code></p>
 <p>cluster2db is a very specialized tool, which was initially developed for the re-analysis of the WashU AML dataset (Ding et al.). The argument is the filename to a flat text file that describes the cell prevalence of each event cluster in the Primary - Relapse plane. Each line corresponds to a cluster, and the first column represent the CP in the primary sample, and second column the CP in the relapse sample. The utility will then create two files, ORIGINAL-FILENAME-pri.sqlite and ORIGINAL-FILENAME-rel.sqlite, that contains the EventCluster objects of each sample. Since only the cluster CP values are given, instead of the actual events, dummy events are created as copy number variations whose chromosome id field is reused as a generic serial id number, and <code>start</code> and <code>length</code> values uninitialized. The database files are suitable to be used as the input to <code>ssmain</code>.</p>
 <p>An example can be seen in the <code>run.sh</code> script in 03-washu folder inside the example package.</p>
 <h4>treeprint</h4>
-<p><code>Usage: ./treeprint &lt;sqlite-db&gt; &lt;root-id&gt; [-g]</code></p>
-<p>A simple utility to print the subclone structure in the database sqlite-db, with a root node id number root-id, to the standard output. Maybe more useful is the switch <code>-g</code>, which will print the structure in GraphViz format to be directly visualized. </p>
+<pre class="fragment">Usage: utils/treeprint [Options] \&lt;sqlite-db-file\&gt;
+Options:
+  -l      List all root subclone IDs
+  -r \&lt;subclone-id\&gt;  Only output the subclone structure rooted with the given id
+  -g      Output in graphviz format
+  -h      Print this message
+</pre><p>A simple utility to list and print the subclone structures in the database sqlite-db. The default is to print all structures in a textual format suitable for debugging. If subclone A, with a subclone frequency 20%, is the parent of both subclone B and C, with subclone frequencies 30% and 15% respectively, the printed string would be 0.35,(0.2,(0.3,0.15)). The first 0.35 corresponds to the subclone frequency of normal tissue cells. The rest is a result of a pre-order traverse, with the subclone frequencies being printed, and children nodes wrapped around by parentheses.</p>
+<p>If only one structure is desired, the id of the root node of that structure can be given with the <code>-r</code> option. The utility does not check if the given subclone is actually a root subclone, so it is possible to print a partial tree given that the id refers to an internal node.</p>
+<p>When <code>-l</code> is given, the IDs of all the root subclone nodes are printed, which can be useful to find out the IDs, and use <code>-r</code> to print out specific structures.</p>
+<p>When <code>-g</code> is given, the output format is switched to graphviz <code>dot</code> format. Not that in the current version, the cluster label is not preserved in the subclone structure database. So the nodes are simply labeled as n1, n2, ... A future update will remedy this. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Jun 16 2014 19:49:24 for SubcloneSeeker by
+    <li class="footer">Generated on Thu Jul 3 2014 19:31:15 for SubcloneSeeker by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

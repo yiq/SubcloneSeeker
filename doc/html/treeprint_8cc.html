@@ -105,7 +105,9 @@ $(document).ready(function(){initNavTree('treeprint_8cc.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">treeprint.cc File Reference</div>  </div>
 </div><!--header-->
@@ -118,6 +120,8 @@ $(document).ready(function(){initNavTree('treeprint_8cc.html','');});
 <code>#include &lt;cstdio&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
 <code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;ctype.h&gt;</code><br />
+<code>#include &lt;unistd.h&gt;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -131,15 +135,77 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A tree traverser that prints the edges in Graphviz .dot format.  <a href="class_edge_print_traverser.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a06fc87d81c62e9abb8790b6e5713c55b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a06fc87d81c62e9abb8790b6e5713c55b"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>RUN_MODE_LIST</b>, 
+<b>RUN_MODE_PRINT</b>
+ }</td></tr>
+<tr class="separator:a06fc87d81c62e9abb8790b6e5713c55b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf764cbdea00d65edcd07bb9953ad2b7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf764cbdea00d65edcd07bb9953ad2b7"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>OUT_FORMAT_TEXT</b>, 
+<b>OUT_FORMAT_GVIZ</b>
+ }</td></tr>
+<tr class="separator:adf764cbdea00d65edcd07bb9953ad2b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a45fc708a2dd038a9dcd60f56aeb3e01b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treeprint_8cc.html#a45fc708a2dd038a9dcd60f56aeb3e01b">usage</a> (const char *progName)</td></tr>
+<tr class="memdesc:a45fc708a2dd038a9dcd60f56aeb3e01b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print the usage information.  <a href="#a45fc708a2dd038a9dcd60f56aeb3e01b">More...</a><br /></td></tr>
+<tr class="separator:a45fc708a2dd038a9dcd60f56aeb3e01b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac59958bfa320bb1a79022d635e4b7ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treeprint_8cc.html#aac59958bfa320bb1a79022d635e4b7ef">listRootIDs</a> (sqlite3 *database)</td></tr>
+<tr class="memdesc:aac59958bfa320bb1a79022d635e4b7ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">List all root subclone IDs.  <a href="#aac59958bfa320bb1a79022d635e4b7ef">More...</a><br /></td></tr>
+<tr class="separator:aac59958bfa320bb1a79022d635e4b7ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60caba9d36f78de61bb9c2b221dd1111"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treeprint_8cc.html#a60caba9d36f78de61bb9c2b221dd1111">printSubcloneWithID</a> (sqlite3 *database, int32_t rootID)</td></tr>
+<tr class="memdesc:a60caba9d36f78de61bb9c2b221dd1111"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print details about a subclone structure The structure contains the given root, and all its descendent nodes.  <a href="#a60caba9d36f78de61bb9c2b221dd1111">More...</a><br /></td></tr>
+<tr class="separator:a60caba9d36f78de61bb9c2b221dd1111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97ec8b42787c29dc0790d540bf85b0ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treeprint_8cc.html#a97ec8b42787c29dc0790d540bf85b0ac">printAllSubclones</a> (sqlite3 *database)</td></tr>
+<tr class="memdesc:a97ec8b42787c29dc0790d540bf85b0ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print all subclone structures.  <a href="#a97ec8b42787c29dc0790d540bf85b0ac">More...</a><br /></td></tr>
+<tr class="separator:a97ec8b42787c29dc0790d540bf85b0ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treeprint_8cc.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
 <tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a8692fe1693350045fd7948f132a3de1e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8692fe1693350045fd7948f132a3de1e"></a>
+enum  { ... } &#160;</td><td class="memItemRight" valign="bottom"><b>runMode</b></td></tr>
+<tr class="separator:a8692fe1693350045fd7948f132a3de1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87f195cd240365d710159792cf2b638d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a87f195cd240365d710159792cf2b638d"></a>
+enum  { ... } &#160;</td><td class="memItemRight" valign="bottom"><b>outputMode</b></td></tr>
+<tr class="separator:a87f195cd240365d710159792cf2b638d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d0c1e722ce2fb62559dca8c8c8ddee2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0d0c1e722ce2fb62559dca8c8c8ddee2"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>isRootIDSpecified</b></td></tr>
+<tr class="separator:a0d0c1e722ce2fb62559dca8c8c8ddee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3d085246b6288fdbf81a97e1dfa93a4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3d085246b6288fdbf81a97e1dfa93a4"></a>
+int32_t&#160;</td><td class="memItemRight" valign="bottom"><b>rootID</b></td></tr>
+<tr class="separator:aa3d085246b6288fdbf81a97e1dfa93a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The source for util 'treeprint', which takes a database and a root id and prints out the subclonal tree</p>
 <dl class="section author"><dt>Author</dt><dd>Yi Qiao </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="aac59958bfa320bb1a79022d635e4b7ef"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void listRootIDs </td>
+          <td>(</td>
+          <td class="paramtype">sqlite3 *&#160;</td>
+          <td class="paramname"><em>database</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>List all root subclone IDs. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">database</td><td>An live sqlite3 database connection </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a0ddf1224851353fc92bfbff6f499fa97"></a>
 <div class="memitem">
 <div class="memproto">
@@ -167,13 +233,96 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a97ec8b42787c29dc0790d540bf85b0ac"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void printAllSubclones </td>
+          <td>(</td>
+          <td class="paramtype">sqlite3 *&#160;</td>
+          <td class="paramname"><em>database</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Print all subclone structures. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">database</td><td>An live sqlite3 database connection </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a60caba9d36f78de61bb9c2b221dd1111"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void printSubcloneWithID </td>
+          <td>(</td>
+          <td class="paramtype">sqlite3 *&#160;</td>
+          <td class="paramname"><em>database</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>rootID</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Print details about a subclone structure The structure contains the given root, and all its descendent nodes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">database</td><td>An live sqlite3 database connection </td></tr>
+    <tr><td class="paramname">rootID</td><td>The id of the root node for which the structure is printed </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a45fc708a2dd038a9dcd60f56aeb3e01b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void usage </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>progName</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Print the usage information. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">progName</td><td>the string containing the name of the executable </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_cbdb8362360e11eafe2fa3bc74cf0ffd.html">utils</a></li><li class="navelem"><a class="el" href="treeprint_8cc.html">treeprint.cc</a></li>
-    <li class="footer">Generated on Mon Jun 16 2014 19:49:24 for SubcloneSeeker by
+    <li class="footer">Generated on Thu Jul 3 2014 19:31:15 for SubcloneSeeker by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

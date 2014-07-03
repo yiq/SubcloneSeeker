@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['removechild',['removeChild',['../class_subclone_seeker_1_1_tree_node.html#aec9f17f221002078c4abb69bfda33d54',1,'SubcloneSeeker::TreeNode']]],
-  ['resultsetcomparator',['resultSetComparator',['../treemerge__p_8cc.html#a545793e62441d9f1bff284749b7069df',1,'resultSetComparator(const SomaticEventPtr_vec &amp;v1, const SomaticEventPtr_vec &amp;v2):&#160;treemerge_p.cc'],['../treemerge__p_8h.html#a545793e62441d9f1bff284749b7069df',1,'resultSetComparator(const SomaticEventPtr_vec &amp;v1, const SomaticEventPtr_vec &amp;v2):&#160;treemerge_p.cc']]],
-  ['rootnodes',['rootNodes',['../class_subclone_seeker_1_1_subclone_load_tree_traverser.html#aab73727e9ec645ccfa2c2f41c00f1d35',1,'SubcloneSeeker::SubcloneLoadTreeTraverser']]]
+  ['querychromid',['queryChromID',['../class_ref_genome.html#a8a4b43937d71c6675a9cad3e5773d550',1,'RefGenome']]],
+  ['querychromlengthwithid',['queryChromLengthWithID',['../class_ref_genome.html#a3f544e7ecb7e6140446ee49533438a1c',1,'RefGenome']]],
+  ['querychromstartbase',['queryChromStartBase',['../class_ref_genome.html#a5608491ec4003fb02f5b4a32240d4347',1,'RefGenome']]],
+  ['querygenomelength',['queryGenomeLength',['../class_ref_genome.html#a76cb9e067a47b3b890248445322daa3d',1,'RefGenome']]]
 ];

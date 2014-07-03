@@ -40,11 +40,8 @@ This is the main entrance to the SubcloneSeeker structure enumeration algorithm.
 
 this is the implementation of the algorithm to trim solution space by merging e.g. primary and relapse solutions. It expects two filenames are arguments, each corresponds to a sample. The compatible structures will be directly reported to standard output. E.g.
 
-<code>
-Primary tree 1 is compatible with Secondary tree 1
-
-Primary tree 1 is compatible with Secondary tree 5
-</code>
+    Primary tree 1 is compatible with Secondary tree 1
+    Primary tree 1 is compatible with Secondary tree 5
 
 This means that, for this specific sample pair, the primary subclone structure, whose root node has an ID number of 1 in the database, is compatible with both of the relapse structures, with a root node ID of 1 and 5, in the relapse database.
 
@@ -67,25 +64,15 @@ Convert a common file format that describes segmental events into database objec
 
 The ID has nothing to do with the database ID. the numMark usually represents the number of probes located in a segment. The segMean needs to be in the format of log 2 of the segment's cell prevalence value. Some of the other parameters are
 
-<code>
-Usage: ./segtxt2db \<seg.txt file\> \<result database\>
-
-    Options: 
-
-     -p purity      [default = 1]           A number between 0-1 specifying the purity of the sample
-
-     -q ploidy      [default = 2]           A integer number specifying the ploidy of the copy number neutral regions
-
-     -n ratio       [default = 1]           A tumor/normal ratio where the copy number neutral regions are found
-
-     -m                                     Fraction correction by modal value
-
-     -r mask-file                           A mask file for regions to exclude
-
-     -t threshold   [default = 0.05]        The ratio threshold for merging two segments into a cluster
-
-     -e length      [default=0]             The minimal cumulative length of a cluster to be included in the result
-</code>
+    Usage: ./segtxt2db \<seg.txt file\> \<result database\>
+        Options: 
+          -p purity      [default = 1]      A number between 0-1 specifying the purity of the sample
+          -q ploidy      [default = 2]      A integer number specifying the ploidy of the copy number neutral regions
+          -n ratio       [default = 1]      A tumor/normal ratio where the copy number neutral regions are found
+          -m                                Fraction correction by modal value
+          -r mask-file                      A mask file for regions to exclude
+          -t threshold   [default = 0.05]   The ratio threshold for merging two segments into a cluster
+          -e length      [default=0]        The minimal cumulative length of a cluster to be included in the result
 
 Most of the parameters are self explainatory. if `-m` is specified, segMean will be normalized by the modal segMean value. `-r` can be used to specify a file, with three columns Chrom, StartLoc and endLoc without header line, that describes regions to be excluded from analysis (e.g. centromere). The result database will have both the segments serialized as SegmentalMutation objects, and clusters as EventCluster objects, which will be suitable for `ssmain` to perform subclone deconvolution
 
@@ -101,6 +88,17 @@ An example can be seen in the `run.sh` script in 03-washu folder inside the exam
 
 #### treeprint
 
-`Usage: ./treeprint <sqlite-db> <root-id> [-g]`
+    Usage: utils/treeprint [Options] \<sqlite-db-file\>
+    Options:
+      -l      List all root subclone IDs
+      -r \<subclone-id\>  Only output the subclone structure rooted with the given id
+      -g      Output in graphviz format
+      -h      Print this message
 
-A simple utility to print the subclone structure in the database sqlite-db, with a root node id number root-id, to the standard output. Maybe more useful is the switch `-g`, which will print the structure in GraphViz format to be directly visualized.
+A simple utility to list and print the subclone structures in the database sqlite-db. The default is to print all structures in a textual format suitable for debugging. If subclone A, with a subclone frequency 20%, is the parent of both subclone B and C, with subclone frequencies 30% and 15% respectively, the printed string would be 0.35,(0.2,(0.3,0.15)). The first 0.35 corresponds to the subclone frequency of normal tissue cells. The rest is a result of a pre-order traverse, with the subclone frequencies being printed, and children nodes wrapped around by parentheses. 
+
+If only one structure is desired, the id of the root node of that structure can be given with the `-r` option. The utility does not check if the given subclone is actually a root subclone, so it is possible to print a partial tree given that the id refers to an internal node.
+
+When `-l` is given, the IDs of all the root subclone nodes are printed, which can be useful to find out the IDs, and use `-r` to print out specific structures.
+
+When `-g` is given, the output format is switched to graphviz `dot` format. Not that in the current version, the cluster label is not preserved in the subclone structure database. So the nodes are simply labeled as n1, n2, ... A future update will remedy this.

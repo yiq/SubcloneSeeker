@@ -142,16 +142,46 @@ source('plot.r');
 </pre><p>in the example directory, as it will take care of removing old results (if you run it before), creating required directories, running the deconvolution and plotting the result. After the execution, a file 'SamplePurity.pdf' should be created in the same directory, which contains the plotted result.</p>
 <h3>Example-3: Re-analysis of the dataset presented in Ding et, al. 2012</h3>
 <p>execute </p><pre class="fragment">make
-</pre><p>(More content to be written......)</p>
+</pre><p>As an example, the following is part of the output </p><pre class="fragment">SAMPLE UPN933124:
+Primary tree 11 is compatible with Secondary tree 1
+</pre><p>This means that, for the sample UPN933124, the primary tree, with a root node whose id is 11, is compatible with the relapse (secondary) tree, with a root node whose id is 1. To further investigate the actual structures, the utility <code>treeprint</code> can be used. The following commands assume that an environment variable <code>SSHOME</code> exists that points to the directory of SubcloneSeeker </p><pre class="fragment">$SSHOME/utils/treeprint -l results/subclones/UPN933124-pri.sqlite
+1
+6
+11
+16
+21
+26
+</pre><p>There are 6 subclone structures (or root nodes, more precisely) in the database resulted from reconstruction on the primary sample. Since tree 11 is compatible, let's look at that one particularly </p><pre class="fragment">$SSHOME/utils/treeprint -r 11 results/subclones/UPN933124-pri.sqlite
+0,(0.127401,(0.531157,0.29044,(0.051003,)))
+</pre><p>It indicates that the structure of tree 11 is as follows:</p>
+<ul>
+<li>The root node, which represent normal tissue, is 0% (because the data was adjusted by the highest AF before subjected to reconstruction)</li>
+<li>The next subclone, whose parent is the normal clone, has a subclone frequency of 12.74% (let's denote it as subclone A)</li>
+<li>The next two subclones are both the children of subclone A, each taking up 53.11% and 29.04% of the entire population (denoted as subclone B and C)</li>
+<li>The next subclone, whose parent is subclone C, takes up 5.1% of the entire population</li>
+</ul>
+<p>A more visualization friendly output can be produced with the <code>-g</code> option with <code>treeprint</code>, which print the structure in graphviz format </p><pre class="fragment">$SSHOME/utils/treeprint -r 11 -g results/subclones/UPN933124-pri.sqlite
+digraph {
+    n11 [label="n11: 0%"];
+    n12 [label="n12: 12.7%"];
+    n13 [label="n13: 53.1%"];
+    n14 [label="n14: 29%"];
+    n15 [label="n15: 5.1%"];
+    n11-&gt;n12;
+    n12-&gt;n13;
+    n12-&gt;n14;
+    n14-&gt;n15;
+}
+</pre><p>Currently the clusters are not labeled when they are provided to the main reconstruction algorithm, so that the output cannot be labeled either (a future update will remedy this), and they are simply labeled as n (as in node) + their subclone ID. But given the subclone frequencies, it is easy to assign the mutations back to each of the subclones, working from the bottom up.</p>
 <h3>Example-4: Analysis of two OvCa cancer sample Single Nucleotide Polymorphism dataset</h3>
 <p>execute </p><pre class="fragment">make
-</pre><p>(More content to be written......) </p>
+</pre><p>The details of the resulting structures can be interrogated in a similar fashion as in the previous example </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Jun 16 2014 19:49:25 for SubcloneSeeker by
+    <li class="footer">Generated on Thu Jul 3 2014 19:31:15 for SubcloneSeeker by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

@@ -37,8 +37,15 @@ THE SOFTWARE.
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctype.h>
+#include <unistd.h>
 
 using namespace SubcloneSeeker;
+
+enum {RUN_MODE_LIST, RUN_MODE_PRINT} runMode;
+enum {OUT_FORMAT_TEXT, OUT_FORMAT_GVIZ} outputMode;
+int isRootIDSpecified;
+int32_t rootID;
 
 // Traverser borrowed from SubcloneExplore.cc
 /**
@@ -99,47 +106,142 @@ class EdgePrintTraverser: public TreeTraverseDelegate {
 };
 
 /**
- * Main function of the treeprint utility
+ * @brief Print the usage information
+ *
+ * @param progName the string containing the name of the executable
  */
-int main(int argc, char* argv[]) {
+void usage(const char* progName) {
+	std::cout<<"Usage: "<<progName<<" [Options] <sqlite-db-file>"<<std::endl;
+	std::cout<<"Options:"<<std::endl;
+	std::cout<<"\t-l\t\t\tList all root subclone IDs"<<std::endl;
+	std::cout<<"\t-r <subclone-id>\tOnly output the subclone structure rooted with the given id"<<std::endl;
+	std::cout<<"\t-g\t\t\tOutput in graphviz format"<<std::endl;
+	std::cout<<"\t-h\t\t\tPrint this message"<<std::endl;
+	exit(0);
+}
 
-	if(argc<3) {
-		std::cerr<<"Usage "<<argv[0]<<" <sqlite-db> <root-id> [-g]"<<std::endl;
-		std::cerr<<"The optional -g switch will produce dot file suitable to be visualized with GraphViz"<<std::endl;
-		exit(0);
+/**
+ * @brief List all root subclone IDs
+ *
+ * @param database An live sqlite3 database connection
+ */
+void listRootIDs(sqlite3* database) {
+
+	DBObjectID_vec rootIDs = SubcloneLoadTreeTraverser::rootNodes(database);
+	for(DBObjectID_vec::iterator it = rootIDs.begin(); it != rootIDs.end(); it++) {
+		std::cout<<*it<<std::endl;
 	}
+}
 
-	sqlite3 *database;
-	int rc;
-
-	if(sqlite3_open_v2(argv[1], &database, SQLITE_OPEN_READONLY, NULL) != SQLITE_OK) {
-		std::cerr<<"Unable to open database "<<argv[1]<<std::endl;
-		return(1);
-	}
-
+/**
+ * @brief Print details about a subclone structure
+ * The structure contains the given root, and all its descendent nodes
+ *
+ * @param database An live sqlite3 database connection
+ * @param rootID The id of the root node for which the structure is printed
+ */
+void printSubcloneWithID(sqlite3* database, int32_t rootID) {
 	Subclone *root = new Subclone();
 
-	root->unarchiveObjectFromDB(database, atoi(argv[2]));
+	root->unarchiveObjectFromDB(database, rootID);
 
 	SubcloneLoadTreeTraverser loadTr(database);
 	TreeNode::PreOrderTraverse(root, loadTr);
 
-	if(argc<4) {
+	if(outputMode == OUT_FORMAT_TEXT) {
 		TreePrintTraverser traverser;
 		TreeNode::PreOrderTraverse(root, traverser);
-	} else if(strcmp(argv[3], "-g") == 0) {
+	} 
+	else if(outputMode == OUT_FORMAT_GVIZ) {
 		std::cout<<"digraph {"<<std::endl;
 		// Node list
 		NodePrintTraverser npTrav;
 		TreeNode::PreOrderTraverse(root, npTrav);
-		
+
 		// Edge list
 		EdgePrintTraverser epTrav;
 		TreeNode::PreOrderTraverse(root, epTrav);
 		std::cout<<"}"<<std::endl;
 	}
-
 	std::cout<<std::endl;
+}
 
+/**
+ * @brief Print all subclone structures
+ *
+ * @param database An live sqlite3 database connection
+ */
+void printAllSubclones(sqlite3* database) {
+
+	DBObjectID_vec rootIDs = SubcloneLoadTreeTraverser::rootNodes(database);
+	for(DBObjectID_vec::iterator it = rootIDs.begin(); it != rootIDs.end(); it++) {
+		printSubcloneWithID(database, *it);
+	}
+}
+
+/**
+ * Main function of the treeprint utility
+ */
+
+int main(int argc, char* argv[]) {
+
+	runMode = RUN_MODE_PRINT;
+	outputMode = OUT_FORMAT_TEXT;
+
+	isRootIDSpecified = 0;
+
+	int c;
+	while((c = getopt(argc, argv, "lgr:h")) != -1) {
+		switch(c)
+		{
+			case 'l':
+				runMode = RUN_MODE_LIST;
+				break;
+			case 'g':
+				outputMode = OUT_FORMAT_GVIZ;
+				break;
+			case 'r':
+				isRootIDSpecified = 1;
+				rootID = atoi(optarg);
+				break;
+			case 'h':
+				usage(argv[0]);
+				break;
+			default:
+				std::cerr<<"Unknown option "<<(char)c<<std::endl;
+				usage(argv[0]);
+				break;
+		}
+	}
+
+	if(optind == argc) {
+		std::cerr<<"Missing subclone database file"<<std::endl;
+		usage(argv[0]);
+	}
+
+	sqlite3 *database;
+	int rc;
+
+	if(sqlite3_open_v2(argv[optind], &database, SQLITE_OPEN_READONLY, NULL) != SQLITE_OK) {
+		std::cerr<<"Unable to open database "<<argv[optind]<<std::endl;
+		return(1);
+	}
+
+	switch(runMode)
+	{
+		case RUN_MODE_LIST:
+			listRootIDs(database);
+			break;
+		case RUN_MODE_PRINT:
+			if(isRootIDSpecified) {
+				printSubcloneWithID(database, rootID);
+			}
+			else {
+				printAllSubclones(database);
+			}
+	}
+
+	sqlite3_close(database);
+	
 	return 0;
 }

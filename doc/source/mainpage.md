@@ -148,7 +148,49 @@ execute
 
 	make
 
-(More content to be written......)
+As an example, the following is part of the output
+
+    SAMPLE UPN933124:
+    Primary tree 11 is compatible with Secondary tree 1
+
+This means that, for the sample UPN933124, the primary tree, with a root node whose id is 11, is compatible with the relapse (secondary) tree, with a root node whose id is 1. To further investigate the actual structures, the utility `treeprint` can be used. The following commands assume that an environment variable `SSHOME` exists that points to the directory of SubcloneSeeker
+
+    $SSHOME/utils/treeprint -l results/subclones/UPN933124-pri.sqlite
+    1
+    6
+    11
+    16
+    21
+    26
+
+There are 6 subclone structures (or root nodes, more precisely) in the database resulted from reconstruction on the primary sample. Since tree 11 is compatible, let's look at that one particularly
+
+    $SSHOME/utils/treeprint -r 11 results/subclones/UPN933124-pri.sqlite
+    0,(0.127401,(0.531157,0.29044,(0.051003,)))
+
+It indicates that the structure of tree 11 is as follows:
+
+  * The root node, which represent normal tissue, is 0% (because the data was adjusted by the highest AF before subjected to reconstruction)
+  * The next subclone, whose parent is the normal clone, has a subclone frequency of 12.74% (let's denote it as subclone A)
+  * The next two subclones are both the children of subclone A, each taking up 53.11% and 29.04% of the entire population (denoted as subclone B and C)
+  * The next subclone, whose parent is subclone C, takes up 5.1% of the entire population
+
+A more visualization friendly output can be produced with the `-g` option with `treeprint`, which print the structure in graphviz format
+
+    $SSHOME/utils/treeprint -r 11 -g results/subclones/UPN933124-pri.sqlite
+    digraph {
+        n11 [label="n11: 0%"];
+        n12 [label="n12: 12.7%"];
+        n13 [label="n13: 53.1%"];
+        n14 [label="n14: 29%"];
+        n15 [label="n15: 5.1%"];
+        n11->n12;
+        n12->n13;
+        n12->n14;
+        n14->n15;
+    }
+
+Currently the clusters are not labeled when they are provided to the main reconstruction algorithm, so that the output cannot be labeled either (a future update will remedy this), and they are simply labeled as n (as in node) + their subclone ID. But given the subclone frequencies, it is easy to assign the mutations back to each of the subclones, working from the bottom up.
 
 ###Example-4: Analysis of two OvCa cancer sample Single Nucleotide Polymorphism dataset
 
@@ -156,4 +198,4 @@ execute
 
 	make
 
-(More content to be written......)
+The details of the resulting structures can be interrogated in a similar fashion as in the previous example
