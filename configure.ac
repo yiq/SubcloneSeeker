@@ -26,6 +26,13 @@ AM_PROG_AR
 LT_PREREQ([2.4])
 LT_INIT()
 
+AC_ARG_WITH([htslib],
+            [AS_HELP_STRING([--with-htslib=<path-to-htslib>],
+                            [Specify the path to which htslib this program will link against])])
+
+AS_IF([test "x$with_htslib" != x], [CPPFLAGS="$CPPFLAGS -I$with_htslib -I$with_htslib/include"])
+AS_IF([test "x$with_htslib" != x], [LDFLAGS="$LDFLAGS -L$with_htslib -L$with_htslib/lib -L$with_htslib/lib64"])
+AC_CHECK_LIB([hts], [bcf_read], [], [AC_MSG_ERROR([Could not find htslib shared library])])
 
 
 # Config files to output

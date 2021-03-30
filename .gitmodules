@@ -1,3 +1,3 @@
 [submodule "vendor/htslibpp"]
-	path = vendor/htslibpp
+	path = contrib/htslibpp
 	url = https://github.com/YiCppLib/htslibpp.git

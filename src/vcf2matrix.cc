@@ -1,6 +1,6 @@
 #include <iostream>
-#include <htslibpp/htslibpp.h>
-#include <htslibpp/htslibpp_variant.h>
+#include <htslibpp.h>
+#include <htslibpp_variant.h>
 
 using namespace YiCppLib::HTSLibpp;
 

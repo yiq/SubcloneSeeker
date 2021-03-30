@@ -1,0 +1,2 @@
+-I../vendor/htslibpp
+-I/opt/htslib/1.11/include
