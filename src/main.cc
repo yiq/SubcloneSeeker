@@ -86,10 +86,6 @@ int main(int argc, char** argv) {
             }
         });
 
-    //for(auto pa : allele_frequencies) {
-    //    std::cout<<pa.first.first<<", "<<pa.first.second<<std::endl;
-    //}
-    //
 
     std::sort(samples.begin(), samples.end());
 
