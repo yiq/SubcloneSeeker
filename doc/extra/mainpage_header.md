@@ -1,3 +1,0 @@
-SubcloneSeeker Documentation {#mainpage}
-============================
-
