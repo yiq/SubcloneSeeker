@@ -1,5 +1,4 @@
 
-
 AM_CPPFLAGS = -I$(srcdir)/../contrib/htslibpp
 
 

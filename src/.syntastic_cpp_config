@@ -1,2 +1,2 @@
--I../vendor/htslibpp
+-I../contrib/htslibpp
 -I/opt/htslib/1.11/include
